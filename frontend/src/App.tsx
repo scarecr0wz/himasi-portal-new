@@ -1,0 +1,68 @@
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./lib/auth";
+import Layout from "./components/Layout";
+import AdminLayout from "./components/AdminLayout";
+import Login from "./pages/Login";
+import Landing from "./pages/Landing";
+import Home from "./pages/Home";
+import Placeholder from "./pages/Placeholder";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminPlaceholder from "./pages/AdminPlaceholder";
+import Profile from "./pages/Profile";
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { token } = useAuth();
+  if (!token) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { token, isAdmin } = useAuth();
+  if (!token) return <Navigate to="/login" replace />;
+  if (!isAdmin) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
+
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Home />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="akademik" element={<Placeholder />} />
+        <Route path="acara" element={<Placeholder />} />
+        <Route path="kehadiran" element={<Placeholder />} />
+        <Route path="kas" element={<Placeholder />} />
+        <Route path="forum" element={<Placeholder />} />
+        <Route path="activities" element={<Placeholder />} />
+      </Route>
+
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminLayout />
+          </AdminRoute>
+        }
+      >
+        <Route index element={<AdminDashboard />} />
+        <Route path="users" element={<AdminPlaceholder />} />
+        <Route path="roles" element={<AdminPlaceholder />} />
+        <Route path="content" element={<AdminPlaceholder />} />
+        <Route path="menus" element={<AdminPlaceholder />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}

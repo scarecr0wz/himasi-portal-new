@@ -1,0 +1,288 @@
+// Himasi Portal - PostgreSQL schema (aligned with backend-web-himasi reference)
+// Reference: backend-web-himasi (Laravel migrations) - READ ONLY
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Level 4 (sensitif) sengaja TIDAK disimpan: alamat lengkap, NIK, DOB lengkap, kesehatan, biometrik, keuangan, data orang tua.
+// Address/birthDate di bawah hanya opsional legacy; MVP pakai data minimal + MahasiswaProfile.
+
+model User {
+  id                String    @id @default(uuid()) @db.Uuid
+  name              String
+  nim               String    @unique
+  email             String    @unique
+  emailVerifiedAt   DateTime? @map("email_verified_at")
+  password          String
+  jabatanId         String?   @map("jabatan_id") @db.Uuid
+  avatar            String?
+  departemenId      String?   @map("departemen_id") @db.Uuid
+  angkatan          String?   @db.VarChar(4)
+  joinedAt          DateTime? @map("joined_at") @db.Date
+  birthDate         DateTime? @map("birth_date") @db.Date
+  phoneNumber       String?   @map("phone_number") @db.VarChar(20)
+  address           String?   @db.Text
+  instagramAccount  String?   @map("instagram_account")
+  rememberToken     String?   @map("remember_token")
+  deletedAt         DateTime? @map("deleted_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Level 1 - Wajib (minimal)
+  membershipStatus  String    @default("ACTIVE") @map("membership_status") @db.VarChar(20)
+  programStudi      String    @default("SI") @map("program_studi") @db.VarChar(50)
+
+  jabatan   Enumeration? @relation("UserJabatan", fields: [jabatanId], references: [id], onDelete: SetNull)
+  departemen Departemen? @relation(fields: [departemenId], references: [id], onDelete: SetNull)
+
+  modelHasRoles       ModelHasRole[]
+  modelHasPermissions ModelHasPermission[]
+  mahasiswaProfile    MahasiswaProfile?
+  eventParticipations MahasiswaEventParticipation[]
+  badges              MahasiswaBadge[]
+  kontribusi          MahasiswaKontribusi[]
+}
+
+model Enumeration {
+  id        String    @id @default(uuid()) @db.Uuid
+  key       String
+  value     String
+  desc      String?   @db.Text
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  usersAsJabatan User[] @relation("UserJabatan")
+}
+
+model Departemen {
+  id        String    @id @default(uuid()) @db.Uuid
+  icon      String
+  title     String
+  desc      String    @db.Text
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  users   User[]
+  prokers Proker[]
+}
+
+// Spatie-like permission tables (guard_name = 'api' for API)
+model Permission {
+  id        BigInt   @id @default(autoincrement())
+  name      String
+  guardName String   @map("guard_name") @default("api")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  roleHasPermissions RoleHasPermission[]
+  modelHasPermissions ModelHasPermission[]
+
+  @@unique([name, guardName])
+}
+
+model Role {
+  id        BigInt   @id @default(autoincrement())
+  name      String
+  guardName String   @map("guard_name") @default("api")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  roleHasPermissions RoleHasPermission[]
+  modelHasRoles      ModelHasRole[]
+
+  @@unique([name, guardName])
+}
+
+model ModelHasPermission {
+  permissionId BigInt @map("permission_id")
+  userId      String @map("model_id") @db.Uuid
+
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([permissionId, userId])
+}
+
+model ModelHasRole {
+  roleId BigInt @map("role_id")
+  userId String @map("model_id") @db.Uuid
+
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, userId])
+}
+
+model RoleHasPermission {
+  permissionId BigInt @map("permission_id")
+  roleId       BigInt @map("role_id")
+
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([permissionId, roleId])
+}
+
+model Menu {
+  id             String   @id @default(uuid()) @db.Uuid
+  icon           String?
+  name           String
+  url            String
+  permissionName String?  @map("permission_name")
+  parentId       String?  @map("parent_id") @db.Uuid
+  order          Int      @default(0)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  parent   Menu?   @relation("MenuHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children Menu[] @relation("MenuHierarchy")
+}
+
+model Benefit {
+  id        String    @id @default(uuid()) @db.Uuid
+  photo     String
+  title     String
+  desc      String
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+}
+
+model News {
+  id          String    @id @default(uuid()) @db.Uuid
+  categoryId  String    @map("category_id") @db.Uuid
+  photo       String?
+  title       String
+  slug        String    @unique
+  desc        String    @db.Text
+  author      String
+  publishedAt DateTime? @map("published_at")
+  isActive    Boolean   @default(false) @map("is_active")
+  deletedAt  DateTime? @map("deleted_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+}
+
+model Faq {
+  id        String    @id @default(uuid()) @db.Uuid
+  title     String
+  desc      String
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+}
+
+model Proker {
+  id           String    @id @default(uuid()) @db.Uuid
+  departemenId String    @map("departemen_id") @db.Uuid
+  photo        String?
+  title        String
+  desc         String
+  actionLink   String?   @map("action_link")
+  isActive     Boolean   @default(true) @map("is_active")
+  deletedAt   DateTime? @map("deleted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  departemen Departemen @relation(fields: [departemenId], references: [id], onDelete: Cascade)
+}
+
+model Activity {
+  id        String    @id @default(uuid()) @db.Uuid
+  title     String
+  image     String?
+  desc      String?   @db.Text
+  startAt   DateTime  @map("start_at")
+  endAt     DateTime  @map("end_at")
+  uploadAt  DateTime  @map("upload_at") @db.Date
+  isActive  Boolean   @map("is_active")
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  participations MahasiswaEventParticipation[]
+}
+
+model Photo {
+  id        String    @id @default(uuid()) @db.Uuid
+  title     String
+  image     String?
+  isActive  Boolean   @map("is_active")
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+}
+
+// ========== Data Mahasiswa (Level 1–3, aman & berguna; Level 4 tidak disimpan) ==========
+// Level 1: nama, nim, email, no HP, angkatan, prodi, status, role+divisi → User + Role/Departemen
+// Level 2: domisili kota, minat, skill, portfolio, riwayat event, preferensi notifikasi
+// Level 3: CV path, sertifikat/badge, kehadiran event, kontribusi komunitas
+
+model MahasiswaProfile {
+  id                    String   @id @default(uuid()) @db.Uuid
+  userId                String   @unique @map("user_id") @db.Uuid
+  // Level 2
+  domisiliCity          String?  @map("domisili_city") @db.VarChar(100)
+  minatFokus            String?  @map("minat_fokus") @db.VarChar(500)
+  skillsJson            String?  @map("skills_json") @db.Text
+  portfolioGithub        String?  @map("portfolio_github") @db.VarChar(255)
+  portfolioLinkedin     String?  @map("portfolio_linkedin") @db.VarChar(255)
+  portfolioBehance      String?  @map("portfolio_behance") @db.VarChar(255)
+  communicationPreference String? @map("communication_preference") @db.VarChar(20)
+  notificationHours     String?  @map("notification_hours") @db.VarChar(20)
+  // Level 3
+  cvPath                String?  @map("cv_path") @db.VarChar(512)
+  // Governance & consent (UU PDP)
+  consentAt             DateTime? @map("consent_at")
+  dataRetentionRequestedAt DateTime? @map("data_retention_requested_at")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MahasiswaEventParticipation {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  activityId String   @map("activity_id") @db.Uuid
+  attended   Boolean  @default(false)
+  participatedAt DateTime @default(now()) @map("participated_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, activityId])
+}
+
+model MahasiswaBadge {
+  id              String    @id @default(uuid()) @db.Uuid
+  userId          String    @map("user_id") @db.Uuid
+  badgeType       String    @map("badge_type") @db.VarChar(50)
+  title           String
+  certificatePath String?   @map("certificate_path") @db.VarChar(512)
+  issuedAt        DateTime  @map("issued_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MahasiswaKontribusi {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  type        String   @db.VarChar(30)
+  title       String
+  description String?  @db.Text
+  occurredAt  DateTime @map("occurred_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
