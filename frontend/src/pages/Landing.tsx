@@ -101,7 +101,7 @@ export default function Landing() {
         setProkers(Array.isArray(p) ? p : []);
         setFaqs(Array.isArray(f) ? f : []);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, []);
 
@@ -199,7 +199,7 @@ export default function Landing() {
                 </div>
                 <div className="flex flex-wrap gap-4">
                   <Link
-                    to="/login"
+                    to="/register"
                     className="flex min-w-[160px] items-center justify-center rounded-xl h-14 px-8 bg-primary text-white text-base font-bold shadow-xl shadow-primary/30 hover:shadow-primary/40 transition-all"
                   >
                     Mulai
@@ -551,7 +551,7 @@ export default function Landing() {
             </div>
             <div className="text-center mt-10">
               <Link
-                to="/login"
+                to="/register"
                 className="inline-flex items-center justify-center rounded-xl h-14 px-8 bg-primary text-white text-base font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
               >
                 Daftar Sekarang

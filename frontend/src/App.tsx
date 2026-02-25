@@ -3,6 +3,7 @@ import { useAuth } from "./lib/auth";
 import Layout from "./components/Layout";
 import AdminLayout from "./components/AdminLayout";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Landing from "./pages/Landing";
 import Home from "./pages/Home";
 import Placeholder from "./pages/Placeholder";
@@ -37,6 +38,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
       <Route
         path="/dashboard"
