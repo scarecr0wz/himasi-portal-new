@@ -84,6 +84,7 @@ npm install
   npx prisma db push
   npm run db:seed
   ```
+  **Migrasi & penambahan tabel:** lihat [docs/MIGRATION.md](docs/MIGRATION.md).
 
 **Jalankan API:**
 
@@ -136,10 +137,12 @@ Dari **root repo**:
 | `npm run start` | Jalankan dist        |
 | `npm run db:generate` | Prisma generate |
 | `npm run db:push` | Push schema ke DB  |
-| `npm run db:migrate` | Prisma migrate dev |
+| `npm run db:migrate` | Prisma migrate dev (file migrasi) |
 | `npm run db:seed` | Seed data           |
 | `npm run db:studio` | Prisma Studio     |
 | `npm run user:create` | Buat user (script) |
+
+**Migrasi DB & penambahan tabel:** [docs/MIGRATION.md](docs/MIGRATION.md).
 
 ### Frontend
 
