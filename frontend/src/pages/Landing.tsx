@@ -36,6 +36,12 @@ type ProkerItem = {
   departemen?: { id: string; title: string };
 };
 
+type FaqItem = {
+  id: string;
+  title: string;
+  desc: string;
+};
+
 const HERO_IMAGE = "/hero-himasi.png";
 const CARD_IMAGES = [
   "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80",
@@ -76,6 +82,8 @@ export default function Landing() {
   const [prokers, setProkers] = useState<ProkerItem[]>([]);
   const [selectedDeptId, setSelectedDeptId] = useState<string | null>(null);
   const [selectedProkerId, setSelectedProkerId] = useState<string | null>(null);
+  const [faqs, setFaqs] = useState<FaqItem[]>([]);
+  const [faqOpenId, setFaqOpenId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -84,12 +92,14 @@ export default function Landing() {
       fetch(`${API}/content/activities`).then((r) => (r.ok ? r.json() : [])),
       fetch(`${API}/content/departments`).then((r) => (r.ok ? r.json() : [])),
       fetch(`${API}/content/prokers`).then((r) => (r.ok ? r.json() : [])),
+      fetch(`${API}/content/faqs`).then((r) => (r.ok ? r.json() : [])),
     ])
-      .then(([n, a, d, p]) => {
+      .then(([n, a, d, p, f]) => {
         setNews(Array.isArray(n) ? n.slice(0, 6) : []);
         setActivities(Array.isArray(a) ? a.slice(0, 6) : []);
         setDepartments(Array.isArray(d) ? d : []);
         setProkers(Array.isArray(p) ? p : []);
+        setFaqs(Array.isArray(f) ? f : []);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -547,6 +557,44 @@ export default function Landing() {
                 Daftar Sekarang
               </Link>
             </div>
+          </section>
+
+          {/* Frequently Asked Question */}
+          <section id="faq" className="mb-16">
+            <div className="mb-8">
+              <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-2">Frequently Asked Question</h2>
+              <p className="text-slate-600 text-lg max-w-2xl">
+                Pertanyaan yang sering diajukan seputar HIMASI, keanggotaan, dan kegiatan.
+              </p>
+            </div>
+            {loading ? (
+              <p className="text-slate-500">Memuat...</p>
+            ) : (faqs.length > 0 ? faqs : [
+              { id: "1", title: "Apa itu HIMASI?", desc: "HIMASI (Himpunan Mahasiswa Sistem Informasi) adalah organisasi kemahasiswaan bagi mahasiswa Prodi Sistem Informasi Universitas Terbuka Bogor. Wadah untuk berkembang, berkolaborasi, dan berkontribusi di kampus dan masyarakat." },
+              { id: "2", title: "Bagaimana cara bergabung dengan HIMASI?", desc: "Mahasiswa aktif Prodi Sistem Informasi UT Bogor dapat mendaftar melalui portal ini. Klik tombol Masuk atau Daftar, lengkapi data, dan ikuti proses verifikasi oleh pengurus." },
+              { id: "3", title: "Apa saja manfaat menjadi anggota HIMASI?", desc: "Anggota mendapat akses ke program kerja (akademik, acara, media, olahraga, PSDM), jaringan dengan senior dan alumni, sertifikat kegiatan, serta pengembangan soft skill dan kepemimpinan." },
+            ] as FaqItem[]).map((faq) => (
+              <div
+                key={faq.id}
+                className="bg-white rounded-xl shadow-md border border-slate-100 overflow-hidden mb-3"
+              >
+                <button
+                  type="button"
+                  onClick={() => setFaqOpenId((prev) => (prev === faq.id ? null : faq.id))}
+                  className="w-full flex items-center justify-between gap-4 px-6 py-4 text-left hover:bg-slate-50/80 transition-colors"
+                >
+                  <span className="font-semibold text-slate-900">{faq.title}</span>
+                  <span className={`material-symbols-outlined text-slate-500 shrink-0 transition-transform ${faqOpenId === faq.id ? "rotate-180" : ""}`}>
+                    expand_more
+                  </span>
+                </button>
+                {faqOpenId === faq.id && (
+                  <div className="px-6 pb-4 pt-0">
+                    <p className="text-slate-600 text-sm leading-relaxed border-t border-slate-100 pt-4">{faq.desc}</p>
+                  </div>
+                )}
+              </div>
+            ))}
           </section>
         </main>
 
