@@ -173,9 +173,20 @@ Nav: Berita, Acara, Pengurus, Program Kerja, Department, FAQ, Tentang. Aset: `fr
 - Profil (edit level 1 & 2)
 - Akademik, Acara, Kehadiran, Kas, Ruang Terbuka (placeholder / halaman lanjutan)
 
-### Admin
+### Admin (konsol portal)
 
-- Route `/admin` (role admin): dashboard, users, roles, content, menus (placeholder).
+- **Route:** `/admin` (hanya role **admin** atau **superadmin**). Setelah reload, auth di-load otomatis (`loadMe`) sehingga tetap di `/admin`.
+- **Layout:** Sidebar (logo ADMIN Portal Console, nav), header (search, notifikasi, tombol Kelola Konten, profil + logout), area konten. Tema terang (Tailwind: `background-light`, `sidebar-bg`, primary `#137fec`), font Manrope.
+- **Menu sidebar:** Dashboard, **Data Mahasiswa** (`/admin/mahasiswa`), Content, Menu, **Pengaturan** (`/admin/settings`).  
+  **User Administrasi** dan **Role & Permission** tidak punya menu terpisah—dikelola di dalam **Pengaturan**.
+- **Dashboard admin:** Breadcrumb, judul, Quick Access (User Administrasi → Pengaturan, Data Mahasiswa, Kelola Konten, Navigasi Portal), tabel “Daftar User Administrasi Terbaru” (link “Kelola di Pengaturan”).
+- **Pengaturan** (`/admin/settings`):
+  - **User Administrasi Portal:** Tabel user dengan role admin/superadmin (data dari DB via `GET /api/admin/settings/users`). Kolom: User (avatar inisial + nama), Email/NIM, Role, Aksi. Tombol “Tambah user administrasi” (placeholder).
+  - **Role & Permission (RBAC):** Tabel role (superadmin, admin) + permission, tombol “Tambah role” (placeholder).
+  - **Konfigurasi SMTP:** Form (host, port, user, password, from email, from name, TLS). Tombol simpan (siap dihubungkan ke API).
+- **Data Mahasiswa** (`/admin/mahasiswa`): Halaman terpisah untuk kelola data mahasiswa (NIM, nama, angkatan, dll)—berbeda dari User Administrasi (akun yang bisa akses konsol admin).
+- **Konten** (`/admin/content`): Tab Berita, Acara, Departemen, Program Kerja, FAQ; CRUD via API admin CMS.
+- **Redirect:** `/admin/users` dan `/admin/roles` mengarah ke `/admin/settings`.
 
 ---
 
@@ -186,6 +197,22 @@ Nav: Berita, Acara, Pengurus, Program Kerja, Department, FAQ, Tentang. Aset: `fr
 **Content (public):** `GET /api/content/benefits`, `/news`, `/departments`, `/prokers` (termasuk `departemen`), `/activities`, `/photos`, `/faqs`
 
 **Profil:** `GET /api/profile`, `PUT /api/profile` (per level)
+
+**Admin (Bearer token + permission):**
+
+- **Settings – User Administrasi:** `GET /api/admin/settings/users` → array `{ id, name, email, nim, roles[] }` (user dengan role admin/superadmin).
+- **CMS:** `GET/POST/PUT/DELETE /api/admin/news`, `/admin/activities`, `/admin/departments`, `/admin/prokers`, `/admin/faqs`; `GET /api/admin/enumerations?key=...`
+
+---
+
+## Changelog / perubahan terkini
+
+- **Admin layout:** Layout konsol admin mengikuti referensi (sidebar + header) dengan tema terang; Manrope, primary #137fec; alignment header/sidebar diperbaiki.
+- **Pengaturan:** Halaman Pengaturan (`/admin/settings`) memusatkan **User Administrasi**, **Role & Permission (RBAC)**, dan **Konfigurasi SMTP** dalam satu tempat. Menu sidebar tidak lagi punya item terpisah “User Administrasi” atau “Role & Permission”.
+- **User Administrasi vs Data Mahasiswa:** Dibedakan di UI dan route—User Administrasi (akun admin/superadmin) dikelola di Pengaturan; Data Mahasiswa (`/admin/mahasiswa`) untuk data mahasiswa (NIM, nama, dll).
+- **Data real User Administrasi:** Tabel User Administrasi di Pengaturan memakai data dari database via `GET /api/admin/settings/users` (user dengan role admin/superadmin).
+- **Auth:** Pemuatan auth saat app load (`loadMe` di `AuthProvider`) agar setelah reload di `/admin` user tidak di-redirect ke dashboard mahasiswa; `AdminRoute` menunggu user ter-load sebelum cek `isAdmin`. Perbaikan pengecekan role superadmin di backend (`superadmin` bukan `super-admin`).
+- **Redirect:** `/admin/users` dan `/admin/roles` redirect ke `/admin/settings`.
 
 ---
 

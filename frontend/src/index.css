@@ -521,6 +521,42 @@ body {
   box-shadow: 0 12px 24px -8px rgba(13, 148, 136, 0.35);
 }
 
+/* ========== Admin Portal (sidebar-item / sidebar-active) ========== */
+.sidebar-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  color: #64748b;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.5);
+  color: inherit;
+}
+
+.sidebar-active {
+  background: #fff;
+  color: var(--color-primary, #137fec);
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.sidebar-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 2rem;
+  background: var(--color-primary, #137fec);
+  border-radius: 0 4px 4px 0;
+}
+
 /* ========== Landing ========== */
 .landing {
   min-height: 100vh;

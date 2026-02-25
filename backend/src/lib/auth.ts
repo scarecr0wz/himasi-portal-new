@@ -86,7 +86,7 @@ export function requirePermission(permission: string) {
     const permNames = user.modelHasPermissions?.map((p) => p.permission.name) ?? [];
     const roleNames = user.modelHasRoles?.map((r) => r.role.name) ?? [];
     // Super admin bypass or exact permission
-    if (roleNames.includes("super-admin") || permNames.includes(permission)) {
+    if (roleNames.includes("superadmin") || permNames.includes(permission)) {
       await next();
       return;
     }

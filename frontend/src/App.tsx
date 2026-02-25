@@ -8,6 +8,8 @@ import Home from "./pages/Home";
 import Placeholder from "./pages/Placeholder";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminPlaceholder from "./pages/AdminPlaceholder";
+import AdminContent from "./pages/AdminContent";
+import AdminSettings from "./pages/AdminSettings";
 import Profile from "./pages/Profile";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -17,8 +19,15 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
-  const { token, isAdmin } = useAuth();
+  const { token, user, isAdmin } = useAuth();
   if (!token) return <Navigate to="/login" replace />;
+  if (token && user === null) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background-light">
+        <p className="text-slate-500">Memuat...</p>
+      </div>
+    );
+  }
   if (!isAdmin) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 }
@@ -56,10 +65,12 @@ export default function App() {
         }
       >
         <Route index element={<AdminDashboard />} />
-        <Route path="users" element={<AdminPlaceholder />} />
-        <Route path="roles" element={<AdminPlaceholder />} />
-        <Route path="content" element={<AdminPlaceholder />} />
+        <Route path="users" element={<Navigate to="/admin/settings" replace />} />
+        <Route path="mahasiswa" element={<AdminPlaceholder />} />
+        <Route path="roles" element={<Navigate to="/admin/settings" replace />} />
+        <Route path="content" element={<AdminContent />} />
         <Route path="menus" element={<AdminPlaceholder />} />
+        <Route path="settings" element={<AdminSettings />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

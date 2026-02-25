@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 
 const API = "/api";
 
@@ -81,6 +81,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRoles([]);
     localStorage.removeItem(STORAGE_KEY);
   }, []);
+
+  useEffect(() => {
+    const t = token ?? localStorage.getItem(STORAGE_KEY);
+    if (t) void loadMe();
+  }, [token, loadMe]);
 
   const isAdmin = roles.includes("admin") || roles.includes("superadmin");
 

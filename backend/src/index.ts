@@ -4,6 +4,7 @@ import { cors } from "hono/cors";
 import { auth } from "./routes/auth.js";
 import { content } from "./routes/content.js";
 import { profile } from "./routes/profile.js";
+import { adminCms } from "./routes/admin-cms.js";
 import { authMiddleware } from "./lib/auth.js";
 import type { AuthVariables } from "./lib/auth.js";
 
@@ -16,6 +17,7 @@ app.get("/", (c) => c.json({ name: "himasi-portal-api", version: "0.1.0" }));
 app.route("/api/auth", auth);
 app.route("/api/profile", profile);
 app.route("/api", content);
+app.route("/api", adminCms);
 
 app.get("/api/me", authMiddleware, (c) => {
   const user = c.get("user");
