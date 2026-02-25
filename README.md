@@ -26,7 +26,7 @@ himasi-portal/
 │   ├── public/       # Logo, gambar landing (hero, department, bergabung)
 │   └── src/
 │       ├── components/  # Layout, AdminLayout
-│       ├── pages/       # Landing, Login, Home, Profile, dll.
+│       ├── pages/       # Landing, Login, Register, Home, Profile, Admin*, dll.
 │       ├── lib/         # auth context
 │       ├── index.css    # Dashboard & global styles
 │       └── tailwind.css # Tailwind + theme (primary #137fec, Manrope)
@@ -158,7 +158,7 @@ Dari **root repo**:
 
 ### Public (landing)
 
-- **Hero:** “Bangun Masa Depanmu di Sini.” + gambar + CTA Mulai / Lihat Acara
+- **Hero:** “Bangun Masa Depanmu di Sini.” + gambar + CTA **Mulai** (→ `/register`) / **Lihat Acara** (`#acara`). **Pendaftaran:** `/register` — form NIM, nama, email, password; `POST /api/auth/register`.
 - **HIMASI Infopedia** (id=`berita`): section berita; judul "HIMASI Infopedia", kartu berita (gambar + tag Berita Kegiatan, tanggal & author, judul, ringkasan, link Baca artikel). Data: `GET /api/content/news`
 - **Acara Mendatang:** daftar acara dengan badge tanggal + tombol Daftar. Data: `GET /api/content/activities`
 - **Tentang HIMASI:** teks + gambar + kartu statistik (5 Departemen, 100+ Anggota Aktif, 12 Program Kerja, 8/10 Kepuasan)
@@ -184,10 +184,10 @@ Nav: Berita, Acara, Pengurus, Program Kerja, Department, FAQ, Tentang. Aset: `fr
   **User Administrasi** dan **Role & Permission** tidak punya menu terpisah—dikelola di dalam **Pengaturan**.
 - **Dashboard admin:** Breadcrumb, judul, Quick Access (User Administrasi → Pengaturan, Data Mahasiswa, Kelola Konten, Navigasi Portal), tabel “Daftar User Administrasi Terbaru” (link “Kelola di Pengaturan”).
 - **Pengaturan** (`/admin/settings`):
-  - **User Administrasi Portal:** Tabel user dengan role admin/superadmin (data dari DB via `GET /api/admin/settings/users`). Kolom: User (avatar inisial + nama), Email/NIM, Role, Aksi. Tombol “Tambah user administrasi” (placeholder).
+  - **User Administrasi Portal:** Tabel user dengan role admin/superadmin (data dari DB via `GET /api/admin/settings/users`). Kolom: User (avatar inisial + nama), Email/NIM, Role, Aksi. Tombol **Tambah user administrasi** → modal (NIM + role) → `POST /api/admin/settings/users`.
   - **Role & Permission (RBAC):** Tabel role (superadmin, admin) + permission, tombol “Tambah role” (placeholder).
   - **Konfigurasi SMTP:** Form (host, port, user, password, from email, from name, TLS). Tombol simpan (siap dihubungkan ke API).
-- **Data Mahasiswa** (`/admin/mahasiswa`): Halaman terpisah untuk kelola data mahasiswa (NIM, nama, angkatan, dll)—berbeda dari User Administrasi (akun yang bisa akses konsol admin).
+- **Data Mahasiswa** (`/admin/mahasiswa`): Halaman manajemen — tabel (NIM, Nama, Email, Angkatan, Departemen, Status), pencarian; `GET /api/admin/mahasiswa?search=...`.
 - **Konten** (`/admin/content`): Tab Berita, Acara, Departemen, Program Kerja, FAQ; CRUD via API admin CMS.
 - **Redirect:** `/admin/users` dan `/admin/roles` mengarah ke `/admin/settings`.
 
@@ -195,7 +195,7 @@ Nav: Berita, Acara, Pengurus, Program Kerja, Department, FAQ, Tentang. Aset: `fr
 
 ## API (ringkas)
 
-**Auth:** `POST /api/auth/sign-in`, `POST /api/auth/sign-out`, `GET /api/auth/me`, `PUT /api/auth/update-profile`, `POST /api/auth/update-avatar`
+**Auth:** `POST /api/auth/sign-in`, `POST /api/auth/sign-out`, `POST /api/auth/register` (body: `nim`, `name`, `email`, `password` — pendaftaran mahasiswa baru), `GET /api/auth/me`, `PUT /api/auth/update-profile`, `POST /api/auth/update-avatar`
 
 **Content (public):** `GET /api/content/benefits`, `/news`, `/departments`, `/prokers` (termasuk `departemen`), `/activities`, `/photos`, `/faqs`
 
@@ -203,19 +203,18 @@ Nav: Berita, Acara, Pengurus, Program Kerja, Department, FAQ, Tentang. Aset: `fr
 
 **Admin (Bearer token + permission):**
 
-- **Settings – User Administrasi:** `GET /api/admin/settings/users` → array `{ id, name, email, nim, roles[] }` (user dengan role admin/superadmin).
+- **Settings – User Administrasi:** `GET /api/admin/settings/users` → array `{ id, name, email, nim, roles[] }`. `POST /api/admin/settings/users` → body `{ nim, role: "admin"|"superadmin" }` (assign role ke user yang sudah ada).
+- **Data Mahasiswa:** `GET /api/admin/mahasiswa?search=...` → array mahasiswa (id, name, nim, email, angkatan, membershipStatus, programStudi, departemen).
 - **CMS:** `GET/POST/PUT/DELETE /api/admin/news`, `/admin/activities`, `/admin/departments`, `/admin/prokers`, `/admin/faqs`; `GET /api/admin/enumerations?key=...`
 
 ---
 
 ## Changelog / perubahan terkini
 
-- **Admin layout:** Layout konsol admin mengikuti referensi (sidebar + header) dengan tema terang; Manrope, primary #137fec; alignment header/sidebar diperbaiki.
-- **Pengaturan:** Halaman Pengaturan (`/admin/settings`) memusatkan **User Administrasi**, **Role & Permission (RBAC)**, dan **Konfigurasi SMTP** dalam satu tempat. Menu sidebar tidak lagi punya item terpisah “User Administrasi” atau “Role & Permission”.
-- **User Administrasi vs Data Mahasiswa:** Dibedakan di UI dan route—User Administrasi (akun admin/superadmin) dikelola di Pengaturan; Data Mahasiswa (`/admin/mahasiswa`) untuk data mahasiswa (NIM, nama, dll).
-- **Data real User Administrasi:** Tabel User Administrasi di Pengaturan memakai data dari database via `GET /api/admin/settings/users` (user dengan role admin/superadmin).
-- **Auth:** Pemuatan auth saat app load (`loadMe` di `AuthProvider`) agar setelah reload di `/admin` user tidak di-redirect ke dashboard mahasiswa; `AdminRoute` menunggu user ter-load sebelum cek `isAdmin`. Perbaikan pengecekan role superadmin di backend (`superadmin` bukan `super-admin`).
-- **Redirect:** `/admin/users` dan `/admin/roles` redirect ke `/admin/settings`.
+- **Pendaftaran mahasiswa:** Tombol **Mulai** di hero → `/register`. Halaman Register + `POST /api/auth/register`; sukses → login.
+- **Data Mahasiswa (admin):** Halaman `/admin/mahasiswa` dengan tabel + pencarian; `GET /api/admin/mahasiswa?search=...`.
+- **Tambah user administrasi:** Modal (NIM + role) + `POST /api/admin/settings/users`. Perbaikan section RBAC double.
+- **Admin layout & Pengaturan:** Layout konsol (sidebar, header, tema terang). User Administrasi, RBAC, SMTP di Pengaturan. Redirect `/admin/users` dan `/admin/roles` ke `/admin/settings`. Auth: `loadMe`, perbaikan superadmin.
 
 ---
 

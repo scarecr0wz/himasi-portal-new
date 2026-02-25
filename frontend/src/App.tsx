@@ -11,6 +11,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminPlaceholder from "./pages/AdminPlaceholder";
 import AdminContent from "./pages/AdminContent";
 import AdminSettings from "./pages/AdminSettings";
+import AdminMahasiswa from "./pages/AdminMahasiswa";
 import Profile from "./pages/Profile";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -68,7 +69,7 @@ export default function App() {
       >
         <Route index element={<AdminDashboard />} />
         <Route path="users" element={<Navigate to="/admin/settings" replace />} />
-        <Route path="mahasiswa" element={<AdminPlaceholder />} />
+        <Route path="mahasiswa" element={<AdminMahasiswa />} />
         <Route path="roles" element={<Navigate to="/admin/settings" replace />} />
         <Route path="content" element={<AdminContent />} />
         <Route path="menus" element={<AdminPlaceholder />} />

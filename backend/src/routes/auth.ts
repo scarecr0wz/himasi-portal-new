@@ -12,6 +12,13 @@ const signInSchema = z.object({
   password: z.string().min(6),
 });
 
+const registerSchema = z.object({
+  nim: z.string().min(1, "NIM wajib diisi"),
+  name: z.string().min(1, "Nama wajib diisi"),
+  email: z.string().email("Email tidak valid"),
+  password: z.string().min(6, "Password minimal 6 karakter"),
+});
+
 const updateProfileSchema = z.object({
   name: z.string().min(1).max(255).optional(),
   email: z.string().email().optional(),
@@ -72,6 +79,41 @@ auth.post("/sign-in", zValidator("json", signInSchema), async (c) => {
   } catch (err) {
     console.error("Sign-in error:", err);
     return c.json({ message: "Invalid credentials" }, 401);
+  }
+});
+
+auth.post("/register", zValidator("json", registerSchema), async (c) => {
+  try {
+    const { nim, name, email, password } = c.req.valid("json");
+    const nimTrim = String(nim).trim();
+    const emailTrim = String(email).trim().toLowerCase();
+
+    const existing = await prisma.user.findFirst({
+      where: {
+        deletedAt: null,
+        OR: [{ nim: nimTrim }, { email: emailTrim }],
+      },
+    });
+    if (existing) {
+      if (existing.nim === nimTrim) {
+        return c.json({ message: "NIM sudah terdaftar." }, 400);
+      }
+      return c.json({ message: "Email sudah terdaftar." }, 400);
+    }
+
+    const hashed = await bcrypt.hash(String(password), 10);
+    await prisma.user.create({
+      data: {
+        nim: nimTrim,
+        name: String(name).trim(),
+        email: emailTrim,
+        password: hashed,
+      },
+    });
+    return c.json({ message: "Pendaftaran berhasil. Silakan login." }, 201);
+  } catch (err) {
+    console.error("Register error:", err);
+    return c.json({ message: "Gagal mendaftar. Coba lagi." }, 500);
   }
 });
 

@@ -12,12 +12,8 @@ export default function AdminSettings() {
   const [adminUsersLoading, setAdminUsersLoading] = useState(true);
   const [adminUsersError, setAdminUsersError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!token) {
-      setAdminUsersLoading(false);
-      return;
-    }
-    let cancelled = false;
+  const fetchAdminUsers = () => {
+    if (!token) return;
     setAdminUsersLoading(true);
     setAdminUsersError(null);
     fetch(`${API}/admin/settings/users`, {
@@ -27,19 +23,53 @@ export default function AdminSettings() {
         if (!r.ok) throw new Error("Gagal memuat data");
         return r.json();
       })
-      .then((data) => {
-        if (!cancelled) setAdminUsers(Array.isArray(data) ? data : []);
-      })
-      .catch((e) => {
-        if (!cancelled) setAdminUsersError(e instanceof Error ? e.message : "Gagal memuat data");
-      })
-      .finally(() => {
-        if (!cancelled) setAdminUsersLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
+      .then((data) => setAdminUsers(Array.isArray(data) ? data : []))
+      .catch((e) => setAdminUsersError(e instanceof Error ? e.message : "Gagal memuat data"))
+      .finally(() => setAdminUsersLoading(false));
+  };
+
+  useEffect(() => {
+    if (!token) {
+      setAdminUsersLoading(false);
+      return;
+    }
+    fetchAdminUsers();
   }, [token]);
+
+  const [addUserOpen, setAddUserOpen] = useState(false);
+  const [addUserNim, setAddUserNim] = useState("");
+  const [addUserRole, setAddUserRole] = useState<"admin" | "superadmin">("admin");
+  const [addUserSubmitting, setAddUserSubmitting] = useState(false);
+  const [addUserError, setAddUserError] = useState<string | null>(null);
+
+  const handleAddUserSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAddUserError(null);
+    setAddUserSubmitting(true);
+    try {
+      const res = await fetch(`${API}/admin/settings/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ nim: addUserNim.trim(), role: addUserRole }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setAddUserError(data.message || "Gagal menambahkan user administrasi.");
+        return;
+      }
+      setAddUserOpen(false);
+      setAddUserNim("");
+      setAddUserRole("admin");
+      fetchAdminUsers();
+    } catch {
+      setAddUserError("Gagal menambahkan user administrasi.");
+    } finally {
+      setAddUserSubmitting(false);
+    }
+  };
 
   const [smtp, setSmtp] = useState({
     host: "",
@@ -191,6 +221,12 @@ export default function AdminSettings() {
         <div className="p-4 border-t border-slate-100 bg-slate-50/50">
           <button
             type="button"
+            onClick={() => {
+              setAddUserOpen(true);
+              setAddUserError(null);
+              setAddUserNim("");
+              setAddUserRole("admin");
+            }}
             className="text-primary text-sm font-semibold flex items-center gap-2 hover:underline"
           >
             <span className="material-symbols-outlined text-lg">person_add</span>
@@ -199,77 +235,90 @@ export default function AdminSettings() {
         </div>
       </div>
 
-      {/* Role & Permission (RBAC) */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-slate-100">
-          <div className="flex items-center gap-3">
-            <div className="w-1 h-5 bg-primary rounded-full" />
-            <h2 className="text-lg font-bold text-slate-800">Role & Permission (RBAC)</h2>
-          </div>
-          <p className="text-slate-500 text-sm mt-2">
-            Atur role dan permission untuk user administrasi. Assign permission per role (menu, aksi).
-          </p>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
-              <tr>
-                <th className="px-6 py-4">Role</th>
-                <th className="px-6 py-4">Deskripsi</th>
-                <th className="px-6 py-4">Permission</th>
-                <th className="px-6 py-4 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              <tr className="hover:bg-slate-50 transition-colors">
-                <td className="px-6 py-4">
-                  <span className="font-semibold text-slate-800 text-sm">superadmin</span>
-                </td>
-                <td className="px-6 py-4 text-sm text-slate-500">Akses penuh ke semua fitur</td>
-                <td className="px-6 py-4">
-                  <span className="text-[11px] text-slate-500">* (semua)</span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <button
-                    type="button"
-                    className="text-slate-400 hover:text-primary p-2 hover:bg-slate-100 rounded-lg transition-all"
-                    aria-label="Menu"
-                  >
-                    <span className="material-symbols-outlined text-lg">more_vert</span>
-                  </button>
-                </td>
-              </tr>
-              <tr className="hover:bg-slate-50 transition-colors">
-                <td className="px-6 py-4">
-                  <span className="font-semibold text-slate-800 text-sm">admin</span>
-                </td>
-                <td className="px-6 py-4 text-sm text-slate-500">Admin portal, tanpa pengaturan sistem</td>
-                <td className="px-6 py-4">
-                  <span className="text-[11px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded">cms, users, content</span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <button
-                    type="button"
-                    className="text-slate-400 hover:text-primary p-2 hover:bg-slate-100 rounded-lg transition-all"
-                    aria-label="Menu"
-                  >
-                    <span className="material-symbols-outlined text-lg">more_vert</span>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-          <button
-            type="button"
-            className="text-primary text-sm font-semibold flex items-center gap-2 hover:underline"
+      {/* Modal Tambah User Administrasi */}
+      {addUserOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+          onClick={() => !addUserSubmitting && setAddUserOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
           >
-            <span className="material-symbols-outlined text-lg">add_circle</span>
-            Tambah role
-          </button>
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-slate-800">Tambah User Administrasi</h3>
+              <button
+                type="button"
+                disabled={addUserSubmitting}
+                onClick={() => setAddUserOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg disabled:opacity-50"
+                aria-label="Tutup"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <form onSubmit={handleAddUserSubmit} className="p-6 space-y-4">
+              {addUserError && (
+                <div className="rounded-xl px-4 py-3 text-sm bg-red-50 text-red-800 border border-red-200">
+                  {addUserError}
+                </div>
+              )}
+              <div>
+                <label htmlFor="add-user-nim" className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                  NIM (user yang sudah terdaftar)
+                </label>
+                <input
+                  id="add-user-nim"
+                  type="text"
+                  required
+                  value={addUserNim}
+                  onChange={(e) => setAddUserNim(e.target.value)}
+                  placeholder="Contoh: 1234567890"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
+                />
+              </div>
+              <div>
+                <label htmlFor="add-user-role" className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                  Role
+                </label>
+                <select
+                  id="add-user-role"
+                  value={addUserRole}
+                  onChange={(e) => setAddUserRole(e.target.value as "admin" | "superadmin")}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
+                >
+                  <option value="admin">Admin</option>
+                  <option value="superadmin">Superadmin</option>
+                </select>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setAddUserOpen(false)}
+                  disabled={addUserSubmitting}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={addUserSubmitting}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-primary text-white hover:bg-primary/90 disabled:opacity-60 flex items-center justify-center gap-2"
+                >
+                  {addUserSubmitting ? (
+                    <>
+                      <span className="material-symbols-outlined text-lg animate-spin">progress_activity</span>
+                      Menyimpan...
+                    </>
+                  ) : (
+                    "Simpan"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Role & Permission (RBAC) */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">

@@ -308,4 +308,89 @@ admin.get("/admin/settings/users", async (c) => {
   return c.json(list);
 });
 
+const addAdminUserSchema = z.object({
+  nim: z.string().min(1, "NIM wajib diisi"),
+  role: z.enum(["admin", "superadmin"], { message: "Pilih role admin atau superadmin" }),
+});
+
+admin.post("/admin/settings/users", zValidator("json", addAdminUserSchema), async (c) => {
+  const { nim, role } = c.req.valid("json");
+
+  const user = await prisma.user.findFirst({
+    where: { nim: String(nim).trim(), deletedAt: null },
+    select: { id: true },
+  });
+  if (!user) {
+    return c.json({ message: "User dengan NIM tersebut tidak ditemukan." }, 404);
+  }
+
+  const roleRow = await prisma.role.findFirst({
+    where: { name: role, guardName: "api" },
+    select: { id: true },
+  });
+  if (!roleRow) {
+    return c.json({ message: "Role tidak valid." }, 400);
+  }
+
+  const existing = await prisma.modelHasRole.findUnique({
+    where: { roleId_userId: { roleId: roleRow.id, userId: user.id } },
+  });
+  if (existing) {
+    return c.json({ message: "User sudah memiliki role tersebut." }, 400);
+  }
+
+  await prisma.modelHasRole.create({
+    data: { roleId: roleRow.id, userId: user.id },
+  });
+
+  return c.json({ message: "User administrasi berhasil ditambahkan.", userId: user.id, role }, 201);
+});
+
+// ---------- Data Mahasiswa (list semua user/mahasiswa) ----------
+admin.get("/admin/mahasiswa", async (c) => {
+  const search = c.req.query("search")?.trim() || "";
+  const limit = Math.min(Number(c.req.query("limit")) || 100, 500);
+
+  const where: { deletedAt: null; OR?: Array<{ nim?: { contains: string; mode: "insensitive" }; name?: { contains: string; mode: "insensitive" }; email?: { contains: string; mode: "insensitive" } }> } = {
+    deletedAt: null,
+  };
+  if (search.length > 0) {
+    where.OR = [
+      { nim: { contains: search, mode: "insensitive" } },
+      { name: { contains: search, mode: "insensitive" } },
+      { email: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  const users = await prisma.user.findMany({
+    where,
+    select: {
+      id: true,
+      name: true,
+      nim: true,
+      email: true,
+      angkatan: true,
+      membershipStatus: true,
+      programStudi: true,
+      departemenId: true,
+      departemen: { select: { id: true, title: true } },
+    },
+    orderBy: [{ name: "asc" }],
+    take: limit,
+  });
+
+  const list = users.map((u) => ({
+    id: u.id,
+    name: u.name,
+    nim: u.nim,
+    email: u.email,
+    angkatan: u.angkatan ?? null,
+    membershipStatus: u.membershipStatus,
+    programStudi: u.programStudi,
+    departemen: u.departemen ? { id: u.departemen.id, title: u.departemen.title } : null,
+  }));
+
+  return c.json(list);
+});
+
 export { admin as adminCms };
