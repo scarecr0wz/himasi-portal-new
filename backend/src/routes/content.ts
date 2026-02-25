@@ -21,7 +21,11 @@ content.get("/content/departments", async (c) => {
 });
 
 content.get("/content/prokers", async (c) => {
-  const list = await prisma.proker.findMany({ where: { deletedAt: null }, orderBy: { createdAt: "desc" } });
+  const list = await prisma.proker.findMany({
+    where: { deletedAt: null },
+    orderBy: { createdAt: "desc" },
+    include: { departemen: { select: { id: true, title: true } } },
+  });
   return c.json(list);
 });
 

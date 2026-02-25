@@ -10,6 +10,7 @@ type NewsItem = {
   author: string;
   publishedAt: string | null;
   desc?: string;
+  photo?: string | null;
 };
 type ActivityItem = {
   id: string;
@@ -17,6 +18,22 @@ type ActivityItem = {
   startAt: string;
   endAt: string;
   desc: string | null;
+};
+
+type DepartemenItem = {
+  id: string;
+  title: string;
+  icon?: string;
+  desc?: string;
+};
+
+type ProkerItem = {
+  id: string;
+  departemenId: string;
+  photo: string | null;
+  title: string;
+  desc: string;
+  departemen?: { id: string; title: string };
 };
 
 const HERO_IMAGE = "/hero-himasi.png";
@@ -55,20 +72,35 @@ function formatDateBadge(d: string): { day: string; month: string } {
 export default function Landing() {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
+  const [departments, setDepartments] = useState<DepartemenItem[]>([]);
+  const [prokers, setProkers] = useState<ProkerItem[]>([]);
+  const [selectedDeptId, setSelectedDeptId] = useState<string | null>(null);
+  const [selectedProkerId, setSelectedProkerId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
       fetch(`${API}/content/news`).then((r) => (r.ok ? r.json() : [])),
       fetch(`${API}/content/activities`).then((r) => (r.ok ? r.json() : [])),
+      fetch(`${API}/content/departments`).then((r) => (r.ok ? r.json() : [])),
+      fetch(`${API}/content/prokers`).then((r) => (r.ok ? r.json() : [])),
     ])
-      .then(([n, a]) => {
+      .then(([n, a, d, p]) => {
         setNews(Array.isArray(n) ? n.slice(0, 6) : []);
         setActivities(Array.isArray(a) ? a.slice(0, 6) : []);
+        setDepartments(Array.isArray(d) ? d : []);
+        setProkers(Array.isArray(p) ? p : []);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const filteredProkers = selectedDeptId
+    ? prokers.filter((pr) => pr.departemenId === selectedDeptId)
+    : prokers;
+  const selectedProker =
+    prokers.find((p) => p.id === selectedProkerId) ??
+    filteredProkers[0] ?? null;
 
   const displayNews = news.length > 0 ? news : [
     {
@@ -173,36 +205,62 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Latest Updates Section */}
+          {/* HIMASI Infopedia - Berita */}
           <section id="berita" className="mb-16">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-slate-900 text-2xl font-bold tracking-tight">Berita Terkini</h2>
-              <a href="#berita" className="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
-                Semua Berita <span className="material-symbols-outlined text-sm">arrow_forward</span>
-              </a>
+            <div className="mb-8">
+              <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-2">HIMASI Infopedia</h2>
+              <p className="text-slate-600 text-lg max-w-2xl">
+                Pusat informasi terkini, berisikan info akademik, kegiatan, dan inovasi seputar Sistem Informasi.
+              </p>
             </div>
             {loading ? (
               <p className="text-slate-500">Memuat...</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {displayNews.slice(0, 3).map((item, i) => (
-                  <article key={item.id} className="flex flex-col gap-4 group cursor-pointer">
-                    <div
-                      className="w-full aspect-[16/10] bg-cover bg-center rounded-xl overflow-hidden"
-                      style={{ backgroundImage: `url(${CARD_IMAGES[i % CARD_IMAGES.length]})` }}
-                    >
-                      <div className="w-full h-full bg-slate-900/0 group-hover:bg-slate-900/20 transition-all duration-300" />
+                  <article key={item.id} className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col">
+                    <div className="relative w-full aspect-[16/10] rounded-t-2xl overflow-hidden">
+                      <img
+                        src={item.photo || CARD_IMAGES[i % CARD_IMAGES.length]}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                      <span className="absolute top-3 left-3 px-3 py-1 bg-primary text-white text-[10px] font-bold uppercase rounded-full">
+                        Berita Kegiatan
+                      </span>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold uppercase rounded">Berita</span>
-                        <span className="text-slate-400 text-xs">{formatDate(item.publishedAt)}</span>
+                    <div className="p-5 flex flex-col gap-3 flex-1">
+                      <div className="flex items-center gap-4 text-slate-500 text-xs">
+                        <span className="flex items-center gap-1">
+                          <span className="material-symbols-outlined text-sm">calendar_today</span>
+                          {formatDate(item.publishedAt) || "—"}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="material-symbols-outlined text-sm">person</span>
+                          {item.author || "HIMASI"}
+                        </span>
                       </div>
-                      <h3 className="text-slate-900 text-lg font-bold leading-snug group-hover:text-primary transition-colors">{item.title}</h3>
-                      <p className="text-slate-600 text-sm line-clamp-2">{item.desc || "Informasi terbaru dari HIMASI Universitas Terbuka Bogor."}</p>
+                      <h3 className="text-slate-900 text-lg font-bold leading-snug">{item.title}</h3>
+                      <p className="text-slate-600 text-sm leading-relaxed line-clamp-2 flex-1">
+                        {item.desc || "Informasi terbaru dari HIMASI Universitas Terbuka Bogor."}
+                      </p>
+                      <a
+                        href={`#berita-${item.slug || item.id}`}
+                        className="text-primary text-sm font-semibold hover:underline inline-flex items-center gap-1"
+                      >
+                        Baca artikel
+                        <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                      </a>
                     </div>
                   </article>
                 ))}
+              </div>
+            )}
+            {!loading && displayNews.length > 0 && (
+              <div className="mt-6 text-right">
+                <a href="#berita" className="text-primary text-sm font-bold flex items-center gap-1 hover:underline inline-flex ml-auto">
+                  Semua Berita <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
               </div>
             )}
           </section>
@@ -364,6 +422,69 @@ export default function Landing() {
                 <p className="text-slate-600 text-sm leading-relaxed">Pengembangan Sumber Daya Mahasiswa, kaderisasi, dan pelatihan soft skill.</p>
               </div>
             </div>
+          </section>
+
+          {/* Program Kerja / Proker Departemen */}
+          <section id="program-kerja" className="mb-16">
+            <div className="mb-8">
+              <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-2">Program Kerja HIMASI</h2>
+              <p className="text-slate-600 text-lg">Program kerja unggulan dari setiap departemen HIMASI.</p>
+            </div>
+            <div className="flex flex-wrap gap-2 mb-6">
+              <button
+                type="button"
+                onClick={() => { setSelectedDeptId(null); setSelectedProkerId(null); }}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${selectedDeptId === null ? "bg-primary text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+              >
+                Semua Departemen
+              </button>
+              {departments.map((d) => (
+                <button
+                  key={d.id}
+                  type="button"
+                  onClick={() => { setSelectedDeptId(d.id); setSelectedProkerId(null); }}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${selectedDeptId === d.id ? "bg-primary text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                >
+                  {d.title}
+                </button>
+              ))}
+            </div>
+            {loading ? (
+              <p className="text-slate-500 py-8">Memuat program kerja...</p>
+            ) : filteredProkers.length === 0 ? (
+              <p className="text-slate-500 py-8">Belum ada program kerja untuk departemen ini.</p>
+            ) : (
+              <div className="flex flex-col lg:flex-row gap-6">
+                <div className="w-full lg:w-72 shrink-0 flex flex-col gap-1">
+                  {filteredProkers.map((pr) => (
+                    <button
+                      key={pr.id}
+                      type="button"
+                      onClick={() => setSelectedProkerId(pr.id)}
+                      className={`text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${selectedProker?.id === pr.id ? "bg-primary/10 text-primary border-l-4 border-primary pl-[calc(1rem-4px)]" : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-100"}`}
+                    >
+                      {pr.title}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 min-w-0">
+                  <div className="md:col-span-2 rounded-xl overflow-hidden bg-slate-100 aspect-video">
+                    <img
+                      src={selectedProker?.photo ?? "/wadah-berkembang.png"}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                    {selectedProker?.departemen && (
+                      <p className="text-center py-2 text-slate-600 text-sm font-medium bg-white/90">{selectedProker.departemen.title}</p>
+                    )}
+                  </div>
+                  <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-3">
+                    <h3 className="text-slate-900 font-bold text-lg">{selectedProker?.title ?? "—"}</h3>
+                    <p className="text-slate-600 text-sm leading-relaxed flex-1">{selectedProker?.desc ?? "Pilih program kerja di sebelah kiri."}</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
 
           {/* Keuntungan Bergabung / Ajakan Bergabung */}

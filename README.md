@@ -155,16 +155,17 @@ Dari **root repo**:
 
 ### Public (landing)
 
-- **Hero:** “Bangun Masa Depanmu di Sini.” + CTA Mulai / Lihat Acara
-- **Berita Terkini:** grid kartu (data dari `GET /api/content/news`)
-- **Acara Mendatang:** daftar acara (data dari `GET /api/content/activities`)
-- **Tentang HIMASI:** teks + gambar + kartu statistik (Departemen, Anggota Aktif, Program Kerja, Kepuasan)
-- **Visi & Misi:** dua kartu (Visi kutipan, Misi poin-poin)
+- **Hero:** “Bangun Masa Depanmu di Sini.” + gambar + CTA Mulai / Lihat Acara
+- **HIMASI Infopedia** (id=`berita`): section berita; judul "HIMASI Infopedia", kartu berita (gambar + tag Berita Kegiatan, tanggal & author, judul, ringkasan, link Baca artikel). Data: `GET /api/content/news`
+- **Acara Mendatang:** daftar acara dengan badge tanggal + tombol Daftar. Data: `GET /api/content/activities`
+- **Tentang HIMASI:** teks + gambar + kartu statistik (5 Departemen, 100+ Anggota Aktif, 12 Program Kerja, 8/10 Kepuasan)
+- **Visi & Misi:** dua kartu (Visi kutipan, Misi 5 poin)
 - **Department:** 5 kartu (Acara & Kehumasan, Akademik & Keilmuan, Media & Publikasi, Olahraga & Seni, PSDM)
+- **Program Kerja HIMASI** (id=`program-kerja`): filter departemen (tab), daftar proker (sidebar), detail (gambar + departemen, judul & deskripsi). Data: `GET /api/content/departments`, `GET /api/content/prokers` (include departemen)
 - **Mari Bergabung dengan HIMASI:** 3 kartu (Wadah Berkembang, Peningkatan Prestasi, Lebih dari Organisasi) + tombol Daftar Sekarang
 - **Footer:** logo, link, newsletter, copyright
 
-Nav: Berita, Acara, Pengurus, Program Kerja, Department, FAQ, Tentang. Logo & aset di `frontend/public/`.
+Nav: Berita, Acara, Pengurus, Program Kerja, Department, FAQ, Tentang. Aset: `frontend/public/` (logo-himasi, hero-himasi, tentang-himasi, wadah-berkembang, peningkatan-prestasi, lebih-dari-organisasi).
 
 ### Setelah login (mahasiswa)
 
@@ -182,7 +183,7 @@ Nav: Berita, Acara, Pengurus, Program Kerja, Department, FAQ, Tentang. Logo & as
 
 **Auth:** `POST /api/auth/sign-in`, `POST /api/auth/sign-out`, `GET /api/auth/me`, `PUT /api/auth/update-profile`, `POST /api/auth/update-avatar`
 
-**Content (public):** `GET /api/content/benefits`, `/news`, `/departments`, `/prokers`, `/activities`, `/photos`, `/faqs`
+**Content (public):** `GET /api/content/benefits`, `/news`, `/departments`, `/prokers` (termasuk `departemen`), `/activities`, `/photos`, `/faqs`
 
 **Profil:** `GET /api/profile`, `PUT /api/profile` (per level)
 
