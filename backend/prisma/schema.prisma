@@ -35,7 +35,8 @@ model User {
   updatedAt         DateTime  @updatedAt @map("updated_at")
 
   // Level 1 - Wajib (minimal)
-  membershipStatus  String    @default("ACTIVE") @map("membership_status") @db.VarChar(20)
+  membershipStatus  String    @default("INACTIVE") @map("membership_status") @db.VarChar(20)
+  fakultas          String?   @map("fakultas") @db.VarChar(100)
   programStudi      String    @default("SI") @map("program_studi") @db.VarChar(50)
 
   jabatan   Enumeration? @relation("UserJabatan", fields: [jabatanId], references: [id], onDelete: SetNull)

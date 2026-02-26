@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/lib/auth";
 
 const API = "/api";
@@ -36,6 +36,25 @@ export default function AdminSettings() {
     fetchAdminUsers();
   }, [token]);
 
+  const [actionMenuId, setActionMenuId] = useState<string | null>(null);
+  const [modalDetail, setModalDetail] = useState<AdminUser | null>(null);
+  const [revokeTarget, setRevokeTarget] = useState<{ user: AdminUser; role: string } | null>(null);
+  const [revokeSubmitting, setRevokeSubmitting] = useState(false);
+  const [revokeError, setRevokeError] = useState<string | null>(null);
+  const actionMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!actionMenuId) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (actionMenuRef.current && !actionMenuRef.current.contains(e.target as Node)) setActionMenuId(null);
+    };
+    const t = setTimeout(() => document.addEventListener("click", handleClickOutside), 50);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [actionMenuId]);
+
   const [addUserOpen, setAddUserOpen] = useState(false);
   const [addUserNim, setAddUserNim] = useState("");
   const [addUserRole, setAddUserRole] = useState<"admin" | "superadmin">("admin");
@@ -68,6 +87,29 @@ export default function AdminSettings() {
       setAddUserError("Gagal menambahkan user administrasi.");
     } finally {
       setAddUserSubmitting(false);
+    }
+  };
+
+  const handleRevokeRole = async () => {
+    if (!token || !revokeTarget) return;
+    setRevokeError(null);
+    setRevokeSubmitting(true);
+    try {
+      const res = await fetch(
+        `${API}/admin/settings/users/${revokeTarget.user.id}/roles/${revokeTarget.role}`,
+        { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }
+      );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setRevokeError(data.message || "Gagal mencabut role.");
+        return;
+      }
+      setRevokeTarget(null);
+      fetchAdminUsers();
+    } catch {
+      setRevokeError("Gagal mencabut role.");
+    } finally {
+      setRevokeSubmitting(false);
     }
   };
 
@@ -138,9 +180,9 @@ export default function AdminSettings() {
             <h2 className="text-lg font-bold text-slate-800">User Administrasi Portal</h2>
           </div>
           <p className="text-slate-500 text-sm mt-2">
-            Kelola akun yang dapat mengakses konsol admin (role admin/superadmin). Data mahasiswa dikelola di menu{" "}
+            Kelola akun yang dapat mengakses konsol admin (role admin/superadmin). Data anggota dikelola di menu{" "}
             <Link to="/admin/mahasiswa" className="text-primary font-medium hover:underline">
-              Data Mahasiswa
+              Data Anggota
             </Link>
             .
           </p>
@@ -205,13 +247,49 @@ export default function AdminSettings() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        type="button"
-                        className="text-slate-400 hover:text-primary p-2 hover:bg-slate-100 rounded-lg transition-all"
-                        aria-label="Menu"
-                      >
-                        <span className="material-symbols-outlined text-lg">more_vert</span>
-                      </button>
+                      <div ref={actionMenuId === u.id ? actionMenuRef : undefined} className="relative inline-block">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActionMenuId(actionMenuId === u.id ? null : u.id);
+                          }}
+                          className="text-slate-400 hover:text-primary p-2 hover:bg-slate-100 rounded-lg transition-all"
+                          aria-label="Menu aksi"
+                        >
+                          <span className="material-symbols-outlined text-lg">more_vert</span>
+                        </button>
+                        {actionMenuId === u.id && (
+                          <div className="absolute right-0 top-full mt-1 py-1 w-52 bg-white border border-slate-200 rounded-xl shadow-lg z-20">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActionMenuId(null);
+                                setModalDetail(u);
+                              }}
+                              className="flex items-center gap-2 w-full px-4 py-2.5 text-left text-slate-700 hover:bg-slate-50 text-sm"
+                            >
+                              <span className="material-symbols-outlined text-lg">visibility</span>
+                              Lihat detail
+                            </button>
+                            {u.roles.map((role) => (
+                              <button
+                                key={role}
+                                type="button"
+                                onClick={() => {
+                                  setActionMenuId(null);
+                                  setRevokeTarget({ user: u, role });
+                                  setRevokeError(null);
+                                }}
+                                className="flex items-center gap-2 w-full px-4 py-2.5 text-left text-red-600 hover:bg-red-50 text-sm"
+                              >
+                                <span className="material-symbols-outlined text-lg">person_remove</span>
+                                Cabut role {role}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -316,6 +394,84 @@ export default function AdminSettings() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Lihat detail user administrasi */}
+      {modalDetail && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md p-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Detail User Administrasi</h3>
+            <dl className="space-y-3 text-sm">
+              <div>
+                <dt className="text-slate-500">Nama</dt>
+                <dd className="text-slate-800 font-medium">{modalDetail.name}</dd>
+              </div>
+              <div>
+                <dt className="text-slate-500">NIM</dt>
+                <dd className="font-mono text-slate-800">{modalDetail.nim}</dd>
+              </div>
+              <div>
+                <dt className="text-slate-500">Email</dt>
+                <dd className="text-slate-800">{modalDetail.email}</dd>
+              </div>
+              <div>
+                <dt className="text-slate-500">Role</dt>
+                <dd className="flex flex-wrap gap-1">
+                  {modalDetail.roles.map((r) => (
+                    <span
+                      key={r}
+                      className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg uppercase"
+                    >
+                      {r}
+                    </span>
+                  ))}
+                </dd>
+              </div>
+            </dl>
+            <div className="mt-6 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setModalDetail(null)}
+                className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal konfirmasi cabut role */}
+      {revokeTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-sm p-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-2">Cabut akses admin</h3>
+            <p className="text-sm text-slate-600 mb-4">
+              Cabut role <strong>{revokeTarget.role}</strong> dari <strong>{revokeTarget.user.name}</strong>? User tidak akan bisa mengakses konsol admin dengan role ini.
+            </p>
+            {revokeError && (
+              <p className="text-sm text-red-600 mb-4">{revokeError}</p>
+            )}
+            <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => { setRevokeTarget(null); setRevokeError(null); }}
+                disabled={revokeSubmitting}
+                className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleRevokeRole}
+                disabled={revokeSubmitting}
+                className="px-4 py-2 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 disabled:opacity-60"
+              >
+                {revokeSubmitting ? "Memproses..." : "Cabut"}
+              </button>
+            </div>
           </div>
         </div>
       )}

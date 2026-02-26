@@ -12,7 +12,8 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed",
-    "user:create": "tsx scripts/create-user.ts"
+    "user:create": "tsx scripts/create-user.ts",
+    "user:reset-password": "tsx scripts/reset-password.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

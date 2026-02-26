@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API = "/api";
 
@@ -32,6 +33,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 const STORAGE_KEY = "himasi_portal_token";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
   const [token, setToken] = useState<string | null>(() => localStorage.getItem(STORAGE_KEY));
   const [user, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<string[]>([]);
@@ -80,7 +82,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setRoles([]);
     localStorage.removeItem(STORAGE_KEY);
-  }, []);
+    // Defer redirect so state is committed first; replace so back button doesn't return to dashboard
+    setTimeout(() => navigate("/", { replace: true }), 0);
+  }, [navigate]);
 
   useEffect(() => {
     const t = token ?? localStorage.getItem(STORAGE_KEY);

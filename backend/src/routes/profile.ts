@@ -11,6 +11,7 @@ const profileUpdateSchema = z.object({
   email: z.string().email().optional(),
   phone_number: z.string().max(20).nullable().optional(),
   angkatan: z.string().max(4).nullable().optional(),
+  fakultas: z.string().max(100).nullable().optional(),
   program_studi: z.string().max(50).optional(),
   membership_status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
   departemen_id: z.string().uuid().nullable().optional(),
@@ -56,23 +57,31 @@ profile.get("/options", async (c) => {
   return c.json({
     departemens,
     minatFokusOptions: ["Data", "Web", "Mobile", "UI/UX", "Security", "Cloud", "DevOps", "AI/ML", "Lainnya"],
-    programStudiOptions: ["SI"],
+    fakultasOptions: ["FST", "FE", "FH", "FKIP", "FISIP", "Lainnya"],
+    programStudiOptions: ["SI", "IK", "Lainnya"],
     membershipStatusOptions: ["ACTIVE", "INACTIVE"],
   });
 });
 
 profile.put("/", zValidator("json", profileUpdateSchema), async (c) => {
   const userId = c.get("userId") as string;
+  const authUser = c.get("user");
   const body = c.req.valid("json");
+
+  const roleNames = authUser.modelHasRoles?.map((r) => r.role.name) ?? [];
+  const isAdmin = roleNames.includes("admin") || roleNames.includes("superadmin");
 
   const userUpdate: Record<string, unknown> = {};
   if (body.name !== undefined) userUpdate.name = body.name;
   if (body.email !== undefined) userUpdate.email = body.email;
   if (body.phone_number !== undefined) userUpdate.phoneNumber = body.phone_number;
   if (body.angkatan !== undefined) userUpdate.angkatan = body.angkatan;
+  if (body.fakultas !== undefined) userUpdate.fakultas = body.fakultas || null;
   if (body.program_studi !== undefined) userUpdate.programStudi = body.program_studi;
-  if (body.membership_status !== undefined) userUpdate.membershipStatus = body.membership_status;
-  if (body.departemen_id !== undefined) userUpdate.departemenId = body.departemen_id || null;
+  if (isAdmin) {
+    if (body.membership_status !== undefined) userUpdate.membershipStatus = body.membership_status;
+    if (body.departemen_id !== undefined) userUpdate.departemenId = body.departemen_id || null;
+  }
 
   await prisma.user.update({
     where: { id: userId },

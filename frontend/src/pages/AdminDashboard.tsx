@@ -1,6 +1,39 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/auth";
+
+const API = "/api";
+const LATEST_LIMIT = 5;
+
+type Anggota = {
+  id: string;
+  name: string;
+  nim: string;
+  email: string;
+  angkatan: string | null;
+  membershipStatus: string;
+  departemen: { id: string; title: string } | null;
+};
 
 export default function AdminDashboard() {
+  const { token } = useAuth();
+  const [anggotaList, setAnggotaList] = useState<Anggota[]>([]);
+  const [anggotaLoading, setAnggotaLoading] = useState(true);
+
+  useEffect(() => {
+    if (!token) {
+      setAnggotaLoading(false);
+      return;
+    }
+    fetch(`${API}/admin/mahasiswa?limit=${LATEST_LIMIT}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => setAnggotaList(Array.isArray(data) ? data.slice(0, LATEST_LIMIT) : []))
+      .catch(() => setAnggotaList([]))
+      .finally(() => setAnggotaLoading(false));
+  }, [token]);
+
   return (
     <div className="space-y-10">
       <div>
@@ -59,7 +92,7 @@ export default function AdminDashboard() {
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">MAHASISWA</p>
               <h3 className="text-xl font-extrabold text-slate-800 group-hover:text-primary transition-colors">
-                Data Mahasiswa
+                Data Anggota
               </h3>
             </div>
           </Link>
@@ -118,92 +151,75 @@ export default function AdminDashboard() {
         <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
           <div className="flex items-center gap-3">
             <div className="w-1 h-5 bg-primary rounded-full" />
-            <h3 className="font-bold text-slate-800">Daftar User Administrasi Terbaru</h3>
+            <h3 className="font-bold text-slate-800">Daftar Anggota Terbaru</h3>
           </div>
           <Link
-            to="/admin/settings"
+            to="/admin/mahasiswa"
             className="text-primary text-xs font-extrabold uppercase tracking-wider hover:underline px-4 py-2 bg-primary/5 rounded-lg transition-all"
           >
-            Kelola di Pengaturan
+            Kelola di Data Anggota
           </Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
               <tr>
-                <th className="px-8 py-5">User Profile</th>
-                <th className="px-8 py-5">Access Level</th>
-                <th className="px-8 py-5">Account Status</th>
-                <th className="px-8 py-5 text-right">Actions</th>
+                <th className="px-8 py-5">Profil</th>
+                <th className="px-8 py-5">Angkatan</th>
+                <th className="px-8 py-5">Status Keanggotaan</th>
+                <th className="px-8 py-5 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              <tr className="hover:bg-slate-50 transition-colors">
-                <td className="px-8 py-5">
-                  <div className="flex items-center gap-4">
-                    <div className="size-10 rounded-full bg-slate-100 overflow-hidden ring-1 ring-slate-200 flex items-center justify-center text-slate-500 font-semibold text-sm">
-                      S
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-800 text-sm">Sarah Parker</p>
-                      <p className="text-xs text-slate-400">sarah.p@univ.ac.id</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-8 py-5">
-                  <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
-                    ADMINISTRATOR
-                  </span>
-                </td>
-                <td className="px-8 py-5">
-                  <div className="flex items-center gap-2">
-                    <span className="size-2 bg-green-500 rounded-full" />
-                    <span className="text-xs text-slate-700 font-bold uppercase tracking-tight">Active</span>
-                  </div>
-                </td>
-                <td className="px-8 py-5 text-right">
-                  <button
-                    type="button"
-                    className="text-slate-400 hover:text-primary p-2 hover:bg-slate-100 rounded-lg transition-all"
-                    aria-label="Menu"
-                  >
-                    <span className="material-symbols-outlined text-xl">more_vert</span>
-                  </button>
-                </td>
-              </tr>
-              <tr className="hover:bg-slate-50 transition-colors">
-                <td className="px-8 py-5">
-                  <div className="flex items-center gap-4">
-                    <div className="size-10 rounded-full bg-slate-100 overflow-hidden ring-1 ring-slate-200 flex items-center justify-center text-slate-500 font-semibold text-sm">
-                      M
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-800 text-sm">Mark Thompson</p>
-                      <p className="text-xs text-slate-400">mark.t@univ.ac.id</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-8 py-5">
-                  <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
-                    CONTENT EDITOR
-                  </span>
-                </td>
-                <td className="px-8 py-5">
-                  <div className="flex items-center gap-2">
-                    <span className="size-2 bg-green-500 rounded-full" />
-                    <span className="text-xs text-slate-700 font-bold uppercase tracking-tight">Active</span>
-                  </div>
-                </td>
-                <td className="px-8 py-5 text-right">
-                  <button
-                    type="button"
-                    className="text-slate-400 hover:text-primary p-2 hover:bg-slate-100 rounded-lg transition-all"
-                    aria-label="Menu"
-                  >
-                    <span className="material-symbols-outlined text-xl">more_vert</span>
-                  </button>
-                </td>
-              </tr>
+              {anggotaLoading && (
+                <tr>
+                  <td colSpan={4} className="px-8 py-10 text-center text-slate-500 text-sm">
+                    Memuat...
+                  </td>
+                </tr>
+              )}
+              {!anggotaLoading && anggotaList.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-8 py-10 text-center text-slate-500 text-sm">
+                    Belum ada data anggota.
+                  </td>
+                </tr>
+              )}
+              {!anggotaLoading &&
+                anggotaList.map((a) => (
+                  <tr key={a.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-8 py-5">
+                      <div className="flex items-center gap-4">
+                        <div className="size-10 rounded-full bg-primary/10 overflow-hidden ring-1 ring-slate-200 flex items-center justify-center text-primary font-semibold text-sm">
+                          {a.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-800 text-sm">{a.name}</p>
+                          <p className="text-xs text-slate-400">{a.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-8 py-5 text-sm text-slate-600">{a.angkatan ?? "—"}</td>
+                    <td className="px-8 py-5">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`size-2 rounded-full ${a.membershipStatus === "ACTIVE" ? "bg-green-500" : "bg-slate-300"}`}
+                        />
+                        <span className="text-xs text-slate-700 font-bold uppercase tracking-tight">
+                          {a.membershipStatus}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-5 text-right">
+                      <Link
+                        to="/admin/mahasiswa"
+                        className="text-primary text-xs font-semibold hover:underline"
+                      >
+                        Kelola
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

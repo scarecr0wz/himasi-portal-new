@@ -52,7 +52,7 @@ admin.post("/admin/news", zValidator("json", newsCreateSchema), async (c) => {
       desc: body.desc,
       author: body.author,
       photo: body.photo ?? null,
-      publishedAt: body.publishedAt ? new Date(body.publishedAt) : null,
+      publishedAt: body.publishedAt ? new Date(body.publishedAt) : now(),
       isActive: body.isActive ?? false,
     },
   });
@@ -346,6 +346,29 @@ admin.post("/admin/settings/users", zValidator("json", addAdminUserSchema), asyn
   return c.json({ message: "User administrasi berhasil ditambahkan.", userId: user.id, role }, 201);
 });
 
+// Cabut role admin/superadmin dari user (hapus dari model_has_roles)
+admin.delete("/admin/settings/users/:userId/roles/:roleName", async (c) => {
+  const userId = c.req.param("userId");
+  const roleName = c.req.param("roleName");
+  if (roleName !== "admin" && roleName !== "superadmin") {
+    return c.json({ message: "Role tidak valid." }, 400);
+  }
+
+  const roleRow = await prisma.role.findFirst({
+    where: { name: roleName, guardName: "api" },
+    select: { id: true },
+  });
+  if (!roleRow) return c.json({ message: "Role tidak ditemukan." }, 404);
+
+  const deleted = await prisma.modelHasRole.deleteMany({
+    where: { roleId: roleRow.id, userId },
+  });
+  if (deleted.count === 0) {
+    return c.json({ message: "User tidak memiliki role tersebut." }, 404);
+  }
+  return c.json({ message: "Role berhasil dicabut." });
+});
+
 // ---------- Data Mahasiswa (list semua user/mahasiswa) ----------
 admin.get("/admin/mahasiswa", async (c) => {
   const search = c.req.query("search")?.trim() || "";
@@ -391,6 +414,74 @@ admin.get("/admin/mahasiswa", async (c) => {
   }));
 
   return c.json(list);
+});
+
+// ---------- Admin update mahasiswa (status keanggotaan, divisi) ----------
+const adminMahasiswaUpdateSchema = z.object({
+  membership_status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+  departemen_id: z.string().uuid().nullable().optional(),
+});
+
+admin.patch("/admin/mahasiswa/:id", zValidator("json", adminMahasiswaUpdateSchema), async (c) => {
+  const userId = c.req.param("id");
+  const body = c.req.valid("json");
+
+  const update: Record<string, unknown> = {};
+  if (body.membership_status !== undefined) update.membershipStatus = body.membership_status;
+  if (body.departemen_id !== undefined) update.departemenId = body.departemen_id;
+
+  if (Object.keys(update).length === 0) {
+    return c.json({ message: "Tidak ada data yang diubah" }, 400);
+  }
+
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
+    include: { departemen: { select: { id: true, title: true } } },
+  });
+  if (!user) return c.json({ message: "Mahasiswa tidak ditemukan" }, 404);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: update as never,
+  });
+
+  const updated = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      nim: true,
+      email: true,
+      angkatan: true,
+      membershipStatus: true,
+      programStudi: true,
+      departemenId: true,
+      departemen: { select: { id: true, title: true } },
+    },
+  });
+  return c.json(updated);
+});
+
+// Soft-delete anggota (set deletedAt). User dengan role admin/superadmin tidak boleh dihapus.
+admin.delete("/admin/mahasiswa/:id", async (c) => {
+  const userId = c.req.param("id");
+
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
+    include: { modelHasRoles: { include: { role: { select: { name: true } } } } },
+  });
+  if (!user) return c.json({ message: "Anggota tidak ditemukan." }, 404);
+
+  const roleNames = user.modelHasRoles?.map((r) => r.role.name) ?? [];
+  if (roleNames.includes("admin") || roleNames.includes("superadmin")) {
+    return c.json({ message: "Tidak dapat menghapus user administrasi. Cabut role admin terlebih dahulu di Pengaturan." }, 400);
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { deletedAt: now() },
+  });
+  return c.json({ message: "Data anggota berhasil dihapus." });
 });
 
 export { admin as adminCms };

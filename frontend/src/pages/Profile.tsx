@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/lib/auth";
 
 const API = "/api";
 
@@ -10,6 +11,7 @@ type User = {
   email: string;
   phoneNumber: string | null;
   angkatan: string | null;
+  fakultas: string | null;
   programStudi: string | null;
   membershipStatus: string | null;
   departemenId: string | null;
@@ -29,12 +31,14 @@ type MahasiswaProfile = {
 } | null;
 type Options = {
   departemens: { id: string; title: string }[];
-  minatFokusOptions: string[];
+  minatFokusOptions?: string[];
+  fakultasOptions?: string[];
   programStudiOptions: string[];
   membershipStatusOptions: string[];
 };
 
 export default function Profile() {
+  const { token, isAdmin } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [, setMahasiswaProfile] = useState<MahasiswaProfile | null>(null);
   const [options, setOptions] = useState<Options | null>(null);
@@ -46,8 +50,9 @@ export default function Profile() {
     email: "",
     phone_number: "",
     angkatan: "",
+    fakultas: "",
     program_studi: "SI",
-    membership_status: "ACTIVE",
+    membership_status: "INACTIVE",
     departemen_id: "",
     domisili_city: "",
     minat_fokus: "",
@@ -59,8 +64,6 @@ export default function Profile() {
     notification_hours: "",
     consent: false,
   });
-
-  const token = localStorage.getItem("himasi_portal_token");
 
   useEffect(() => {
     if (!token) return;
@@ -78,8 +81,9 @@ export default function Profile() {
             email: u.email ?? "",
             phone_number: u.phoneNumber ?? "",
             angkatan: u.angkatan ?? "",
+            fakultas: u.fakultas ?? "",
             program_studi: u.programStudi ?? "SI",
-            membership_status: u.membershipStatus ?? "ACTIVE",
+            membership_status: u.membershipStatus ?? "INACTIVE",
             departemen_id: u.departemenId ?? "",
           }));
         }
@@ -99,7 +103,7 @@ export default function Profile() {
             consent: !!p.consentAt,
           }));
         }
-        if (optionsRes.departemens) setOptions(optionsRes);
+        if (optionsRes?.departemens) setOptions(optionsRes);
       })
       .catch(() => setMessage("Gagal memuat profil"))
       .finally(() => setLoading(false));
@@ -121,6 +125,7 @@ export default function Profile() {
           email: form.email || undefined,
           phone_number: form.phone_number || null,
           angkatan: form.angkatan || null,
+          fakultas: form.fakultas || null,
           program_studi: form.program_studi || undefined,
           membership_status: form.membership_status || undefined,
           departemen_id: form.departemen_id || null,
@@ -147,126 +152,306 @@ export default function Profile() {
     }
   }
 
-  if (loading) return <p className="section-subtitle">Memuat profil...</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-slate-500">Memuat profil...</p>
+      </div>
+    );
+  }
 
   return (
     <>
-      <nav className="dashboard-breadcrumb">
-        <Link to="/dashboard">Dashboard</Link>
-        <span> &gt; Profil Mahasiswa</span>
+      <nav aria-label="Breadcrumb" className="flex mb-4">
+        <ol className="inline-flex items-center space-x-1 md:space-x-2 text-[11px] text-slate-400 font-bold uppercase tracking-wider">
+          <li className="inline-flex items-center">
+            <Link to="/dashboard" className="hover:text-primary transition-colors">
+              DASHBOARD
+            </Link>
+          </li>
+          <li>
+            <div className="flex items-center">
+              <span className="material-symbols-outlined text-sm mx-1 text-slate-300">chevron_right</span>
+              <span className="text-slate-600">PROFIL MAHASISWA</span>
+            </div>
+          </li>
+        </ol>
       </nav>
-      <h2 className="section-title">
-        <span className="section-title-bar" />
-        Profil Mahasiswa
-      </h2>
-      <p className="section-subtitle">Kelola data diri dan data operasional (Level 1 & 2). Data sensitif tidak dikumpulkan.</p>
+      <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Profil Mahasiswa</h1>
+      <p className="text-slate-500 mt-2 text-[15px] mb-8">
+        Data mengikuti pengelompokan aman → sensitif. Hanya Level 1–3 yang disimpan; sesuai{" "}
+        <code className="text-xs bg-slate-100 px-1 rounded">docs/DATA-MAHASISWA.md</code>.
+      </p>
 
-      <form onSubmit={handleSubmit} className="profile-form">
-        {message && <p className={message.startsWith("Profil") ? "profile-msg success" : "profile-msg error"}>{message}</p>}
+      <form onSubmit={handleSubmit} className="profile-form max-w-2xl space-y-8">
+        {message && (
+          <p className={`px-4 py-2 rounded-lg text-sm ${message.startsWith("Profil") ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-800"}`}>
+            {message}
+          </p>
+        )}
 
+        {/* Level 1 — Wajib (minimal, paling aman) */}
         <section className="profile-section">
-          <h3 className="profile-section-title">Level 1 — Data Dasar</h3>
-          <div className="profile-grid">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-1.5 h-6 bg-primary rounded-full" />
+            <h2 className="text-xl font-bold text-slate-800">Level 1 — Wajib</h2>
+          </div>
+          <p className="text-slate-500 text-sm mb-4">
+            Informasi Mahasiswa
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label className="profile-label">
-              Nama lengkap
-              <input type="text" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required className="profile-input" />
+              <span>Nama lengkap <span className="text-red-500">*</span></span>
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                required
+                className="profile-input"
+                placeholder="Nama sesuai KTM"
+              />
             </label>
             <label className="profile-label">
               NIM
-              <input type="text" value={user?.nim ?? ""} readOnly disabled className="profile-input" />
+              <input
+                type="text"
+                value={user?.nim ?? ""}
+                readOnly
+                disabled
+                className="profile-input bg-slate-50"
+                title="Unique, untuk login — tidak dapat diubah"
+              />
             </label>
-            <label className="profile-label">
-              Email
-              <input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} required className="profile-input" />
+            <label className="profile-label sm:col-span-2">
+              <span>Email kampus / utama <span className="text-red-500">*</span></span>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                required
+                className="profile-input"
+                placeholder="email@contoh.ac.id"
+              />
             </label>
             <label className="profile-label">
               Nomor HP
-              <input type="tel" value={form.phone_number} onChange={(e) => setForm((f) => ({ ...f, phone_number: e.target.value }))} className="profile-input" placeholder="Opsional" />
+              <input
+                type="tel"
+                value={form.phone_number}
+                onChange={(e) => setForm((f) => ({ ...f, phone_number: e.target.value }))}
+                className="profile-input"
+                placeholder="Opsional, untuk notifikasi"
+              />
             </label>
             <label className="profile-label">
-              Angkatan
-              <input type="text" value={form.angkatan} onChange={(e) => setForm((f) => ({ ...f, angkatan: e.target.value }))} className="profile-input" placeholder="Contoh: 2023" maxLength={4} />
+              Angkatan / tahun masuk
+              <input
+                type="text"
+                value={form.angkatan}
+                onChange={(e) => setForm((f) => ({ ...f, angkatan: e.target.value.replace(/\D/g, "").slice(0, 4) }))}
+                className="profile-input"
+                placeholder="Contoh: 2023"
+                maxLength={4}
+              />
             </label>
             <label className="profile-label">
-              Program studi
-              <select value={form.program_studi} onChange={(e) => setForm((f) => ({ ...f, program_studi: e.target.value }))} className="profile-input">
-                {(options?.programStudiOptions ?? ["SI"]).map((o) => (
+              Fakultas
+              <select
+                value={form.fakultas}
+                onChange={(e) => setForm((f) => ({ ...f, fakultas: e.target.value }))}
+                className="profile-input"
+              >
+                <option value="">— Pilih fakultas —</option>
+                {(options?.fakultasOptions ?? ["FST", "FE", "FH", "FKIP", "FISIP", "Lainnya"]).map((o) => (
+                  <option key={o} value={o}>{o}</option>
+                ))}
+              </select>
+            </label>
+            <label className="profile-label">
+              Program studi (prodi)
+              <select
+                value={form.program_studi}
+                onChange={(e) => setForm((f) => ({ ...f, program_studi: e.target.value }))}
+                className="profile-input"
+              >
+                {(options?.programStudiOptions ?? ["SI", "IK", "Lainnya"]).map((o) => (
                   <option key={o} value={o}>{o}</option>
                 ))}
               </select>
             </label>
             <label className="profile-label">
               Status keanggotaan
-              <select value={form.membership_status} onChange={(e) => setForm((f) => ({ ...f, membership_status: e.target.value }))} className="profile-input">
-                {(options?.membershipStatusOptions ?? ["ACTIVE", "INACTIVE"]).map((o) => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
+              {isAdmin ? (
+                <select
+                  value={form.membership_status}
+                  onChange={(e) => setForm((f) => ({ ...f, membership_status: e.target.value }))}
+                  className="profile-input"
+                >
+                  {(options?.membershipStatusOptions ?? ["ACTIVE", "INACTIVE"]).map((o) => (
+                    <option key={o} value={o}>{o}</option>
+                  ))}
+                </select>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    value={form.membership_status}
+                    readOnly
+                    disabled
+                    className="profile-input bg-slate-50 text-slate-600"
+                  />
+                  <p className="text-xs text-slate-500 mt-0.5">Hanya dapat diubah oleh admin.</p>
+                </>
+              )}
             </label>
             <label className="profile-label">
-              Divisi (jika pengurus)
-              <select value={form.departemen_id} onChange={(e) => setForm((f) => ({ ...f, departemen_id: e.target.value }))} className="profile-input">
-                <option value="">— Pilih —</option>
-                {(options?.departemens ?? []).map((d) => (
-                  <option key={d.id} value={d.id}>{d.title}</option>
-                ))}
-              </select>
+              Divisi
+              {isAdmin ? (
+                <select
+                  value={form.departemen_id}
+                  onChange={(e) => setForm((f) => ({ ...f, departemen_id: e.target.value }))}
+                  className="profile-input"
+                >
+                  <option value="">— Kalau pengurus —</option>
+                  {(options?.departemens ?? []).map((d) => (
+                    <option key={d.id} value={d.id}>{d.title}</option>
+                  ))}
+                </select>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    value={options?.departemens?.find((d) => d.id === form.departemen_id)?.title ?? (form.departemen_id || "—")}
+                    readOnly
+                    disabled
+                    className="profile-input bg-slate-50 text-slate-600"
+                  />
+                  <p className="text-xs text-slate-500 mt-0.5">Hanya dapat diubah oleh admin.</p>
+                </>
+              )}
             </label>
           </div>
         </section>
 
-        <section className="profile-section">
-          <h3 className="profile-section-title">Level 2 — Minat, Skill & Portfolio</h3>
-          <div className="profile-grid">
-            <label className="profile-label profile-full">
+        {/* Level 2 — Berguna untuk operasional & komunitas */}
+        <section className="profile-section border-t border-slate-200 pt-8">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-1.5 h-6 bg-primary rounded-full" />
+            <h2 className="text-xl font-bold text-slate-800">Level 2 — Lanjutan</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label className="profile-label sm:col-span-2">
               Domisili (kota saja)
-              <input type="text" value={form.domisili_city} onChange={(e) => setForm((f) => ({ ...f, domisili_city: e.target.value }))} className="profile-input" placeholder="Contoh: Bogor" />
+              <input
+                type="text"
+                value={form.domisili_city}
+                onChange={(e) => setForm((f) => ({ ...f, domisili_city: e.target.value }))}
+                className="profile-input"
+                placeholder="Bukan alamat lengkap — contoh: Bogor"
+              />
             </label>
-            <label className="profile-label profile-full">
-              Minat & fokus (pisahkan dengan koma)
-              <input type="text" value={form.minat_fokus} onChange={(e) => setForm((f) => ({ ...f, minat_fokus: e.target.value }))} className="profile-input" placeholder="Data, Web, Mobile, UI/UX, Security, Cloud, ..." />
+            <label className="profile-label sm:col-span-2">
+              Minat & fokus
+              <input
+                type="text"
+                value={form.minat_fokus}
+                onChange={(e) => setForm((f) => ({ ...f, minat_fokus: e.target.value }))}
+                className="profile-input"
+                placeholder="Data, Web, Mobile, UI/UX, Security, Cloud, dll"
+              />
             </label>
-            <label className="profile-label profile-full">
-              Skill set (JSON atau teks bebas)
-              <textarea value={form.skills_json} onChange={(e) => setForm((f) => ({ ...f, skills_json: e.target.value }))} className="profile-input" rows={2} placeholder='Contoh: ["JavaScript", "React"] atau teks' />
+            <label className="profile-label sm:col-span-2">
+              Skill set + level
+              <textarea
+                value={form.skills_json}
+                onChange={(e) => setForm((f) => ({ ...f, skills_json: e.target.value }))}
+                className="profile-input"
+                rows={3}
+                placeholder='Self-assessment (JSON), contoh: ["JavaScript", "React"] atau teks bebas'
+              />
             </label>
             <label className="profile-label">
-              GitHub
-              <input type="url" value={form.portfolio_github} onChange={(e) => setForm((f) => ({ ...f, portfolio_github: e.target.value }))} className="profile-input" placeholder="https://github.com/..." />
+              Link portfolio — GitHub
+              <input
+                type="url"
+                value={form.portfolio_github}
+                onChange={(e) => setForm((f) => ({ ...f, portfolio_github: e.target.value }))}
+                className="profile-input"
+                placeholder="https://github.com/..."
+              />
             </label>
             <label className="profile-label">
-              LinkedIn
-              <input type="url" value={form.portfolio_linkedin} onChange={(e) => setForm((f) => ({ ...f, portfolio_linkedin: e.target.value }))} className="profile-input" placeholder="https://linkedin.com/..." />
+              Link portfolio — LinkedIn
+              <input
+                type="url"
+                value={form.portfolio_linkedin}
+                onChange={(e) => setForm((f) => ({ ...f, portfolio_linkedin: e.target.value }))}
+                className="profile-input"
+                placeholder="https://linkedin.com/..."
+              />
             </label>
             <label className="profile-label">
-              Behance
-              <input type="url" value={form.portfolio_behance} onChange={(e) => setForm((f) => ({ ...f, portfolio_behance: e.target.value }))} className="profile-input" placeholder="https://behance.net/..." />
+              Link portfolio — Behance
+              <input
+                type="url"
+                value={form.portfolio_behance}
+                onChange={(e) => setForm((f) => ({ ...f, portfolio_behance: e.target.value }))}
+                className="profile-input"
+                placeholder="https://behance.net/..."
+              />
             </label>
             <label className="profile-label">
               Preferensi komunikasi
-              <select value={form.communication_preference} onChange={(e) => setForm((f) => ({ ...f, communication_preference: e.target.value }))} className="profile-input">
+              <select
+                value={form.communication_preference}
+                onChange={(e) => setForm((f) => ({ ...f, communication_preference: e.target.value }))}
+                className="profile-input"
+              >
                 <option value="">— Pilih —</option>
                 <option value="WA">WhatsApp</option>
                 <option value="email">Email</option>
               </select>
             </label>
             <label className="profile-label">
-              Jam notifikasi (contoh: 09-17)
-              <input type="text" value={form.notification_hours} onChange={(e) => setForm((f) => ({ ...f, notification_hours: e.target.value }))} className="profile-input" placeholder="09-17" />
+              Jam notifikasi
+              <input
+                type="text"
+                value={form.notification_hours}
+                onChange={(e) => setForm((f) => ({ ...f, notification_hours: e.target.value }))}
+                className="profile-input"
+                placeholder="Mis. 09-17"
+              />
             </label>
           </div>
         </section>
 
-        <section className="profile-section">
-          <h3 className="profile-section-title">Consent & Privasi</h3>
-          <label className="profile-checkbox">
-            <input type="checkbox" checked={form.consent} onChange={(e) => setForm((f) => ({ ...f, consent: e.target.checked }))} />
-            Saya setuju dengan kebijakan privasi dan pengumpulan data untuk keperluan portal HIMASI.
+        {/* Level 3 — Governance */}
+        <section className="profile-section border-t border-slate-200 pt-8">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-1.5 h-6 bg-primary rounded-full" />
+            <h2 className="text-xl font-bold text-slate-800">Level 3 — Konsen pengguna</h2>
+          </div>
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.consent}
+              onChange={(e) => setForm((f) => ({ ...f, consent: e.target.checked }))}
+              className="rounded border-slate-300 mt-0.5"
+            />
+            <span className="text-sm text-slate-600">
+              Saya setuju dengan kebijakan privasi dan pengumpulan data untuk keperluan portal HIMASI.
+            </span>
           </label>
         </section>
 
-        <div className="profile-actions">
-          <button type="submit" disabled={saving} className="profile-btn">{saving ? "Menyimpan..." : "Simpan profil"}</button>
+        <div className="profile-actions pt-4">
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-5 py-2.5 rounded-lg bg-[var(--accent)] text-white font-semibold text-sm hover:opacity-90 disabled:opacity-60 transition-opacity"
+          >
+            {saving ? "Menyimpan..." : "Simpan profil"}
+          </button>
         </div>
       </form>
     </>

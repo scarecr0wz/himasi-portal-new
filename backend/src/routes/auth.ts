@@ -56,29 +56,47 @@ function userToResource(u: User & { jabatan?: { value: string } | null; departem
 export const auth = new Hono<{ Variables: AuthVariables }>();
 
 auth.post("/sign-in", zValidator("json", signInSchema), async (c) => {
+  const nimTrim = String(c.req.valid("json").nim).trim();
+  const password = String(c.req.valid("json").password);
+  const nimNorm = nimTrim.replace(/^0+/, "") || "0";
+
+  const user = await prisma.user.findFirst({
+    where: {
+      deletedAt: null,
+      OR: [{ nim: nimTrim }, { nim: nimNorm }],
+    },
+    include: { jabatan: true, departemen: true },
+  });
+
+  if (!user) {
+    console.error("Sign-in: user not found for NIM (trim=%s, norm=%s)", nimTrim, nimNorm);
+    return c.json({ message: "NIM atau password salah." }, 401);
+  }
+
+  let ok = false;
   try {
-    const { nim, password } = c.req.valid("json");
-    const user = await prisma.user.findFirst({
-      where: { nim: String(nim).trim(), deletedAt: null },
-      include: { jabatan: true, departemen: true },
-    });
-    if (!user) {
-      return c.json({ message: "Invalid credentials" }, 401);
-    }
-    const ok = await bcrypt.compare(String(password), user.password);
-    if (!ok) {
-      return c.json({ message: "Invalid credentials" }, 401);
-    }
+    ok = await bcrypt.compare(password, user.password);
+  } catch (e) {
+    console.error("Sign-in: bcrypt compare error", e);
+    return c.json({ message: "NIM atau password salah." }, 401);
+  }
+
+  if (!ok) {
+    return c.json({ message: "NIM atau password salah." }, 401);
+  }
+
+  try {
     const token = await signToken({ sub: String(user.id), nim: user.nim });
+    const resource = userToResource(user);
     return c.json({
       message: "Sign in successful",
       access_token: token,
       token_type: "Bearer",
-      user: userToResource(user),
+      user: resource,
     });
   } catch (err) {
-    console.error("Sign-in error:", err);
-    return c.json({ message: "Invalid credentials" }, 401);
+    console.error("Sign-in: token or userToResource error", err);
+    return c.json({ message: "Gagal memproses login. Coba lagi." }, 500);
   }
 });
 

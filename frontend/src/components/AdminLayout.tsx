@@ -1,9 +1,24 @@
+import { useState, useRef, useEffect } from "react";
 import { Outlet, NavLink, Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 
 export default function AdminLayout() {
   const { user, logout } = useAuth();
   const initial = user?.name?.charAt(0)?.toUpperCase() ?? "A";
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
+  const avatarMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!avatarMenuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (avatarMenuRef.current && !avatarMenuRef.current.contains(e.target as Node)) setAvatarMenuOpen(false);
+    };
+    const t = setTimeout(() => document.addEventListener("click", handleClickOutside), 50);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [avatarMenuOpen]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background-light text-slate-900 font-[family-name:var(--font-display)]">
@@ -38,7 +53,7 @@ export default function AdminLayout() {
             }
           >
             <span className="material-symbols-outlined">school</span>
-            <span className="text-[14px]">Data Mahasiswa</span>
+            <span className="text-[14px]">Data Anggota</span>
           </NavLink>
           <NavLink
             to="/admin/content"
@@ -127,19 +142,49 @@ export default function AdminLayout() {
               Kelola Konten
             </Link>
             <div className="h-8 w-px bg-slate-200 mx-2" />
-            <div className="flex items-center gap-3 cursor-pointer group">
-              <div className="text-right hidden lg:block">
-                <p className="text-xs font-bold text-slate-800 leading-none">{user?.name ?? "Super Admin"}</p>
-                <p className="text-[10px] text-slate-400 font-medium">Administrator</p>
-              </div>
+            <div className="relative" ref={avatarMenuRef}>
               <button
                 type="button"
-                onClick={logout}
-                className="size-10 rounded-full bg-slate-100 border-2 border-slate-50 overflow-hidden ring-1 ring-slate-200 group-hover:ring-primary/30 transition-all flex items-center justify-center text-slate-600 font-semibold text-sm"
-                aria-label="Keluar"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAvatarMenuOpen((o) => !o);
+                }}
+                className="flex items-center gap-3 cursor-pointer group outline-none focus:ring-2 focus:ring-slate-300 rounded-full"
+                aria-expanded={avatarMenuOpen}
+                aria-haspopup="true"
               >
-                {initial}
+                <div className="text-right hidden lg:block">
+                  <p className="text-xs font-bold text-slate-800 leading-none">{user?.name ?? "Super Admin"}</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Administrator</p>
+                </div>
+                <span className="size-10 rounded-full bg-slate-100 border-2 border-slate-50 overflow-hidden ring-1 ring-slate-200 group-hover:ring-primary/30 transition-all flex items-center justify-center text-slate-600 font-semibold text-sm">
+                  {initial}
+                </span>
               </button>
+              {avatarMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border border-slate-200 bg-white shadow-xl py-2 z-50">
+                  <div className="px-4 py-2 border-b border-slate-100">
+                    <p className="text-slate-900 font-semibold text-sm truncate">{user?.name ?? "Admin"}</p>
+                    <p className="text-slate-500 text-xs">Administrator</p>
+                  </div>
+                  <Link
+                    to="/"
+                    className="flex items-center gap-2 px-4 py-2.5 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-colors"
+                    onClick={() => setAvatarMenuOpen(false)}
+                  >
+                    <span className="material-symbols-outlined text-lg">home</span>
+                    Beranda
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => { setAvatarMenuOpen(false); logout(); }}
+                    className="flex items-center gap-2 w-full px-4 py-2.5 text-slate-600 hover:bg-slate-50 text-sm font-medium transition-colors text-left"
+                  >
+                    <span className="material-symbols-outlined text-lg">logout</span>
+                    Keluar
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>

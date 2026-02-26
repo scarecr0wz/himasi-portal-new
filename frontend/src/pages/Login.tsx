@@ -22,9 +22,8 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      const { roles } = await login(nim, password);
-      const isAdmin = roles.includes("admin") || roles.includes("superadmin");
-      navigate(isAdmin ? "/admin" : "/dashboard", { replace: true });
+      await login(nim.trim(), password);
+      navigate("/", { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login gagal");
     } finally {

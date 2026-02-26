@@ -5,6 +5,7 @@ import { auth } from "./routes/auth.js";
 import { content } from "./routes/content.js";
 import { profile } from "./routes/profile.js";
 import { adminCms } from "./routes/admin-cms.js";
+import { uploads, serveUploadFile } from "./routes/uploads.js";
 import { authMiddleware } from "./lib/auth.js";
 import type { AuthVariables } from "./lib/auth.js";
 
@@ -14,8 +15,12 @@ app.use("*", cors({ origin: ["http://localhost:5173", "http://localhost:3000"], 
 
 app.get("/", (c) => c.json({ name: "himasi-portal-api", version: "0.1.0" }));
 
+// Public: serve uploaded files (must be before /api routes so GET is not wrapped by auth)
+app.get("/api/uploads/:filename", serveUploadFile);
+
 app.route("/api/auth", auth);
 app.route("/api/profile", profile);
+app.route("/api", uploads);
 app.route("/api", content);
 app.route("/api", adminCms);
 

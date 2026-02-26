@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/lib/auth";
 
 const API = "/api";
 
@@ -76,6 +77,9 @@ function formatDateBadge(d: string): { day: string; month: string } {
 }
 
 export default function Landing() {
+  const { token, user, isAdmin, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [news, setNews] = useState<NewsItem[]>([]);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [departments, setDepartments] = useState<DepartemenItem[]>([]);
@@ -85,6 +89,18 @@ export default function Landing() {
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [faqOpenId, setFaqOpenId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
+    const t = setTimeout(() => document.addEventListener("click", handleClickOutside), 50);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     Promise.all([
@@ -112,35 +128,9 @@ export default function Landing() {
     prokers.find((p) => p.id === selectedProkerId) ??
     filteredProkers[0] ?? null;
 
-  const displayNews = news.length > 0 ? news : [
-    {
-      id: "1",
-      title: "Pendaftaran Semester Ganjil 2025/2026 Dibuka",
-      author: "HIMASI",
-      publishedAt: "2025-10-12",
-      desc: "Pendaftaran untuk mahasiswa baru dan lanjutan sudah dibuka. Segera daftar melalui portal akademik.",
-    },
-    {
-      id: "2",
-      title: "Webinar Literasi Digital untuk Prodi SI",
-      author: "HIMASI",
-      publishedAt: "2025-10-10",
-      desc: "Kegiatan webinar kerja sama dengan dosen dan praktisi untuk meningkatkan kompetensi mahasiswa.",
-    },
-    {
-      id: "3",
-      title: "Perpustakaan Digital UT Bogor Diperluas",
-      author: "HIMASI",
-      publishedAt: "2025-10-08",
-      desc: "Akses e-book dan jurnal diperluas untuk mendukung pembelajaran dan penelitian.",
-    },
-  ] as NewsItem[];
-
-  const displayActivities = activities.length > 0 ? activities : [
-    { id: "1", title: "Malam Keakraban Keluarga Prodi SI", startAt: "2026-02-11T19:00:00", endAt: "2026-02-11T22:00:00", desc: null },
-    { id: "2", title: "Workshop Pengembangan Aplikasi Web", startAt: "2026-02-15T14:00:00", endAt: "2026-02-15T17:00:00", desc: null },
-    { id: "3", title: "Seminar Tugas Akhir & Karier", startAt: "2026-02-20T09:00:00", endAt: "2026-02-20T12:00:00", desc: null },
-  ] as ActivityItem[];
+  // Konten landing = data dari CMS (Admin > Konten). Tanpa placeholder agar sinkron dengan admin.
+  const displayNews = news;
+  const displayActivities = activities;
 
   return (
     <div className="font-display bg-background-light text-slate-900 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-300">
@@ -167,12 +157,73 @@ export default function Landing() {
                 <span className="absolute left-3 text-slate-400 group-focus-within:text-primary transition-colors material-symbols-outlined text-xl">search</span>
                 <input className="w-full h-full pl-10 pr-4 rounded-lg border-none bg-slate-100 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary text-sm transition-all" placeholder="Cari..." />
               </label>
-              <Link
-                to="/login"
-                className="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all"
-              >
-                Masuk
-              </Link>
+              {token && user ? (
+                <div className="relative" ref={menuRef}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMenuOpen((o) => !o);
+                    }}
+                    className="flex items-center gap-3 rounded-xl p-1.5 pr-3 hover:bg-slate-100 transition-colors outline-none focus:ring-2 focus:ring-primary/30"
+                    aria-expanded={menuOpen}
+                    aria-haspopup="true"
+                  >
+                    <div className="flex flex-col items-end hidden sm:block">
+                      <span className="text-slate-900 text-sm font-bold leading-tight">{user.name}</span>
+                      <span className="text-slate-500 text-xs font-medium">{user.nim || user.email || "—"}</span>
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
+                      {user.avatar ? (
+                        <img src={user.avatar} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="material-symbols-outlined text-primary text-2xl">person</span>
+                      )}
+                    </div>
+                  </button>
+                  {menuOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-slate-200 bg-white shadow-xl py-2 z-50">
+                      <div className="px-4 py-2 border-b border-slate-100">
+                        <p className="text-slate-900 font-semibold text-sm truncate">{user.name}</p>
+                        <p className="text-slate-500 text-xs">{user.nim || user.email}</p>
+                      </div>
+                      <Link
+                        to="/dashboard"
+                        className="flex items-center gap-2 px-4 py-2.5 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-colors"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <span className="material-symbols-outlined text-lg">person</span>
+                        Portal Mahasiswa
+                      </Link>
+                      {isAdmin === true && (
+                        <Link
+                          to="/admin"
+                          className="flex items-center gap-2 px-4 py-2.5 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-colors"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
+                          Admin
+                        </Link>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => { setMenuOpen(false); logout(); }}
+                        className="flex items-center gap-2 w-full px-4 py-2.5 text-slate-600 hover:bg-slate-50 text-sm font-medium transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-lg">logout</span>
+                        Keluar
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all"
+                >
+                  Masuk
+                </Link>
+              )}
             </div>
           </div>
         </header>
@@ -225,6 +276,8 @@ export default function Landing() {
             </div>
             {loading ? (
               <p className="text-slate-500">Memuat...</p>
+            ) : displayNews.length === 0 ? (
+              <p className="text-slate-500 py-8">Belum ada berita. Kelola konten di <strong>Admin &gt; Konten (CMS)</strong>.</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {displayNews.slice(0, 3).map((item, i) => (
@@ -234,6 +287,10 @@ export default function Landing() {
                         src={item.photo || CARD_IMAGES[i % CARD_IMAGES.length]}
                         alt=""
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const el = e.currentTarget;
+                          if (item.photo && el.src !== CARD_IMAGES[i % CARD_IMAGES.length]) el.src = CARD_IMAGES[i % CARD_IMAGES.length];
+                        }}
                       />
                       <span className="absolute top-3 left-3 px-3 py-1 bg-primary text-white text-[10px] font-bold uppercase rounded-full">
                         Berita Kegiatan
@@ -254,19 +311,19 @@ export default function Landing() {
                       <p className="text-slate-600 text-sm leading-relaxed line-clamp-2 flex-1">
                         {item.desc || "Informasi terbaru dari HIMASI Universitas Terbuka Bogor."}
                       </p>
-                      <a
-                        href={`#berita-${item.slug || item.id}`}
+                      <Link
+                        to={`/berita/${item.slug || item.id}`}
                         className="text-primary text-sm font-semibold hover:underline inline-flex items-center gap-1"
                       >
                         Baca artikel
                         <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                      </a>
+                      </Link>
                     </div>
                   </article>
                 ))}
               </div>
             )}
-            {!loading && displayNews.length > 0 && (
+            {!loading && displayNews.length > 3 && (
               <div className="mt-6 text-right">
                 <a href="#berita" className="text-primary text-sm font-bold flex items-center gap-1 hover:underline inline-flex ml-auto">
                   Semua Berita <span className="material-symbols-outlined text-sm">arrow_forward</span>
@@ -288,7 +345,10 @@ export default function Landing() {
               </Link>
             </div>
             <div className="space-y-4">
-              {displayActivities.slice(0, 3).map((item) => {
+              {displayActivities.length === 0 ? (
+                <p className="text-slate-500 py-6">Belum ada acara. Kelola konten di <strong>Admin &gt; Konten (CMS)</strong>.</p>
+              ) : (
+              displayActivities.slice(0, 3).map((item) => {
                 const badge = formatDateBadge(item.startAt);
                 const start = new Date(item.startAt);
                 const end = new Date(item.endAt);
@@ -319,7 +379,8 @@ export default function Landing() {
                     </Link>
                   </div>
                 );
-              })}
+              })
+              )}
             </div>
           </section>
 
@@ -569,11 +630,9 @@ export default function Landing() {
             </div>
             {loading ? (
               <p className="text-slate-500">Memuat...</p>
-            ) : (faqs.length > 0 ? faqs : [
-              { id: "1", title: "Apa itu HIMASI?", desc: "HIMASI (Himpunan Mahasiswa Sistem Informasi) adalah organisasi kemahasiswaan bagi mahasiswa Prodi Sistem Informasi Universitas Terbuka Bogor. Wadah untuk berkembang, berkolaborasi, dan berkontribusi di kampus dan masyarakat." },
-              { id: "2", title: "Bagaimana cara bergabung dengan HIMASI?", desc: "Mahasiswa aktif Prodi Sistem Informasi UT Bogor dapat mendaftar melalui portal ini. Klik tombol Masuk atau Daftar, lengkapi data, dan ikuti proses verifikasi oleh pengurus." },
-              { id: "3", title: "Apa saja manfaat menjadi anggota HIMASI?", desc: "Anggota mendapat akses ke program kerja (akademik, acara, media, olahraga, PSDM), jaringan dengan senior dan alumni, sertifikat kegiatan, serta pengembangan soft skill dan kepemimpinan." },
-            ] as FaqItem[]).map((faq) => (
+            ) : faqs.length === 0 ? (
+              <p className="text-slate-500 py-6">Belum ada FAQ. Kelola konten di <strong>Admin &gt; Konten (CMS)</strong>.</p>
+            ) : faqs.map((faq) => (
               <div
                 key={faq.id}
                 className="bg-white rounded-xl shadow-md border border-slate-100 overflow-hidden mb-3"

@@ -11,8 +11,20 @@ content.get("/content/benefits", async (c) => {
 });
 
 content.get("/content/news", async (c) => {
-  const list = await prisma.news.findMany({ where: { deletedAt: null }, orderBy: { createdAt: "desc" } });
+  const list = await prisma.news.findMany({
+    where: { deletedAt: null, isActive: true },
+    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+  });
   return c.json(list);
+});
+
+content.get("/content/news/slug/:slug", async (c) => {
+  const slug = c.req.param("slug");
+  const news = await prisma.news.findFirst({
+    where: { slug, deletedAt: null, isActive: true },
+  });
+  if (!news) return c.json({ message: "Berita tidak ditemukan" }, 404);
+  return c.json(news);
 });
 
 content.get("/content/departments", async (c) => {
@@ -22,7 +34,7 @@ content.get("/content/departments", async (c) => {
 
 content.get("/content/prokers", async (c) => {
   const list = await prisma.proker.findMany({
-    where: { deletedAt: null },
+    where: { deletedAt: null, isActive: true },
     orderBy: { createdAt: "desc" },
     include: { departemen: { select: { id: true, title: true } } },
   });
@@ -30,7 +42,10 @@ content.get("/content/prokers", async (c) => {
 });
 
 content.get("/content/activities", async (c) => {
-  const list = await prisma.activity.findMany({ where: { deletedAt: null }, orderBy: { createdAt: "desc" } });
+  const list = await prisma.activity.findMany({
+    where: { deletedAt: null, isActive: true },
+    orderBy: { startAt: "desc" },
+  });
   return c.json(list);
 });
 

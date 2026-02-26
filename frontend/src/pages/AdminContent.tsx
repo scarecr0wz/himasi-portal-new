@@ -224,21 +224,42 @@ export default function AdminContent() {
       )}
 
       <div style={{ marginBottom: "1rem" }}>
-        <button
-          type="button"
-          onClick={startAdd}
-          style={{
-            padding: "0.5rem 1rem",
-            background: "var(--accent)",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          + Tambah
-        </button>
+        {tab === "news" ? (
+          <Link
+            to="/admin/content/editor"
+            style={{
+              padding: "0.5rem 1rem",
+              background: "var(--accent)",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              fontWeight: 600,
+              cursor: "pointer",
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.25rem",
+            }}
+          >
+            + Tambah
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={startAdd}
+            style={{
+              padding: "0.5rem 1rem",
+              background: "var(--accent)",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            + Tambah
+          </button>
+        )}
       </div>
 
       {(editingId || Object.keys(formData).length > 0) && (
@@ -432,6 +453,7 @@ export default function AdminContent() {
                       <td style={{ padding: "0.75rem" }}>{(item.author as string) ?? ""}</td>
                       <td style={{ padding: "0.75rem" }}>{(item.isActive as boolean) ? "Ya" : "Tidak"}</td>
                       <td style={{ padding: "0.75rem" }}>
+                        <Link to={`/admin/content/editor/${item.id}`} style={{ marginRight: "0.5rem", cursor: "pointer", color: "var(--accent)" }}>Editor</Link>
                         <button type="button" onClick={() => startEdit(item)} style={{ marginRight: "0.5rem", cursor: "pointer" }}>Edit</button>
                         <button type="button" onClick={() => handleDelete(item.id as string)} style={{ cursor: "pointer", color: "#dc2626" }}>Hapus</button>
                       </td>
