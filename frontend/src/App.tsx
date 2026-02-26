@@ -13,6 +13,7 @@ import AdminContent from "./pages/AdminContent";
 import AdminSettings from "./pages/AdminSettings";
 import AdminMahasiswa from "./pages/AdminMahasiswa";
 import Profile from "./pages/Profile";
+import Pengurus from "./pages/Pengurus";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuth();
@@ -40,6 +41,7 @@ export default function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/pengurus" element={<Pengurus />} />
 
       <Route
         path="/dashboard"

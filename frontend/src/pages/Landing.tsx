@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import PublicNavbar from "../components/PublicNavbar";
+import PublicFooter from "../components/PublicFooter";
 
 const API = "/api";
 
@@ -145,37 +147,7 @@ export default function Landing() {
   return (
     <div className="font-display bg-background-light text-slate-900 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-300">
       <div className="flex flex-col grow">
-        {/* Top Navigation Bar */}
-        <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md px-6 md:px-10 lg:px-40 py-3">
-          <div className="flex items-center justify-between gap-8 max-w-[1280px] mx-auto">
-            <div className="flex items-center gap-8">
-              <Link to="/" className="flex items-center gap-3">
-                <img src="/logo-himasi.png" alt="HIMASI" className="h-10 w-auto object-contain" />
-              </Link>
-              <nav className="hidden lg:flex items-center gap-6">
-                <a href="#berita" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Berita</a>
-                <a href="#acara" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Acara</a>
-                <a href="#pengurus" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Pengurus</a>
-                <a href="#program-kerja" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Program Kerja</a>
-                <a href="#department" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Department</a>
-                <a href="#faq" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">FAQ</a>
-                <a href="#tentang" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Tentang</a>
-              </nav>
-            </div>
-            <div className="flex flex-1 justify-end items-center gap-4">
-              <label className="hidden md:flex items-center relative min-w-40 max-w-64 h-10 group">
-                <span className="absolute left-3 text-slate-400 group-focus-within:text-primary transition-colors material-symbols-outlined text-xl">search</span>
-                <input className="w-full h-full pl-10 pr-4 rounded-lg border-none bg-slate-100 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary text-sm transition-all" placeholder="Cari..." />
-              </label>
-              <Link
-                to="/login"
-                className="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all"
-              >
-                Masuk
-              </Link>
-            </div>
-          </div>
-        </header>
+        <PublicNavbar />
 
         <main className="flex-1 max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-12">
           {/* Hero Section */}
@@ -598,65 +570,7 @@ export default function Landing() {
           </section>
         </main>
 
-        {/* Footer */}
-        <footer id="footer" className="bg-white border-t border-slate-200 px-6 md:px-10 lg:px-40 py-16">
-          <div className="max-w-[1280px] mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-              <div className="flex flex-col gap-6">
-                <div className="flex items-center gap-2">
-                  <img src="/logo-himasi.png" alt="HIMASI" className="h-8 w-auto object-contain" />
-                </div>
-                <p className="text-slate-500 text-sm leading-relaxed">
-                  Wadah mahasiswa Prodi Sistem Informasi Universitas Terbuka Bogor. Informasi, acara, dan layanan kemahasiswaan dalam satu portal.
-                </p>
-                <div className="flex gap-4">
-                  <a className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-all" href="#" aria-label="Web">
-                    <span className="material-symbols-outlined text-lg">public</span>
-                  </a>
-                  <a className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-all" href="#" aria-label="Email">
-                    <span className="material-symbols-outlined text-lg">alternate_email</span>
-                  </a>
-                </div>
-              </div>
-              <div className="flex flex-col gap-6">
-                <h4 className="text-slate-900 font-bold uppercase text-xs tracking-widest">Sumber</h4>
-                <ul className="flex flex-col gap-3 text-sm text-slate-500">
-                  <li><a href="#berita" className="hover:text-primary transition-colors">Berita</a></li>
-                  <li><a href="#acara" className="hover:text-primary transition-colors">Acara</a></li>
-                  <li><a href="#pengurus" className="hover:text-primary transition-colors">Pengurus</a></li>
-                  <li><a href="#program-kerja" className="hover:text-primary transition-colors">Program Kerja</a></li>
-                  <li><a href="#department" className="hover:text-primary transition-colors">Department</a></li>
-                  <li><a href="#faq" className="hover:text-primary transition-colors">FAQ</a></li>
-                  <li><Link to="/login" className="hover:text-primary transition-colors">Portal Mahasiswa</Link></li>
-                </ul>
-              </div>
-              <div className="flex flex-col gap-6">
-                <h4 className="text-slate-900 font-bold uppercase text-xs tracking-widest">Institusi</h4>
-                <ul className="flex flex-col gap-3 text-sm text-slate-500">
-                  <li><a href="#tentang" className="hover:text-primary transition-colors">Tentang Kami</a></li>
-                  <li><a href="#" className="hover:text-primary transition-colors">Kontak</a></li>
-                </ul>
-              </div>
-              <div className="flex flex-col gap-6">
-                <h4 className="text-slate-900 font-bold uppercase text-xs tracking-widest">Tetap Terkini</h4>
-                <p className="text-sm text-slate-500">Berlangganan untuk info terbaru dari HIMASI.</p>
-                <div className="flex gap-2">
-                  <input className="w-full bg-slate-100 border-none rounded-lg text-sm px-4 py-2 focus:ring-2 focus:ring-primary" placeholder="Alamat email" type="email" />
-                  <button type="button" className="bg-primary text-white p-2 rounded-lg hover:bg-primary/90 transition-all">
-                    <span className="material-symbols-outlined text-xl">send</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-slate-400 text-[10px] font-medium tracking-wide">© 2024 HIMASI Universitas Terbuka Bogor. Dikelola oleh Departemen Media & Publikasi.</p>
-              <div className="flex gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                <a href="#" className="hover:text-primary">Kebijakan Privasi</a>
-                <a href="#" className="hover:text-primary">Syarat Layanan</a>
-              </div>
-            </div>
-          </div>
-        </footer>
+        <PublicFooter />
       </div>
     </div>
   );
