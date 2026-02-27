@@ -51,8 +51,8 @@ export default function Home() {
     : placeholderActivities;
 
   return (
-    <>
-      <nav className="dashboard-breadcrumb">
+    <div className="min-w-0 w-full">
+      <nav className="dashboard-breadcrumb" aria-label="Breadcrumb">
         <Link to="/">Home</Link>
         <span> &gt; Dashboard Mahasiswa</span>
       </nav>
@@ -66,28 +66,28 @@ export default function Home() {
         <div className="stat-cards">
           <div className="stat-card">
             <div className="stat-card-icon purple">👥</div>
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="stat-card-label">Kehadiran Saya</div>
               <div className="stat-card-value">0%</div>
             </div>
           </div>
           <div className="stat-card">
             <div className="stat-card-icon green">💰</div>
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="stat-card-label">Saldo Kas Saya</div>
               <div className="stat-card-value">Rp 0</div>
             </div>
           </div>
           <div className="stat-card">
             <div className="stat-card-icon yellow">💡</div>
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="stat-card-label">Aspirasi Baru</div>
               <div className="stat-card-value">0</div>
             </div>
           </div>
           <div className="stat-card">
             <div className="stat-card-icon red">📋</div>
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="stat-card-label">Proker Aktif</div>
               <div className="stat-card-value">{loading ? "..." : prokerCount}</div>
             </div>
@@ -95,15 +95,15 @@ export default function Home() {
         </div>
       </section>
 
-      <section>
+      <section className="min-w-0">
         <div className="section-header">
-          <div>
+          <div className="min-w-0">
             <h2 className="section-title">
               <span className="section-title-bar" />
               Aktivitas Terkini
             </h2>
           </div>
-          <Link to="/dashboard/activities" className="btn-link">Lihat Semua</Link>
+          <Link to="/dashboard/activities" className="btn-link py-1 -my-1">Lihat Semua</Link>
         </div>
         <div className="activity-list">
           {list.map((item) => (
@@ -119,6 +119,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-    </>
+    </div>
   );
 }

@@ -11,10 +11,13 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminPlaceholder from "./pages/AdminPlaceholder";
 import AdminContent from "./pages/AdminContent";
 import AdminContentEditor from "./pages/AdminContentEditor";
+import AdminContentItemEditor from "./pages/AdminContentItemEditor";
 import AdminSettings from "./pages/AdminSettings";
 import AdminMahasiswa from "./pages/AdminMahasiswa";
+import AdminPengurus from "./pages/AdminPengurus";
 import Profile from "./pages/Profile";
-import Berita from "./pages/Berita";
+import BeritaList from "./pages/BeritaList";
+import BeritaDetail from "./pages/BeritaDetail";
 import Pengurus from "./pages/Pengurus";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -43,7 +46,8 @@ export default function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/berita/:slug" element={<Berita />} />
+      <Route path="/berita" element={<BeritaList />} />
+      <Route path="/berita/:slug" element={<BeritaDetail />} />
       <Route path="/pengurus" element={<Pengurus />} />
 
       <Route
@@ -79,6 +83,9 @@ export default function App() {
         <Route path="content" element={<AdminContent />} />
         <Route path="content/editor" element={<AdminContentEditor />} />
         <Route path="content/editor/:id" element={<AdminContentEditor />} />
+        <Route path="content/:contentType" element={<AdminContentItemEditor />} />
+        <Route path="content/:contentType/:id" element={<AdminContentItemEditor />} />
+        <Route path="pengurus" element={<AdminPengurus />} />
         <Route path="menus" element={<AdminPlaceholder />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>

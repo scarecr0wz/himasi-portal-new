@@ -38,13 +38,14 @@ type Options = {
 };
 
 export default function Profile() {
-  const { token, isAdmin } = useAuth();
+  const { token, isAdmin, user: authUser, loadMe } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [, setMahasiswaProfile] = useState<MahasiswaProfile | null>(null);
   const [options, setOptions] = useState<Options | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -161,7 +162,7 @@ export default function Profile() {
   }
 
   return (
-    <>
+    <div className="min-w-0 w-full">
       <nav aria-label="Breadcrumb" className="flex mb-4">
         <ol className="inline-flex items-center space-x-1 md:space-x-2 text-[11px] text-slate-400 font-bold uppercase tracking-wider">
           <li className="inline-flex items-center">
@@ -177,18 +178,75 @@ export default function Profile() {
           </li>
         </ol>
       </nav>
-      <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Profil Mahasiswa</h1>
-      <p className="text-slate-500 mt-2 text-[15px] mb-8">
+      <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight break-words">Profil Mahasiswa</h1>
+      <p className="text-slate-500 mt-2 text-sm sm:text-[15px] mb-6 sm:mb-8 break-words">
         Data mengikuti pengelompokan aman → sensitif. Hanya Level 1–3 yang disimpan; sesuai{" "}
         <code className="text-xs bg-slate-100 px-1 rounded">docs/DATA-MAHASISWA.md</code>.
       </p>
 
       <form onSubmit={handleSubmit} className="profile-form max-w-2xl space-y-8">
         {message && (
-          <p className={`px-4 py-2 rounded-lg text-sm ${message.startsWith("Profil") ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-800"}`}>
+          <p className={`px-4 py-2 rounded-lg text-sm ${message.startsWith("Profil") || message.startsWith("Foto") ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-800"}`}>
             {message}
           </p>
         )}
+
+        {/* Foto profil / Avatar */}
+        <section className="profile-section">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-1.5 h-6 bg-primary rounded-full" />
+            <h2 className="text-xl font-bold text-slate-800">Foto Profil</h2>
+          </div>
+          <div className="flex flex-col sm:flex-row items-start gap-6">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-24 h-24 rounded-full bg-slate-100 border-2 border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
+                {authUser?.avatar ? (
+                  <img src={authUser.avatar} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="material-symbols-outlined text-slate-400 text-4xl">person</span>
+                )}
+              </div>
+              <label className="text-slate-500 text-sm">Tampil di navbar &amp; profil</label>
+            </div>
+            <div className="flex flex-col gap-2">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                className="profile-input text-sm py-2 file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:bg-primary file:text-white file:text-sm file:font-semibold file:cursor-pointer"
+                id="avatar-upload"
+                disabled={avatarUploading}
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = "";
+                  if (!file || !token) return;
+                  setMessage("");
+                  setAvatarUploading(true);
+                  try {
+                    const formData = new FormData();
+                    formData.append("avatar", file);
+                    const res = await fetch(`${API}/auth/update-avatar`, {
+                      method: "POST",
+                      headers: { Authorization: `Bearer ${token}` },
+                      body: formData,
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok) {
+                      setMessage(data.message ?? "Gagal mengunggah foto");
+                      return;
+                    }
+                    setMessage(data.message ?? "Foto profil berhasil diperbarui");
+                    await loadMe();
+                  } catch {
+                    setMessage("Gagal mengunggah foto");
+                  } finally {
+                    setAvatarUploading(false);
+                  }
+                }}
+              />
+              <p className="text-xs text-slate-500">JPEG, PNG, GIF atau WebP. Maks. 3MB.</p>
+            </div>
+          </div>
+        </section>
 
         {/* Level 1 — Wajib (minimal, paling aman) */}
         <section className="profile-section">
@@ -454,6 +512,6 @@ export default function Profile() {
           </button>
         </div>
       </form>
-    </>
+    </div>
   );
 }

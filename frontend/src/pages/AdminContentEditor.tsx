@@ -30,7 +30,8 @@ export default function AdminContentEditor() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [publishedAt, setPublishedAt] = useState(() => new Date().toISOString().slice(0, 10));
   const [isActive, setIsActive] = useState(true);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [cancelledAt, setCancelledAt] = useState<string | null>(null);
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -163,7 +164,7 @@ export default function AdminContentEditor() {
     setLoading(true);
     fetch(`${API}/admin/news`, { headers: headers() })
       .then((r) => (r.ok ? r.json() : []))
-      .then((list: { id: string; title: string; slug: string; desc: string; author: string; categoryId: string; photo: string | null; publishedAt: string | null; isActive: boolean }[]) => {
+      .then((list: { id: string; title: string; slug: string; desc: string; author: string; categoryId: string; photo: string | null; publishedAt: string | null; isActive: boolean; cancelledAt?: string | null }[]) => {
         const item = list.find((n) => n.id === id);
         if (item) {
           setTitle(item.title);
@@ -174,16 +175,19 @@ export default function AdminContentEditor() {
           setPhoto(item.photo ?? null);
           setPublishedAt(item.publishedAt ? new Date(item.publishedAt).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10));
           setIsActive(item.isActive);
+          setCancelledAt(item.cancelledAt ?? null);
         }
       })
       .catch(() => setError("Gagal memuat data"))
       .finally(() => setLoading(false));
   }, [isEdit, id, token, headers]);
 
+  type SaveMode = "draft" | "publish" | "cancel";
   const save = useCallback(
-    async (publish: boolean) => {
+    async (mode: SaveMode) => {
       setError(null);
       setSaving(true);
+      const nowIso = new Date().toISOString();
       const payload = {
         title: title.trim(),
         slug: (slug || slugify(title)).trim() || slugify(title) || "berita",
@@ -191,16 +195,18 @@ export default function AdminContentEditor() {
         author: author.trim() || "HIMASI",
         categoryId: categoryId || categories[0]?.id,
         photo: photo || null,
-        publishedAt: publishedAt ? new Date(publishedAt).toISOString() : new Date().toISOString(),
-        isActive: publish,
+        publishedAt: publishedAt ? new Date(publishedAt).toISOString() : nowIso,
+        isActive: mode === "publish",
+        cancelledAt: mode === "cancel" ? nowIso : null,
       };
       try {
         if (isEdit && id) {
-          await fetch(`${API}/admin/news/${id}`, {
+          const r = await fetch(`${API}/admin/news/${id}`, {
             method: "PUT",
             headers: headers(),
             body: JSON.stringify(payload),
           });
+          if (!r.ok) throw new Error(await r.text());
         } else {
           const r = await fetch(`${API}/admin/news`, {
             method: "POST",
@@ -208,10 +214,8 @@ export default function AdminContentEditor() {
             body: JSON.stringify(payload),
           });
           if (!r.ok) throw new Error(await r.text());
-          const created = await r.json();
-          navigate(`/admin/content/editor/${created.id}`, { replace: true });
         }
-        setLastSaved(new Date());
+        navigate("/admin/content");
       } catch (e) {
         setError(e instanceof Error ? e.message : "Gagal menyimpan");
       } finally {
@@ -220,6 +224,7 @@ export default function AdminContentEditor() {
     },
     [title, slug, desc, author, categoryId, photo, publishedAt, isEdit, id, categories, headers, navigate]
   );
+  const newsStatus = cancelledAt ? "batal" : isActive ? "publikasi" : "draf";
 
   const handleDiscard = () => {
     if (confirm("Buang perubahan dan kembali ke daftar konten?")) {
@@ -237,11 +242,11 @@ export default function AdminContentEditor() {
 
   return (
     <div className="flex flex-col max-w-[1440px] mx-auto w-full gap-6">
-      {/* Top bar: Save Draft / Publish Now */}
-      <div className="w-full flex items-center justify-end gap-3">
+      {/* Top bar: Simpan Draf / Terbitkan / Tandai Batal */}
+      <div className="w-full flex items-center justify-end gap-3 flex-wrap">
         <button
           type="button"
-          onClick={() => save(false)}
+          onClick={() => save("draft")}
           disabled={saving}
           className="hidden sm:flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-slate-100 text-slate-700 text-sm font-bold transition-all hover:bg-slate-200 disabled:opacity-50"
         >
@@ -249,11 +254,19 @@ export default function AdminContentEditor() {
         </button>
         <button
           type="button"
-          onClick={() => save(true)}
+          onClick={() => save("publish")}
           disabled={saving}
-          className="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold transition-all hover:bg-primary/90 shadow-sm disabled:opacity-50"
+          className="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold transition-all hover:bg-primary/90 shadow-sm disabled:opacity-50"
         >
           {saving ? "..." : "Terbitkan"}
+        </button>
+        <button
+          type="button"
+          onClick={() => confirm("Tandai berita ini sebagai batal? Tidak akan tampil di landing.") && save("cancel")}
+          disabled={saving}
+          className="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-red-50 text-red-600 text-sm font-bold transition-all hover:bg-red-100 disabled:opacity-50"
+        >
+          {saving ? "..." : "Tandai Batal"}
         </button>
       </div>
 
@@ -351,7 +364,7 @@ export default function AdminContentEditor() {
               spellCheck
             />
             <div className="p-3 border-t border-slate-100 text-xs text-slate-400 flex justify-between items-center">
-              <span>{lastSaved ? `Terakhir disimpan ${lastSaved.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}` : "Belum disimpan"}</span>
+              <span>Markdown editor</span>
               <span>{wordCount} kata</span>
             </div>
           </div>
@@ -463,20 +476,21 @@ export default function AdminContentEditor() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-              <div>
-                <p className="text-sm font-semibold text-slate-700">Tampil di Landing</p>
-                <p className="text-[11px] text-slate-500">Berita aktif muncul di beranda</p>
+            <div className="p-3 bg-slate-50 rounded-lg space-y-1">
+              <p className="text-sm font-semibold text-slate-700">Status</p>
+              <p className="text-[11px] text-slate-500">
+                {newsStatus === "draf" && "Draf — tidak tampil di beranda"}
+                {newsStatus === "publikasi" && "Publikasi — tampil di landing"}
+                {newsStatus === "batal" && "Batal — tidak tampil di beranda"}
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase ${
+                  newsStatus === "draf" ? "bg-slate-200 text-slate-700" :
+                  newsStatus === "publikasi" ? "bg-primary/20 text-primary" : "bg-red-100 text-red-700"
+                }`}>
+                  {newsStatus === "draf" ? "Draf" : newsStatus === "publikasi" ? "Publikasi" : "Batal"}
+                </span>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isActive}
-                  onChange={(e) => setIsActive(e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
-              </label>
             </div>
           </div>
           <div className="mt-8 pt-6 border-t border-slate-100">

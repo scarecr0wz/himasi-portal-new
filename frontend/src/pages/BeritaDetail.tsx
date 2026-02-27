@@ -27,7 +27,7 @@ function formatDate(d: string | null): string {
   }
 }
 
-export default function Berita() {
+export default function BeritaDetail() {
   const { slug } = useParams<{ slug: string }>();
   const [article, setArticle] = useState<NewsDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -78,7 +78,7 @@ export default function Berita() {
             <span className="material-symbols-outlined text-lg">arrow_back</span>
             Beranda
           </Link>
-          <Link to="/#berita" className="text-slate-600 hover:text-primary text-sm font-semibold">
+          <Link to="/berita" className="text-slate-600 hover:text-primary text-sm font-semibold">
             Semua Berita
           </Link>
         </div>
@@ -130,7 +130,7 @@ export default function Berita() {
 
         <div className="mt-10 pt-6 border-t border-slate-200">
           <Link
-            to="/#berita"
+            to="/berita"
             className="text-primary font-semibold hover:underline inline-flex items-center gap-1"
           >
             <span className="material-symbols-outlined text-lg">arrow_back</span>

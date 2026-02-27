@@ -17,7 +17,7 @@ export default function Placeholder() {
   const title = titles[key] ?? "Halaman";
 
   return (
-    <div>
+    <div className="min-w-0 w-full">
       <h2 className="section-title">
         <span className="section-title-bar" />
         {title}

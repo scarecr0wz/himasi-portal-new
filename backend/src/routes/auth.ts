@@ -2,10 +2,19 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import { writeFile, mkdir } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { prisma } from "../lib/db.js";
 import { signToken, authMiddleware } from "../lib/auth.js";
 import type { AuthVariables } from "../lib/auth.js";
 import type { User } from "@prisma/client";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const UPLOADS_DIR = process.env.UPLOADS_DIR ?? path.resolve(__dirname, "..", "..", "uploads");
+const AVATAR_MAX_SIZE = 3 * 1024 * 1024; // 3MB
+const AVATAR_ALLOWED = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+const AVATAR_EXT: Record<string, string> = { "image/jpeg": ".jpg", "image/png": ".png", "image/gif": ".gif", "image/webp": ".webp" };
 
 const signInSchema = z.object({
   nim: z.string().min(1),
@@ -41,7 +50,7 @@ function userToResource(u: User & { jabatan?: { value: string } | null; departem
     nim: u.nim,
     email: u.email,
     jabatan_id: u.jabatanId,
-    avatar: u.avatar ? `${base}/storage/${u.avatar}` : null,
+    avatar: u.avatar ? `${base}/api/uploads/${u.avatar}` : null,
     jabatan: u.jabatan?.value ?? null,
     departemen: u.departemen ? { id: u.departemen.id, title: (u.departemen as { title: string }).title } : null,
     angkatan: u.angkatan,
@@ -194,22 +203,32 @@ auth.put("/update-profile", authMiddleware, zValidator("json", updateProfileSche
   });
 });
 
-// update-avatar: multipart file upload (stub; implement with @hono/zod-validator or multipart)
 auth.post("/update-avatar", authMiddleware, async (c) => {
   const userId = c.get("userId") as string;
   const form = await c.req.formData();
   const file = form.get("avatar");
   if (!file || !(file instanceof File)) {
-    return c.json({ message: "avatar is required (image)" }, 400);
+    return c.json({ message: "Pilih file gambar (field avatar)." }, 400);
   }
-  // Save to disk or S3; for scaffold we store path only
-  const path = `avatars/${userId}-${file.name}`;
+  const mime = (file.type ?? "").toLowerCase();
+  if (!AVATAR_ALLOWED.includes(mime)) {
+    return c.json({ message: "Tipe file tidak diizinkan. Gunakan JPEG, PNG, GIF, atau WebP." }, 400);
+  }
+  if (file.size > AVATAR_MAX_SIZE) {
+    return c.json({ message: "Ukuran file maksimal 3MB." }, 400);
+  }
+  await mkdir(UPLOADS_DIR, { recursive: true });
+  const ext = AVATAR_EXT[mime] ?? ".jpg";
+  const filename = `avatar-${userId}${ext}`;
+  const filepath = path.join(UPLOADS_DIR, filename);
+  const buffer = Buffer.from(await file.arrayBuffer());
+  await writeFile(filepath, buffer);
   await prisma.user.update({
     where: { id: userId },
-    data: { avatar: path },
+    data: { avatar: filename },
   });
   const user = await prisma.user.findUnique({
-    where: { id: userId as string },
+    where: { id: userId },
     include: { jabatan: true, departemen: true },
   });
   return c.json({

@@ -71,8 +71,24 @@ model Departemen {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
-  users   User[]
-  prokers Proker[]
+  users    User[]
+  prokers  Proker[]
+  pengurus Pengurus[]
+}
+
+model Pengurus {
+  id           String    @id @default(uuid()) @db.Uuid
+  name         String
+  role         String    // e.g. "Ketua Umum", "Sekretaris", "Kepala Departemen"
+  departemenId String?   @map("departemen_id") @db.Uuid
+  photo        String?
+  sortOrder    Int       @default(0) @map("sort_order")
+  periode      String    // e.g. "2025/2026"
+  deletedAt    DateTime? @map("deleted_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  departemen Departemen? @relation(fields: [departemenId], references: [id], onDelete: SetNull)
 }
 
 // Spatie-like permission tables (guard_name = 'api' for API)
@@ -167,9 +183,10 @@ model News {
   author      String
   publishedAt DateTime? @map("published_at")
   isActive    Boolean   @default(false) @map("is_active")
-  deletedAt  DateTime? @map("deleted_at")
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime  @updatedAt @map("updated_at")
+  cancelledAt DateTime? @map("cancelled_at")
+  deletedAt   DateTime? @map("deleted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 }
 
 model Faq {

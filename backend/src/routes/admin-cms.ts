@@ -32,6 +32,7 @@ const newsCreateSchema = z.object({
   photo: z.string().optional().nullable(),
   publishedAt: z.string().datetime().optional().nullable(),
   isActive: z.boolean().optional(),
+  cancelledAt: z.string().datetime().optional().nullable(),
 });
 const newsUpdateSchema = newsCreateSchema.partial();
 
@@ -54,6 +55,7 @@ admin.post("/admin/news", zValidator("json", newsCreateSchema), async (c) => {
       photo: body.photo ?? null,
       publishedAt: body.publishedAt ? new Date(body.publishedAt) : now(),
       isActive: body.isActive ?? false,
+      cancelledAt: body.cancelledAt ? new Date(body.cancelledAt) : null,
     },
   });
   return c.json(created, 201);
@@ -72,6 +74,7 @@ admin.put("/admin/news/:id", zValidator("json", newsUpdateSchema), async (c) => 
       ...(body.photo !== undefined && { photo: body.photo }),
       ...(body.publishedAt !== undefined && { publishedAt: body.publishedAt ? new Date(body.publishedAt) : null }),
       ...(body.isActive !== undefined && { isActive: body.isActive }),
+      ...(body.cancelledAt !== undefined && { cancelledAt: body.cancelledAt ? new Date(body.cancelledAt) : null }),
     },
   });
   return c.json(updated);
@@ -266,6 +269,61 @@ admin.put("/admin/faqs/:id", zValidator("json", faqUpdateSchema), async (c) => {
 admin.delete("/admin/faqs/:id", async (c) => {
   const id = c.req.param("id");
   await prisma.faq.update({ where: { id }, data: { deletedAt: now() } });
+  return c.json({ ok: true });
+});
+
+// ---------- Pengurus (BPH & Kepala Departemen) ----------
+const pengurusCreateSchema = z.object({
+  name: z.string().min(1),
+  role: z.string().min(1),
+  departemenId: z.string().uuid().optional().nullable(),
+  photo: z.string().optional().nullable(),
+  sortOrder: z.number().int().optional(),
+  periode: z.string().min(1),
+});
+const pengurusUpdateSchema = pengurusCreateSchema.partial();
+
+admin.get("/admin/pengurus", async (c) => {
+  const list = await prisma.pengurus.findMany({
+    where: { deletedAt: null },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    include: { departemen: { select: { id: true, title: true } } },
+  });
+  return c.json(list);
+});
+admin.post("/admin/pengurus", zValidator("json", pengurusCreateSchema), async (c) => {
+  const body = c.req.valid("json");
+  const created = await prisma.pengurus.create({
+    data: {
+      name: body.name,
+      role: body.role,
+      departemenId: body.departemenId ?? null,
+      photo: body.photo ?? null,
+      sortOrder: body.sortOrder ?? 0,
+      periode: body.periode,
+    },
+  });
+  return c.json(created, 201);
+});
+admin.put("/admin/pengurus/:id", zValidator("json", pengurusUpdateSchema), async (c) => {
+  const id = c.req.param("id");
+  const body = c.req.valid("json");
+  const updated = await prisma.pengurus.update({
+    where: { id },
+    data: {
+      ...(body.name != null && { name: body.name }),
+      ...(body.role != null && { role: body.role }),
+      ...(body.departemenId !== undefined && { departemenId: body.departemenId }),
+      ...(body.photo !== undefined && { photo: body.photo }),
+      ...(body.sortOrder !== undefined && { sortOrder: body.sortOrder }),
+      ...(body.periode != null && { periode: body.periode }),
+    },
+  });
+  return c.json(updated);
+});
+admin.delete("/admin/pengurus/:id", async (c) => {
+  const id = c.req.param("id");
+  await prisma.pengurus.update({ where: { id }, data: { deletedAt: now() } });
   return c.json({ ok: true });
 });
 

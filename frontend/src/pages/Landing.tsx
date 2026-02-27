@@ -112,7 +112,7 @@ export default function Landing() {
       fetch(`${API}/content/faqs`).then((r) => (r.ok ? r.json() : [])),
     ])
       .then(([n, a, d, p, f]) => {
-        setNews(Array.isArray(n) ? n.slice(0, 6) : []);
+        setNews(Array.isArray(n) ? n.slice(0, 3) : []);
         setActivities(Array.isArray(a) ? a.slice(0, 6) : []);
         setDepartments(Array.isArray(d) ? d : []);
         setProkers(Array.isArray(p) ? p : []);
@@ -146,7 +146,7 @@ export default function Landing() {
               <nav className="hidden lg:flex items-center gap-6">
                 <a href="#berita" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Berita</a>
                 <a href="#acara" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Acara</a>
-                <a href="#pengurus" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Pengurus</a>
+                <Link to="/pengurus" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Pengurus</Link>
                 <a href="#program-kerja" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Program Kerja</a>
                 <a href="#department" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Department</a>
                 <a href="#faq" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">FAQ</a>
@@ -228,7 +228,6 @@ export default function Landing() {
             </div>
           </div>
         </header>
-        </header>
 
         <main className="flex-1 max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-12">
           {/* Hero Section */}
@@ -255,7 +254,7 @@ export default function Landing() {
                     to="/register"
                     className="flex min-w-[160px] items-center justify-center rounded-xl h-14 px-8 bg-primary text-white text-base font-bold shadow-xl shadow-primary/30 hover:shadow-primary/40 transition-all"
                   >
-                    Mulai
+                    Mulai perjalananmu sekarang
                   </Link>
                   <a
                     href="#acara"
@@ -325,11 +324,11 @@ export default function Landing() {
                 ))}
               </div>
             )}
-            {!loading && displayNews.length > 3 && (
+            {!loading && displayNews.length > 0 && (
               <div className="mt-6 text-right">
-                <a href="#berita" className="text-primary text-sm font-bold flex items-center gap-1 hover:underline inline-flex ml-auto">
-                  Semua Berita <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                </a>
+                <Link to="/berita" className="text-primary text-sm font-bold flex items-center gap-1 hover:underline inline-flex ml-auto">
+                  Lihat Semua Berita <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                </Link>
               </div>
             )}
           </section>

@@ -98,7 +98,6 @@ export default function AdminContent() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [categories, setCategories] = useState<{ id: string; value: string }[]>([]);
-  const [departmentsList, setDepartmentsList] = useState<{ id: string; title: string }[]>([]);
 
   const tabs: { id: TabId; label: string }[] = [
     { id: "news", label: "Berita" },
@@ -132,11 +131,6 @@ export default function AdminContent() {
         setCategories(Array.isArray(data) ? data.map((d: { id: string; value: string }) => ({ id: d.id, value: d.value })) : [])
       );
     }
-    if (tab === "prokers") {
-      api.fetchList("departments").then((data) =>
-        setDepartmentsList(Array.isArray(data) ? data.map((d: { id: string; title: string }) => ({ id: d.id, title: d.title })) : [])
-      );
-    }
   }, [tab]);
 
   const handleDelete = async (id: string) => {
@@ -166,20 +160,6 @@ export default function AdminContent() {
     } catch (e) {
       setError(e instanceof Error ? e.message : "Gagal menyimpan");
     }
-  };
-
-  const startEdit = (item: Record<string, unknown>) => {
-    setEditingId((item.id as string) ?? null);
-    setFormData({ ...item });
-  };
-
-  const startAdd = () => {
-    setEditingId(null);
-    if (tab === "news") setFormData({ title: "", slug: "", desc: "", author: "", categoryId: categories[0]?.id ?? "", isActive: false });
-    else if (tab === "activities") setFormData({ title: "", desc: "", startAt: new Date().toISOString().slice(0, 16), endAt: new Date().toISOString().slice(0, 16), isActive: true });
-    else if (tab === "departments") setFormData({ icon: "groups", title: "", desc: "" });
-    else if (tab === "prokers") setFormData({ title: "", desc: "", departemenId: "", isActive: true });
-    else setFormData({ title: "", desc: "" });
   };
 
   return (
@@ -243,32 +223,23 @@ export default function AdminContent() {
           >
             + Tambah
           </Link>
-        ) : (
-          <button
-            type="button"
-            onClick={startAdd}
-            style={{
-              padding: "0.5rem 1rem",
-              background: "var(--accent)",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
-            + Tambah
-          </button>
-        )}
+        ) : tab === "activities" ? (
+          <Link to="/admin/content/activity" style={{ padding: "0.5rem 1rem", background: "var(--accent)", color: "white", borderRadius: "8px", fontWeight: 600, textDecoration: "none", display: "inline-flex" }}>+ Tambah</Link>
+        ) : tab === "departments" ? (
+          <Link to="/admin/content/department" style={{ padding: "0.5rem 1rem", background: "var(--accent)", color: "white", borderRadius: "8px", fontWeight: 600, textDecoration: "none", display: "inline-flex" }}>+ Tambah</Link>
+        ) : tab === "prokers" ? (
+          <Link to="/admin/content/proker" style={{ padding: "0.5rem 1rem", background: "var(--accent)", color: "white", borderRadius: "8px", fontWeight: 600, textDecoration: "none", display: "inline-flex" }}>+ Tambah</Link>
+        ) : tab === "faqs" ? (
+          <Link to="/admin/content/faq" style={{ padding: "0.5rem 1rem", background: "var(--accent)", color: "white", borderRadius: "8px", fontWeight: 600, textDecoration: "none", display: "inline-flex" }}>+ Tambah</Link>
+        ) : null}
       </div>
 
-      {(editingId || Object.keys(formData).length > 0) && (
+      {tab === "news" && (editingId || Object.keys(formData).length > 0) && (
         <form onSubmit={handleSubmit} style={{ background: "var(--bg-card)", padding: "1.25rem", borderRadius: "12px", marginBottom: "1.5rem", boxShadow: "var(--shadow)" }}>
           <h3 style={{ marginTop: 0, marginBottom: "1rem" }}>{editingId ? "Edit" : "Tambah Baru"}</h3>
-          {tab === "news" && (
-            <>
-              <div style={{ marginBottom: "0.75rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Kategori</label>
+          <>
+            <div style={{ marginBottom: "0.75rem" }}>
+              <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Kategori</label>
                 <select
                   value={(formData.categoryId as string) ?? ""}
                   onChange={(e) => setFormData((f) => ({ ...f, categoryId: e.target.value }))}
@@ -303,90 +274,7 @@ export default function AdminContent() {
                 <input type="checkbox" checked={!!formData.isActive} onChange={(e) => setFormData((f) => ({ ...f, isActive: e.target.checked }))} />
                 Aktif
               </label>
-            </>
-          )}
-          {tab === "activities" && (
-            <>
-              <div style={{ marginBottom: "0.75rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Judul</label>
-                <input type="text" value={(formData.title as string) ?? ""} onChange={(e) => setFormData((f) => ({ ...f, title: e.target.value }))} required style={{ width: "100%", maxWidth: "400px", padding: "0.5rem" }} />
-              </div>
-              <div style={{ marginBottom: "0.75rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Deskripsi</label>
-                <textarea value={(formData.desc as string) ?? ""} onChange={(e) => setFormData((f) => ({ ...f, desc: e.target.value }))} rows={2} style={{ width: "100%", maxWidth: "500px", padding: "0.5rem" }} />
-              </div>
-              <div style={{ marginBottom: "0.75rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Mulai</label>
-                <input type="datetime-local" value={formData.startAt ? new Date(formData.startAt as string).toISOString().slice(0, 16) : ""} onChange={(e) => setFormData((f) => ({ ...f, startAt: e.target.value ? new Date(e.target.value).toISOString() : "" }))} required style={{ padding: "0.5rem" }} />
-              </div>
-              <div style={{ marginBottom: "0.75rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Selesai</label>
-                <input type="datetime-local" value={formData.endAt ? new Date(formData.endAt as string).toISOString().slice(0, 16) : ""} onChange={(e) => setFormData((f) => ({ ...f, endAt: e.target.value ? new Date(e.target.value).toISOString() : "" }))} required style={{ padding: "0.5rem" }} />
-              </div>
-              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
-                <input type="checkbox" checked={!!formData.isActive} onChange={(e) => setFormData((f) => ({ ...f, isActive: e.target.checked }))} />
-                Aktif
-              </label>
-            </>
-          )}
-          {tab === "departments" && (
-            <>
-              <div style={{ marginBottom: "0.75rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Icon (nama)</label>
-                <input type="text" value={(formData.icon as string) ?? ""} onChange={(e) => setFormData((f) => ({ ...f, icon: e.target.value }))} required style={{ width: "100%", maxWidth: "300px", padding: "0.5rem" }} placeholder="groups" />
-              </div>
-              <div style={{ marginBottom: "0.75rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Judul</label>
-                <input type="text" value={(formData.title as string) ?? ""} onChange={(e) => setFormData((f) => ({ ...f, title: e.target.value }))} required style={{ width: "100%", maxWidth: "400px", padding: "0.5rem" }} />
-              </div>
-              <div style={{ marginBottom: "0.75rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Deskripsi</label>
-                <textarea value={(formData.desc as string) ?? ""} onChange={(e) => setFormData((f) => ({ ...f, desc: e.target.value }))} rows={3} style={{ width: "100%", maxWidth: "500px", padding: "0.5rem" }} />
-              </div>
-            </>
-          )}
-          {tab === "prokers" && (
-            <>
-              <div style={{ marginBottom: "0.75rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Departemen</label>
-                <select
-                  value={(formData.departemenId as string) ?? ""}
-                  onChange={(e) => setFormData((f) => ({ ...f, departemenId: e.target.value }))}
-                  required
-                  style={{ width: "100%", maxWidth: "300px", padding: "0.5rem" }}
-                >
-                  <option value="">— Pilih —</option>
-                  {departmentsList.map((d) => (
-                    <option key={d.id} value={d.id}>{d.title}</option>
-                  ))}
-                </select>
-              </div>
-              <div style={{ marginBottom: "0.75rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Judul</label>
-                <input type="text" value={(formData.title as string) ?? ""} onChange={(e) => setFormData((f) => ({ ...f, title: e.target.value }))} required style={{ width: "100%", maxWidth: "400px", padding: "0.5rem" }} />
-              </div>
-              <div style={{ marginBottom: "0.75rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Deskripsi</label>
-                <textarea value={(formData.desc as string) ?? ""} onChange={(e) => setFormData((f) => ({ ...f, desc: e.target.value }))} rows={3} style={{ width: "100%", maxWidth: "500px", padding: "0.5rem" }} />
-              </div>
-              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
-                <input type="checkbox" checked={!!formData.isActive} onChange={(e) => setFormData((f) => ({ ...f, isActive: e.target.checked }))} />
-                Aktif
-              </label>
-            </>
-          )}
-          {tab === "faqs" && (
-            <>
-              <div style={{ marginBottom: "0.75rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Pertanyaan</label>
-                <input type="text" value={(formData.title as string) ?? ""} onChange={(e) => setFormData((f) => ({ ...f, title: e.target.value }))} required style={{ width: "100%", maxWidth: "500px", padding: "0.5rem" }} />
-              </div>
-              <div style={{ marginBottom: "0.75rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Jawaban</label>
-                <textarea value={(formData.desc as string) ?? ""} onChange={(e) => setFormData((f) => ({ ...f, desc: e.target.value }))} rows={4} style={{ width: "100%", maxWidth: "500px", padding: "0.5rem" }} />
-              </div>
-            </>
-          )}
+          </>
           <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
             <button type="submit" style={{ padding: "0.5rem 1rem", background: "var(--accent)", color: "white", border: "none", borderRadius: "8px", fontWeight: 600, cursor: "pointer" }}>
               Simpan
@@ -409,7 +297,7 @@ export default function AdminContent() {
                   <>
                     <th style={{ padding: "0.75rem", textAlign: "left" }}>Judul</th>
                     <th style={{ padding: "0.75rem", textAlign: "left" }}>Author</th>
-                    <th style={{ padding: "0.75rem", textAlign: "left" }}>Aktif</th>
+                    <th style={{ padding: "0.75rem", textAlign: "left" }}>Status</th>
                     <th style={{ padding: "0.75rem", width: "120px" }}>Aksi</th>
                   </>
                 )}
@@ -451,10 +339,11 @@ export default function AdminContent() {
                     <>
                       <td style={{ padding: "0.75rem" }}>{(item.title as string) ?? ""}</td>
                       <td style={{ padding: "0.75rem" }}>{(item.author as string) ?? ""}</td>
-                      <td style={{ padding: "0.75rem" }}>{(item.isActive as boolean) ? "Ya" : "Tidak"}</td>
                       <td style={{ padding: "0.75rem" }}>
-                        <Link to={`/admin/content/editor/${item.id}`} style={{ marginRight: "0.5rem", cursor: "pointer", color: "var(--accent)" }}>Editor</Link>
-                        <button type="button" onClick={() => startEdit(item)} style={{ marginRight: "0.5rem", cursor: "pointer" }}>Edit</button>
+                        {(item.cancelledAt as string) ? "Batal" : (item.isActive as boolean) ? "Publikasi" : "Draf"}
+                      </td>
+                      <td style={{ padding: "0.75rem" }}>
+                        <Link to={`/admin/content/editor/${item.id}`} style={{ marginRight: "0.5rem", cursor: "pointer", color: "var(--accent)" }}>Edit</Link>
                         <button type="button" onClick={() => handleDelete(item.id as string)} style={{ cursor: "pointer", color: "#dc2626" }}>Hapus</button>
                       </td>
                     </>
@@ -465,7 +354,7 @@ export default function AdminContent() {
                       <td style={{ padding: "0.75rem" }}>{item.startAt ? new Date(item.startAt as string).toLocaleString("id-ID") : ""}</td>
                       <td style={{ padding: "0.75rem" }}>{(item.isActive as boolean) ? "Ya" : "Tidak"}</td>
                       <td style={{ padding: "0.75rem" }}>
-                        <button type="button" onClick={() => startEdit(item)} style={{ marginRight: "0.5rem", cursor: "pointer" }}>Edit</button>
+                        <Link to={`/admin/content/activity/${item.id}`} style={{ marginRight: "0.5rem", cursor: "pointer", color: "var(--accent)" }}>Edit</Link>
                         <button type="button" onClick={() => handleDelete(item.id as string)} style={{ cursor: "pointer", color: "#dc2626" }}>Hapus</button>
                       </td>
                     </>
@@ -475,7 +364,7 @@ export default function AdminContent() {
                       <td style={{ padding: "0.75rem" }}>{(item.title as string) ?? ""}</td>
                       <td style={{ padding: "0.75rem", maxWidth: "300px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{(item.desc as string) ?? ""}</td>
                       <td style={{ padding: "0.75rem" }}>
-                        <button type="button" onClick={() => startEdit(item)} style={{ marginRight: "0.5rem", cursor: "pointer" }}>Edit</button>
+                        <Link to={`/admin/content/department/${item.id}`} style={{ marginRight: "0.5rem", cursor: "pointer", color: "var(--accent)" }}>Edit</Link>
                         <button type="button" onClick={() => handleDelete(item.id as string)} style={{ cursor: "pointer", color: "#dc2626" }}>Hapus</button>
                       </td>
                     </>
@@ -486,7 +375,7 @@ export default function AdminContent() {
                       <td style={{ padding: "0.75rem" }}>{(item.departemen as { title: string })?.title ?? "—"}</td>
                       <td style={{ padding: "0.75rem" }}>{(item.isActive as boolean) ? "Ya" : "Tidak"}</td>
                       <td style={{ padding: "0.75rem" }}>
-                        <button type="button" onClick={() => startEdit(item)} style={{ marginRight: "0.5rem", cursor: "pointer" }}>Edit</button>
+                        <Link to={`/admin/content/proker/${item.id}`} style={{ marginRight: "0.5rem", cursor: "pointer", color: "var(--accent)" }}>Edit</Link>
                         <button type="button" onClick={() => handleDelete(item.id as string)} style={{ cursor: "pointer", color: "#dc2626" }}>Hapus</button>
                       </td>
                     </>
@@ -495,7 +384,7 @@ export default function AdminContent() {
                     <>
                       <td style={{ padding: "0.75rem" }}>{(item.title as string) ?? ""}</td>
                       <td style={{ padding: "0.75rem" }}>
-                        <button type="button" onClick={() => startEdit(item)} style={{ marginRight: "0.5rem", cursor: "pointer" }}>Edit</button>
+                        <Link to={`/admin/content/faq/${item.id}`} style={{ marginRight: "0.5rem", cursor: "pointer", color: "var(--accent)" }}>Edit</Link>
                         <button type="button" onClick={() => handleDelete(item.id as string)} style={{ cursor: "pointer", color: "#dc2626" }}>Hapus</button>
                       </td>
                     </>

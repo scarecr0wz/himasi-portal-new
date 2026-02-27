@@ -24,7 +24,7 @@ export default function PublicFooter() {
                     <div className="flex flex-col gap-6">
                         <h4 className="text-slate-900 font-bold uppercase text-xs tracking-widest">Sumber</h4>
                         <ul className="flex flex-col gap-3 text-sm text-slate-500">
-                            <li><a href="/#berita" className="hover:text-primary transition-colors">Berita</a></li>
+                            <li><Link to="/berita" className="hover:text-primary transition-colors">Berita</Link></li>
                             <li><a href="/#acara" className="hover:text-primary transition-colors">Acara</a></li>
                             <li><Link to="/pengurus" className="hover:text-primary transition-colors">Pengurus</Link></li>
                             <li><a href="/#program-kerja" className="hover:text-primary transition-colors">Program Kerja</a></li>
