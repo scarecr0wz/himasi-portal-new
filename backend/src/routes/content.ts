@@ -32,6 +32,15 @@ content.get("/content/departments", async (c) => {
   return c.json(list);
 });
 
+content.get("/content/departments/:id", async (c) => {
+  const id = c.req.param("id");
+  const dept = await prisma.departemen.findFirst({
+    where: { id, deletedAt: null },
+  });
+  if (!dept) return c.json({ message: "Departemen tidak ditemukan" }, 404);
+  return c.json(dept);
+});
+
 content.get("/content/prokers", async (c) => {
   const list = await prisma.proker.findMany({
     where: { deletedAt: null, isActive: true },
@@ -42,9 +51,13 @@ content.get("/content/prokers", async (c) => {
 });
 
 content.get("/content/activities", async (c) => {
+  const departemenId = c.req.query("departemenId");
+  const where: { deletedAt: null; isActive: true; departemenId?: string | null } = { deletedAt: null, isActive: true };
+  if (departemenId && departemenId.trim()) where.departemenId = departemenId.trim();
   const list = await prisma.activity.findMany({
-    where: { deletedAt: null, isActive: true },
+    where,
     orderBy: { startAt: "desc" },
+    include: { departemen: { select: { id: true, title: true } } },
   });
   return c.json(list);
 });

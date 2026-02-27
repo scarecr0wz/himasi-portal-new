@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
+import Avatar from "@/components/Avatar";
 
 const API = "/api";
 
@@ -200,11 +201,7 @@ export default function Profile() {
           <div className="flex flex-col sm:flex-row items-start gap-6">
             <div className="flex flex-col items-center gap-3">
               <div className="w-24 h-24 rounded-full bg-slate-100 border-2 border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
-                {authUser?.avatar ? (
-                  <img src={authUser.avatar} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="material-symbols-outlined text-slate-400 text-4xl">person</span>
-                )}
+                <Avatar avatar={authUser?.avatar} className="w-full h-full rounded-full" iconClassName="text-slate-400 text-4xl" />
               </div>
               <label className="text-slate-500 text-sm">Tampil di navbar &amp; profil</label>
             </div>

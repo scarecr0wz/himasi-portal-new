@@ -2,14 +2,18 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const API = "/api";
+const MIN_ALASAN = 50;
 
 export default function Register() {
   const navigate = useNavigate();
-  const [nim, setNim] = useState("");
   const [name, setName] = useState("");
+  const [nim, setNim] = useState("");
+  const [angkatan, setAngkatan] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [alasan, setAlasan] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -25,16 +29,24 @@ export default function Register() {
       setError("Password minimal 6 karakter.");
       return;
     }
+    const alasanTrim = alasan.trim();
+    if (alasanTrim.length < MIN_ALASAN) {
+      setError(`Alasan bergabung minimal ${MIN_ALASAN} karakter.`);
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch(`${API}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nim: nim.trim(),
           name: name.trim(),
+          nim: nim.trim(),
+          angkatan: angkatan.trim(),
+          phone_number: phone.trim(),
           email: email.trim().toLowerCase(),
           password,
+          alasan: alasanTrim,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -43,7 +55,7 @@ export default function Register() {
         return;
       }
       setSuccess(true);
-      setTimeout(() => navigate("/login", { replace: true }), 2000);
+      setTimeout(() => navigate("/login", { replace: true }), 3000);
     } catch {
       setError("Gagal mendaftar. Periksa koneksi dan coba lagi.");
     } finally {
@@ -60,7 +72,7 @@ export default function Register() {
           </div>
           <h1 className="text-xl font-bold text-slate-800 mb-2">Pendaftaran Berhasil</h1>
           <p className="text-slate-600 mb-6">
-            Akun Anda telah dibuat. Anda akan diarahkan ke halaman login.
+            Data Anda telah tercatat. Akun menunggu verifikasi admin. Anda akan dihubungi setelah disetujui dan dapat login.
           </p>
           <Link
             to="/login"
@@ -80,9 +92,9 @@ export default function Register() {
           <Link to="/" className="inline-block">
             <img src="/logo-himasi.png" alt="HIMASI" className="h-10 mx-auto mb-4" />
           </Link>
-          <h1 className="text-2xl font-bold text-slate-800">Daftar Mahasiswa Baru</h1>
+          <h1 className="text-2xl font-bold text-slate-800">Daftar Anggota (Mahasiswa)</h1>
           <p className="text-slate-600 mt-1 text-sm">
-            Isi data berikut untuk mendaftar sebagai anggota portal HIMASI.
+            Isi data berikut untuk mendaftar. Setelah disetujui admin, Anda dapat login.
           </p>
         </div>
 
@@ -94,8 +106,23 @@ export default function Register() {
           )}
 
           <div>
+            <label htmlFor="reg-name" className="block text-sm font-medium text-slate-700 mb-1">
+              Nama lengkap mahasiswa <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="reg-name"
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nama sesuai KTM"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            />
+          </div>
+
+          <div>
             <label htmlFor="reg-nim" className="block text-sm font-medium text-slate-700 mb-1">
-              NIM <span className="text-red-500">*</span>
+              NIM (unik) <span className="text-red-500">*</span>
             </label>
             <input
               id="reg-nim"
@@ -109,16 +136,31 @@ export default function Register() {
           </div>
 
           <div>
-            <label htmlFor="reg-name" className="block text-sm font-medium text-slate-700 mb-1">
-              Nama Lengkap <span className="text-red-500">*</span>
+            <label htmlFor="reg-angkatan" className="block text-sm font-medium text-slate-700 mb-1">
+              Angkatan <span className="text-red-500">*</span>
             </label>
             <input
-              id="reg-name"
+              id="reg-angkatan"
               type="text"
               required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Nama sesuai KTM"
+              value={angkatan}
+              onChange={(e) => setAngkatan(e.target.value)}
+              placeholder="Tahun & periode, ex: 2024.1"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="reg-phone" className="block text-sm font-medium text-slate-700 mb-1">
+              No HP (WhatsApp aktif) <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="reg-phone"
+              type="tel"
+              required
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="08xxxxxxxxxx"
               className="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
@@ -168,6 +210,23 @@ export default function Register() {
               placeholder="Ulangi password"
               className="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
+          </div>
+
+          <div>
+            <label htmlFor="reg-alasan" className="block text-sm font-medium text-slate-700 mb-1">
+              Alasan / motivasi bergabung <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="reg-alasan"
+              required
+              minLength={MIN_ALASAN}
+              value={alasan}
+              onChange={(e) => setAlasan(e.target.value)}
+              placeholder="Minimal 50 karakter. Ceritakan mengapa Anda ingin bergabung dengan HIMASI."
+              rows={4}
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary resize-y"
+            />
+            <p className="mt-1 text-xs text-slate-500">{alasan.trim().length} / {MIN_ALASAN} karakter minimal</p>
           </div>
 
           <button

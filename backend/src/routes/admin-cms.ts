@@ -93,6 +93,7 @@ const activityCreateSchema = z.object({
   startAt: z.string().datetime(),
   endAt: z.string().datetime(),
   isActive: z.boolean().optional(),
+  departemenId: z.string().uuid().optional().nullable(),
 });
 const activityUpdateSchema = activityCreateSchema.partial();
 
@@ -100,6 +101,7 @@ admin.get("/admin/activities", async (c) => {
   const list = await prisma.activity.findMany({
     where: { deletedAt: null },
     orderBy: { startAt: "desc" },
+    include: { departemen: { select: { id: true, title: true } } },
   });
   return c.json(list);
 });
@@ -114,6 +116,7 @@ admin.post("/admin/activities", zValidator("json", activityCreateSchema), async 
       endAt: new Date(body.endAt),
       uploadAt: now(),
       isActive: body.isActive ?? true,
+      departemenId: body.departemenId ?? null,
     },
   });
   return c.json(created, 201);
@@ -130,6 +133,7 @@ admin.put("/admin/activities/:id", zValidator("json", activityUpdateSchema), asy
       ...(body.startAt != null && { startAt: new Date(body.startAt) }),
       ...(body.endAt != null && { endAt: new Date(body.endAt) }),
       ...(body.isActive !== undefined && { isActive: body.isActive }),
+      ...(body.departemenId !== undefined && { departemenId: body.departemenId }),
     },
   });
   return c.json(updated);
@@ -451,9 +455,11 @@ admin.get("/admin/mahasiswa", async (c) => {
       nim: true,
       email: true,
       angkatan: true,
+      phoneNumber: true,
       membershipStatus: true,
       programStudi: true,
       departemenId: true,
+      registrationReason: true,
       departemen: { select: { id: true, title: true } },
     },
     orderBy: [{ name: "asc" }],
@@ -466,8 +472,10 @@ admin.get("/admin/mahasiswa", async (c) => {
     nim: u.nim,
     email: u.email,
     angkatan: u.angkatan ?? null,
+    phoneNumber: u.phoneNumber ?? null,
     membershipStatus: u.membershipStatus,
     programStudi: u.programStudi,
+    registrationReason: u.registrationReason ?? null,
     departemen: u.departemen ? { id: u.departemen.id, title: u.departemen.title } : null,
   }));
 
@@ -476,7 +484,7 @@ admin.get("/admin/mahasiswa", async (c) => {
 
 // ---------- Admin update mahasiswa (status keanggotaan, divisi) ----------
 const adminMahasiswaUpdateSchema = z.object({
-  membership_status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+  membership_status: z.enum(["PENDING", "APPROVED", "REJECTED", "ACTIVE", "INACTIVE"]).optional(),
   departemen_id: z.string().uuid().nullable().optional(),
 });
 

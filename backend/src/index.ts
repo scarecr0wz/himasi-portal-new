@@ -11,7 +11,14 @@ import type { AuthVariables } from "./lib/auth.js";
 
 const app = new Hono<{ Variables: AuthVariables }>();
 
-app.use("*", cors({ origin: ["http://localhost:5173", "http://localhost:3000"], credentials: true }));
+const corsOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "http://127.0.0.1:5173",
+  "https://dev.himasi-utbogor.com",
+  "https://himasi-utbogor.com",
+];
+app.use("*", cors({ origin: corsOrigins, credentials: true }));
 
 app.get("/", (c) => c.json({ name: "himasi-portal-api", version: "0.1.0" }));
 

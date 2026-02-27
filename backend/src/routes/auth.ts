@@ -26,6 +26,9 @@ const registerSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
   email: z.string().email("Email tidak valid"),
   password: z.string().min(6, "Password minimal 6 karakter"),
+  angkatan: z.string().min(1, "Angkatan wajib diisi").max(10),
+  phone_number: z.string().min(1, "Nomor HP wajib diisi").max(20),
+  alasan: z.string().min(50, "Alasan bergabung minimal 50 karakter"),
 });
 
 const updateProfileSchema = z.object({
@@ -42,59 +45,59 @@ const updateProfileSchema = z.object({
   path: ["password_confirmation"],
 });
 
-function userToResource(u: User & { jabatan?: { value: string } | null; departemen?: { id: string; title: string } | null }, appUrl?: string) {
-  const base = appUrl || process.env.APP_URL || "";
+function userToResource(u: User & { jabatan?: { value?: string } | null; departemen?: { id?: string; title?: string } | null }) {
+  const dep = u.departemen as { id?: string; title?: string } | null | undefined;
   return {
-    id: u.id,
-    name: u.name,
-    nim: u.nim,
-    email: u.email,
-    jabatan_id: u.jabatanId,
-    avatar: u.avatar ? `${base}/api/uploads/${u.avatar}` : null,
-    jabatan: u.jabatan?.value ?? null,
-    departemen: u.departemen ? { id: u.departemen.id, title: (u.departemen as { title: string }).title } : null,
-    angkatan: u.angkatan,
-    joined_at: u.joinedAt,
-    birth_date: u.birthDate,
-    phone_number: u.phoneNumber,
-    instagram_account: u.instagramAccount,
-    address: u.address,
+    id: String(u.id),
+    name: String(u.name),
+    nim: String(u.nim),
+    email: String(u.email),
+    jabatan_id: u.jabatanId ?? null,
+    avatar: u.avatar ?? null,
+    jabatan: (u.jabatan && "value" in u.jabatan ? (u.jabatan as { value?: string }).value : null) ?? null,
+    departemen: dep && dep.id ? { id: String(dep.id), title: String(dep.title ?? "") } : null,
+    angkatan: u.angkatan ?? null,
+    joined_at: u.joinedAt != null ? (u.joinedAt instanceof Date ? u.joinedAt.toISOString() : u.joinedAt) : null,
+    birth_date: u.birthDate != null ? (u.birthDate instanceof Date ? u.birthDate.toISOString() : u.birthDate) : null,
+    phone_number: u.phoneNumber ?? null,
+    instagram_account: u.instagramAccount ?? null,
+    address: u.address ?? null,
   };
 }
 
 export const auth = new Hono<{ Variables: AuthVariables }>();
 
 auth.post("/sign-in", zValidator("json", signInSchema), async (c) => {
-  const nimTrim = String(c.req.valid("json").nim).trim();
-  const password = String(c.req.valid("json").password);
-  const nimNorm = nimTrim.replace(/^0+/, "") || "0";
-
-  const user = await prisma.user.findFirst({
-    where: {
-      deletedAt: null,
-      OR: [{ nim: nimTrim }, { nim: nimNorm }],
-    },
-    include: { jabatan: true, departemen: true },
-  });
-
-  if (!user) {
-    console.error("Sign-in: user not found for NIM (trim=%s, norm=%s)", nimTrim, nimNorm);
-    return c.json({ message: "NIM atau password salah." }, 401);
-  }
-
-  let ok = false;
   try {
-    ok = await bcrypt.compare(password, user.password);
-  } catch (e) {
-    console.error("Sign-in: bcrypt compare error", e);
-    return c.json({ message: "NIM atau password salah." }, 401);
-  }
+    const nimTrim = String(c.req.valid("json").nim).trim();
+    const password = String(c.req.valid("json").password);
+    const nimNorm = nimTrim.replace(/^0+/, "") || "0";
 
-  if (!ok) {
-    return c.json({ message: "NIM atau password salah." }, 401);
-  }
+    const user = await prisma.user.findFirst({
+      where: {
+        deletedAt: null,
+        OR: [{ nim: nimTrim }, { nim: nimNorm }],
+      },
+      include: { jabatan: true, departemen: true },
+    });
 
-  try {
+    if (!user) {
+      console.error("Sign-in: user not found for NIM (trim=%s, norm=%s)", nimTrim, nimNorm);
+      return c.json({ message: "NIM atau password salah." }, 401);
+    }
+
+    let ok = false;
+    try {
+      ok = await bcrypt.compare(password, user.password);
+    } catch (e) {
+      console.error("Sign-in: bcrypt compare error", e);
+      return c.json({ message: "NIM atau password salah." }, 401);
+    }
+
+    if (!ok) {
+      return c.json({ message: "NIM atau password salah." }, 401);
+    }
+
     const token = await signToken({ sub: String(user.id), nim: user.nim });
     const resource = userToResource(user);
     return c.json({
@@ -104,14 +107,15 @@ auth.post("/sign-in", zValidator("json", signInSchema), async (c) => {
       user: resource,
     });
   } catch (err) {
-    console.error("Sign-in: token or userToResource error", err);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("Sign-in error:", msg);
     return c.json({ message: "Gagal memproses login. Coba lagi." }, 500);
   }
 });
 
 auth.post("/register", zValidator("json", registerSchema), async (c) => {
   try {
-    const { nim, name, email, password } = c.req.valid("json");
+    const { nim, name, email, password, angkatan, phone_number, alasan } = c.req.valid("json");
     const nimTrim = String(nim).trim();
     const emailTrim = String(email).trim().toLowerCase();
 
@@ -135,9 +139,13 @@ auth.post("/register", zValidator("json", registerSchema), async (c) => {
         name: String(name).trim(),
         email: emailTrim,
         password: hashed,
+        angkatan: String(angkatan).trim().slice(0, 10),
+        phoneNumber: String(phone_number).trim().slice(0, 20),
+        registrationReason: String(alasan).trim(),
+        membershipStatus: "PENDING",
       },
     });
-    return c.json({ message: "Pendaftaran berhasil. Silakan login." }, 201);
+    return c.json({ message: "Pendaftaran berhasil. Menunggu verifikasi admin. Anda akan dihubungi setelah disetujui." }, 201);
   } catch (err) {
     console.error("Register error:", err);
     return c.json({ message: "Gagal mendaftar. Coba lagi." }, 500);

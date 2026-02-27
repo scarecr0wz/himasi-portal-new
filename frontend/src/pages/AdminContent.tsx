@@ -304,6 +304,7 @@ export default function AdminContent() {
                 {tab === "activities" && (
                   <>
                     <th style={{ padding: "0.75rem", textAlign: "left" }}>Judul</th>
+                    <th style={{ padding: "0.75rem", textAlign: "left" }}>Departemen</th>
                     <th style={{ padding: "0.75rem", textAlign: "left" }}>Mulai</th>
                     <th style={{ padding: "0.75rem", textAlign: "left" }}>Aktif</th>
                     <th style={{ padding: "0.75rem", width: "120px" }}>Aksi</th>
@@ -351,6 +352,7 @@ export default function AdminContent() {
                   {tab === "activities" && (
                     <>
                       <td style={{ padding: "0.75rem" }}>{(item.title as string) ?? ""}</td>
+                      <td style={{ padding: "0.75rem" }}>{(item.departemen as { title?: string })?.title ?? "Umum"}</td>
                       <td style={{ padding: "0.75rem" }}>{item.startAt ? new Date(item.startAt as string).toLocaleString("id-ID") : ""}</td>
                       <td style={{ padding: "0.75rem" }}>{(item.isActive as boolean) ? "Ya" : "Tidak"}</td>
                       <td style={{ padding: "0.75rem" }}>

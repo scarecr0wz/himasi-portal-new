@@ -23,19 +23,20 @@ model User {
   jabatanId         String?   @map("jabatan_id") @db.Uuid
   avatar            String?
   departemenId      String?   @map("departemen_id") @db.Uuid
-  angkatan          String?   @db.VarChar(4)
+  angkatan          String?   @db.VarChar(10)
   joinedAt          DateTime? @map("joined_at") @db.Date
   birthDate         DateTime? @map("birth_date") @db.Date
   phoneNumber       String?   @map("phone_number") @db.VarChar(20)
   address           String?   @db.Text
   instagramAccount  String?   @map("instagram_account")
+  registrationReason String?  @map("registration_reason") @db.Text
   rememberToken     String?   @map("remember_token")
   deletedAt         DateTime? @map("deleted_at")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
 
-  // Level 1 - Wajib (minimal)
-  membershipStatus  String    @default("INACTIVE") @map("membership_status") @db.VarChar(20)
+  // Level 1 - Wajib (minimal). Verifikasi pendaftaran: PENDING | APPROVED | REJECTED (legacy: INACTIVE | ACTIVE)
+  membershipStatus  String    @default("PENDING") @map("membership_status") @db.VarChar(20)
   fakultas          String?   @map("fakultas") @db.VarChar(100)
   programStudi      String    @default("SI") @map("program_studi") @db.VarChar(50)
 
@@ -71,9 +72,10 @@ model Departemen {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
-  users    User[]
-  prokers  Proker[]
-  pengurus Pengurus[]
+  users      User[]
+  prokers    Proker[]
+  pengurus   Pengurus[]
+  activities Activity[]
 }
 
 model Pengurus {
@@ -214,18 +216,20 @@ model Proker {
 }
 
 model Activity {
-  id        String    @id @default(uuid()) @db.Uuid
-  title     String
-  image     String?
-  desc      String?   @db.Text
-  startAt   DateTime  @map("start_at")
-  endAt     DateTime  @map("end_at")
-  uploadAt  DateTime  @map("upload_at") @db.Date
-  isActive  Boolean   @map("is_active")
-  deletedAt DateTime? @map("deleted_at")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
+  id           String    @id @default(uuid()) @db.Uuid
+  title        String
+  image        String?
+  desc         String?   @db.Text
+  startAt      DateTime  @map("start_at")
+  endAt        DateTime  @map("end_at")
+  uploadAt     DateTime  @map("upload_at") @db.Date
+  isActive     Boolean   @map("is_active")
+  departemenId String?   @map("departemen_id") @db.Uuid
+  deletedAt    DateTime? @map("deleted_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
 
+  departemen    Departemen? @relation(fields: [departemenId], references: [id], onDelete: SetNull)
   participations MahasiswaEventParticipation[]
 }
 

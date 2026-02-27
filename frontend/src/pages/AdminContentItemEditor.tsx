@@ -42,7 +42,7 @@ export default function AdminContentItemEditor() {
   }), [token]);
 
   useEffect(() => {
-    if (type === "proker" && token) {
+    if ((type === "proker" || type === "activity") && token) {
       fetch(`${API}/admin/departments`, { headers: headers() })
         .then((r) => (r.ok ? r.json() : []))
         .then((d) => setDepartments(Array.isArray(d) ? d : []))
@@ -55,7 +55,7 @@ export default function AdminContentItemEditor() {
       const now = new Date();
       const defaultStart = new Date(now.getTime() + 86400000).toISOString().slice(0, 16);
       const defaultEnd = new Date(now.getTime() + 86400000 + 7200000).toISOString().slice(0, 16);
-      if (type === "activity") setForm({ title: "", desc: "", image: "", startAt: defaultStart, endAt: defaultEnd, isActive: true });
+      if (type === "activity") setForm({ title: "", desc: "", image: "", startAt: defaultStart, endAt: defaultEnd, isActive: true, departemenId: "" });
       else if (type === "department") setForm({ icon: "groups", title: "", desc: "" });
       else if (type === "proker") setForm({ departemenId: "", title: "", desc: "", photo: "", actionLink: "", isActive: true });
       else setForm({ title: "", desc: "" });
@@ -76,6 +76,7 @@ export default function AdminContentItemEditor() {
               startAt: item.startAt ? new Date(item.startAt as string).toISOString().slice(0, 16) : "",
               endAt: item.endAt ? new Date(item.endAt as string).toISOString().slice(0, 16) : "",
               isActive: item.isActive ?? true,
+              departemenId: item.departemenId ?? (item.departemen as { id?: string })?.id ?? "",
             });
           } else if (type === "department") {
             setForm({ icon: item.icon ?? "groups", title: item.title ?? "", desc: item.desc ?? "" });
@@ -106,6 +107,7 @@ export default function AdminContentItemEditor() {
         startAt: form.startAt ? new Date(form.startAt as string).toISOString() : new Date().toISOString(),
         endAt: form.endAt ? new Date(form.endAt as string).toISOString() : new Date().toISOString(),
         isActive: Boolean(form.isActive),
+        departemenId: form.departemenId ? String(form.departemenId).trim() || null : null,
       };
     }
     if (type === "department") {
@@ -213,6 +215,20 @@ export default function AdminContentItemEditor() {
                     placeholder="Judul acara"
                     className="w-full text-lg p-4 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Departemen (kalender aktivitas)</label>
+                  <select
+                    value={String(form.departemenId ?? "")}
+                    onChange={(e) => set("departemenId", e.target.value)}
+                    className="w-full p-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  >
+                    <option value="">— Umum (semua) —</option>
+                    {departments.map((d) => (
+                      <option key={d.id} value={d.id}>{d.title}</option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-slate-500">Pilih departemen agar acara tampil di kalender portal departemen tersebut.</p>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-1">Deskripsi</label>

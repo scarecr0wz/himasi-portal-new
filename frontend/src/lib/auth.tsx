@@ -3,6 +3,16 @@ import { useNavigate } from "react-router-dom";
 
 const API = "/api";
 
+/** Normalize avatar URL: always same-origin /api/uploads/:filename so image loads. */
+export function avatarUrl(avatar: string | null | undefined): string | null {
+  if (!avatar || typeof avatar !== "string") return null;
+  const s = avatar.trim();
+  if (!s) return null;
+  const filename = s.includes("/") ? s.replace(/^.*\//, "") : s;
+  if (!filename) return null;
+  return `${API}/uploads/${filename}`;
+}
+
 type User = {
   id: string;
   name: string;

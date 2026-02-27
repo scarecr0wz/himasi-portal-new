@@ -186,32 +186,44 @@ export default function Pengurus() {
                   {departemen.map((dept) => {
                     const kepalaList = byDept.get(dept.id) ?? [];
                     return (
-                      <article
+                      <Link
                         key={dept.id}
-                        className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-slate-100 flex flex-col"
+                        to={`/pengurus/department/${dept.id}`}
+                        className="block group"
                       >
-                        <div className="p-6 md:p-8 flex flex-col gap-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                              <span className="material-symbols-outlined text-2xl text-primary">
-                                {dept.icon?.match(/^[a-z0-9_]+$/) ? dept.icon : ICON_FALLBACK}
+                        <article
+                          className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-all border border-slate-100 flex flex-col group-hover:border-primary/30 cursor-pointer"
+                        >
+                          <div className="p-6 md:p-8 flex flex-col gap-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                <span className="material-symbols-outlined text-2xl text-primary">
+                                  {dept.icon?.match(/^[a-z0-9_]+$/) ? dept.icon : ICON_FALLBACK}
+                                </span>
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <h3 className="text-slate-900 font-bold text-lg group-hover:text-primary transition-colors">{dept.title}</h3>
+                                {dept.desc ? (
+                                  <p className="text-slate-500 text-sm mt-1 line-clamp-2">{dept.desc}</p>
+                                ) : null}
+                              </div>
+                              <span className="material-symbols-outlined text-slate-400 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0">
+                                arrow_forward
                               </span>
                             </div>
-                            <div className="min-w-0">
-                              <h3 className="text-slate-900 font-bold text-lg">{dept.title}</h3>
-                              {dept.desc ? (
-                                <p className="text-slate-500 text-sm mt-1 line-clamp-2">{dept.desc}</p>
-                              ) : null}
-                            </div>
-                          </div>
-                          {kepalaList.length > 0 && (
-                            <p className="text-slate-600 text-sm mt-1">
-                              <span className="font-semibold text-slate-700">Kepala Departemen: </span>
-                              {kepalaList.map((k) => k.name).join(", ")}
+                            {kepalaList.length > 0 && (
+                              <p className="text-slate-600 text-sm mt-1">
+                                <span className="font-semibold text-slate-700">Kepala Departemen: </span>
+                                {kepalaList.map((k) => k.name).join(", ")}
+                              </p>
+                            )}
+                            <p className="text-primary text-sm font-semibold mt-2 inline-flex items-center gap-1">
+                              Lihat portal departemen
+                              <span className="material-symbols-outlined text-lg">open_in_new</span>
                             </p>
-                          )}
-                        </div>
-                      </article>
+                          </div>
+                        </article>
+                      </Link>
                     );
                   })}
                 </div>

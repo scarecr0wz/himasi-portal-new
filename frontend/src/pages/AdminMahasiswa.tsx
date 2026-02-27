@@ -10,8 +10,10 @@ type Mahasiswa = {
   nim: string;
   email: string;
   angkatan: string | null;
+  phoneNumber: string | null;
   membershipStatus: string;
   programStudi: string;
+  registrationReason: string | null;
   departemen: { id: string; title: string } | null;
 };
 
@@ -37,7 +39,7 @@ export default function AdminMahasiswa() {
   const [modalDetail, setModalDetail] = useState<Mahasiswa | null>(null);
   const [modalStatus, setModalStatus] = useState<Mahasiswa | null>(null);
   const [modalDivisi, setModalDivisi] = useState<Mahasiswa | null>(null);
-  const [editStatus, setEditStatus] = useState<"ACTIVE" | "INACTIVE">("ACTIVE");
+  const [editStatus, setEditStatus] = useState<string>("PENDING");
   const [editDepartemenId, setEditDepartemenId] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -90,7 +92,7 @@ export default function AdminMahasiswa() {
   const openStatusModal = (m: Mahasiswa) => {
     setActionMenuId(null);
     setModalStatus(m);
-    setEditStatus(m.membershipStatus === "ACTIVE" ? "ACTIVE" : "INACTIVE");
+    setEditStatus(m.membershipStatus || "PENDING");
     setSaveError(null);
   };
 
@@ -275,9 +277,13 @@ export default function AdminMahasiswa() {
                     <td className="px-6 py-4">
                       <span
                         className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${
-                          m.membershipStatus === "ACTIVE"
+                          m.membershipStatus === "APPROVED" || m.membershipStatus === "ACTIVE"
                             ? "bg-green-50 text-green-700"
-                            : "bg-slate-100 text-slate-600"
+                            : m.membershipStatus === "PENDING"
+                              ? "bg-amber-50 text-amber-700"
+                              : m.membershipStatus === "REJECTED"
+                                ? "bg-red-50 text-red-700"
+                                : "bg-slate-100 text-slate-600"
                         }`}
                       >
                         {m.membershipStatus}
@@ -367,21 +373,35 @@ export default function AdminMahasiswa() {
                 <dd className="text-slate-800">{modalDetail.email}</dd>
               </div>
               <div>
+                <dt className="text-slate-500">No HP</dt>
+                <dd className="text-slate-800">{modalDetail.phoneNumber ?? "—"}</dd>
+              </div>
+              <div>
                 <dt className="text-slate-500">Angkatan</dt>
                 <dd className="text-slate-800">{modalDetail.angkatan ?? "—"}</dd>
               </div>
+              {modalDetail.registrationReason && (
+                <div>
+                  <dt className="text-slate-500">Alasan bergabung</dt>
+                  <dd className="text-slate-800 text-sm mt-1 whitespace-pre-wrap">{modalDetail.registrationReason}</dd>
+                </div>
+              )}
               <div>
                 <dt className="text-slate-500">Program studi</dt>
                 <dd className="text-slate-800">{modalDetail.programStudi}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Status keanggotaan</dt>
+                <dt className="text-slate-500">Status verifikasi</dt>
                 <dd>
                   <span
                     className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${
-                      modalDetail.membershipStatus === "ACTIVE"
+                      modalDetail.membershipStatus === "APPROVED" || modalDetail.membershipStatus === "ACTIVE"
                         ? "bg-green-50 text-green-700"
-                        : "bg-slate-100 text-slate-600"
+                        : modalDetail.membershipStatus === "PENDING"
+                          ? "bg-amber-50 text-amber-700"
+                          : modalDetail.membershipStatus === "REJECTED"
+                            ? "bg-red-50 text-red-700"
+                            : "bg-slate-100 text-slate-600"
                     }`}
                   >
                     {modalDetail.membershipStatus}
@@ -410,16 +430,20 @@ export default function AdminMahasiswa() {
       {modalStatus && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6">
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Ubah status keanggotaan</h3>
+            <h3 className="text-lg font-bold text-slate-800 mb-2">Ubah status verifikasi</h3>
             <p className="text-sm text-slate-500 mb-4">{modalStatus.name} ({modalStatus.nim})</p>
             <select
               value={editStatus}
-              onChange={(e) => setEditStatus(e.target.value as "ACTIVE" | "INACTIVE")}
+              onChange={(e) => setEditStatus(e.target.value)}
               className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-primary/20"
             >
+              <option value="PENDING">PENDING</option>
+              <option value="APPROVED">APPROVED</option>
+              <option value="REJECTED">REJECTED</option>
               <option value="ACTIVE">ACTIVE</option>
               <option value="INACTIVE">INACTIVE</option>
             </select>
+            <p className="mt-2 text-xs text-slate-500">APPROVED = dapat login. PENDING = menunggu. REJECTED = ditolak.</p>
             {saveError && <p className="mt-2 text-sm text-red-600">{saveError}</p>}
             <div className="mt-6 flex gap-2 justify-end">
               <button

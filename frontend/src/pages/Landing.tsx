@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
+import Avatar from "@/components/Avatar";
 import PublicFooter from "../components/PublicFooter";
 
 const API = "/api";
@@ -174,13 +175,7 @@ export default function Landing() {
                       <span className="text-slate-900 text-sm font-bold leading-tight">{user.name}</span>
                       <span className="text-slate-500 text-xs font-medium">{user.nim || user.email || "—"}</span>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
-                      {user.avatar ? (
-                        <img src={user.avatar} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="material-symbols-outlined text-primary text-2xl">person</span>
-                      )}
-                    </div>
+                    <Avatar avatar={user.avatar} className="w-10 h-10 rounded-full" />
                   </button>
                   {menuOpen && (
                     <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-slate-200 bg-white shadow-xl py-2 z-50">

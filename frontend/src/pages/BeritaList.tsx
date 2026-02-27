@@ -46,6 +46,7 @@ function stripMarkdown(md: string): string {
 export default function BeritaList() {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetch(`${API}/content/news`)
@@ -54,6 +55,16 @@ export default function BeritaList() {
       .catch(() => setNews([]))
       .finally(() => setLoading(false));
   }, []);
+
+  const searchLower = search.trim().toLowerCase();
+  const filteredNews = searchLower
+    ? news.filter(
+        (item) =>
+          (item.title && item.title.toLowerCase().includes(searchLower)) ||
+          (item.author && item.author.toLowerCase().includes(searchLower)) ||
+          (item.desc && stripMarkdown(item.desc).toLowerCase().includes(searchLower))
+      )
+    : news;
 
   return (
     <div className="font-display bg-background-light text-slate-900 min-h-screen flex flex-col">
@@ -71,23 +82,60 @@ export default function BeritaList() {
           <h1 className="text-slate-900 text-3xl md:text-4xl font-bold tracking-tight mb-2">
             Semua Berita
           </h1>
-          <p className="text-slate-600 text-lg max-w-2xl">
+          <p className="text-slate-600 text-lg max-w-2xl mb-6">
             Kumpulan berita, pengumuman, dan informasi terkini dari HIMASI Universitas Terbuka Bogor.
           </p>
+          <div className="relative max-w-md">
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">search</span>
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Cari judul, penulis, atau isi berita..."
+              className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+              aria-label="Cari berita"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded-full"
+                aria-label="Hapus pencarian"
+              >
+                <span className="material-symbols-outlined text-xl">close</span>
+              </button>
+            )}
+          </div>
+          {search && (
+            <p className="mt-2 text-sm text-slate-500">
+              {filteredNews.length} berita ditemukan
+            </p>
+          )}
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <p className="text-slate-500">Memuat berita...</p>
           </div>
-        ) : news.length === 0 ? (
+        ) : filteredNews.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <span className="material-symbols-outlined text-5xl text-slate-300 mb-4">article</span>
-            <p className="text-slate-500 text-lg">Belum ada berita yang dipublikasikan.</p>
+            <span className="material-symbols-outlined text-5xl text-slate-300 mb-4">search_off</span>
+            <p className="text-slate-500 text-lg">
+              {search ? "Tidak ada berita yang cocok dengan pencarian." : "Belum ada berita yang dipublikasikan."}
+            </p>
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                className="mt-4 text-primary font-semibold hover:underline"
+              >
+                Hapus filter
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {news.map((item, i) => (
+            {filteredNews.map((item, i) => (
               <article
                 key={item.id}
                 className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col hover:shadow-lg transition-shadow"

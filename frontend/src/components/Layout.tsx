@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Outlet, NavLink, Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
+import Avatar from "@/components/Avatar";
 
 export default function Layout() {
   const { user, logout, isAdmin } = useAuth();
@@ -220,8 +221,8 @@ export default function Layout() {
                   <p className="text-[10px] text-slate-400 font-medium">{isAdmin ? "Admin" : "Mahasiswa"}</p>
                 </div>
                 <span className="size-10 rounded-full bg-slate-100 border-2 border-slate-50 overflow-hidden ring-1 ring-slate-200 group-hover:ring-primary/30 transition-all flex items-center justify-center text-slate-600 font-semibold text-sm shrink-0">
-                  {user?.avatar ? (
-                    <img src={user.avatar} alt="" className="w-full h-full object-cover" />
+                  {user?.avatar != null && user.avatar !== "" ? (
+                    <Avatar avatar={user?.avatar} className="w-full h-full rounded-full" iconClassName="text-slate-400 text-xl" />
                   ) : (
                     initial
                   )}

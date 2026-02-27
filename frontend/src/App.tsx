@@ -19,6 +19,7 @@ import Profile from "./pages/Profile";
 import BeritaList from "./pages/BeritaList";
 import BeritaDetail from "./pages/BeritaDetail";
 import Pengurus from "./pages/Pengurus";
+import DepartmentPortal from "./pages/DepartmentPortal";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuth();
@@ -49,6 +50,7 @@ export default function App() {
       <Route path="/berita" element={<BeritaList />} />
       <Route path="/berita/:slug" element={<BeritaDetail />} />
       <Route path="/pengurus" element={<Pengurus />} />
+      <Route path="/pengurus/department/:id" element={<DepartmentPortal />} />
 
       <Route
         path="/dashboard"

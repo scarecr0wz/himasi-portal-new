@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
+import Avatar from "@/components/Avatar";
 
 export default function PublicNavbar() {
   const { token, user, isAdmin, logout } = useAuth();
@@ -41,7 +42,8 @@ export default function PublicNavbar() {
             <span className="absolute left-3 text-slate-400 group-focus-within:text-primary transition-colors material-symbols-outlined text-xl">search</span>
             <input className="w-full h-full pl-10 pr-4 rounded-lg border-none bg-slate-100 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary text-sm transition-all" placeholder="Cari..." />
           </label>
-          {token && user ? (
+          {token ? (
+            user ? (
             <div className="relative" ref={menuRef}>
               <button
                 type="button"
@@ -57,13 +59,7 @@ export default function PublicNavbar() {
                   <span className="text-slate-900 text-sm font-bold leading-tight">{user.name}</span>
                   <span className="text-slate-500 text-xs font-medium">{user.nim || user.email || "—"}</span>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
-                  {user.avatar ? (
-                    <img src={user.avatar} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="material-symbols-outlined text-primary text-2xl">person</span>
-                  )}
-                </div>
+                <Avatar avatar={user.avatar} className="w-10 h-10 rounded-full" />
               </button>
               {menuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-slate-200 bg-white shadow-xl py-2 z-50">
@@ -100,6 +96,12 @@ export default function PublicNavbar() {
                 </div>
               )}
             </div>
+            ) : (
+              <div className="flex min-w-[100px] items-center justify-center rounded-lg h-10 px-6 bg-slate-100 text-slate-500 text-sm font-medium">
+                <span className="material-symbols-outlined animate-spin text-xl">progress_activity</span>
+                <span className="ml-2">Memuat...</span>
+              </div>
+            )
           ) : (
             <Link
               to="/login"

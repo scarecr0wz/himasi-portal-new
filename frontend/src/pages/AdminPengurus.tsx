@@ -18,7 +18,7 @@ type PengurusItem = {
 type DeptOption = { id: string; title: string };
 
 const ROLES_BPH = ["Dewan Pengarah", "Ketua Umum", "Wakil Ketua Umum", "Sekretaris Umum", "Bendahara Umum"];
-const ROLE_KEPALA = "Kepala Departemen";
+const ROLES_DEPARTMENT = ["Kepala Departemen", "Anggota Departemen"];
 
 export default function AdminPengurus() {
   const { token } = useAuth();
@@ -113,11 +113,14 @@ export default function AdminPengurus() {
   };
 
   const startEdit = (item: PengurusItem) => {
+    const deptId = item.departemenId ?? null;
+    const roleList = deptId ? ROLES_DEPARTMENT : ROLES_BPH;
+    const role = roleList.includes(item.role) ? item.role : roleList[0];
     setEditingId(item.id);
     setForm({
       name: item.name,
-      role: item.role,
-      departemenId: item.departemenId ?? null,
+      role,
+      departemenId: deptId,
       photo: item.photo ?? null,
       sortOrder: item.sortOrder,
       periode: item.periode,
@@ -187,7 +190,7 @@ export default function AdminPengurus() {
         Kelola Pengurus
       </h2>
       <p className="section-subtitle">
-        BPH dan Kepala Departemen yang tampil di halaman Pengurus (periode kepengurusan).
+        BPH (tanpa departemen) dan pengurus departemen: Kepala Departemen &amp; Anggota Departemen per departemen.
       </p>
 
       {error && (
@@ -221,23 +224,20 @@ export default function AdminPengurus() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Jabatan / Role</label>
-            <select
-              value={form.role}
-              onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
-            >
-              {ROLES_BPH.map((r) => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-              <option value={ROLE_KEPALA}>{ROLE_KEPALA}</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Departemen (opsional, untuk Kepala Dept)</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Departemen</label>
             <select
               value={form.departemenId ?? ""}
-              onChange={(e) => setForm((f) => ({ ...f, departemenId: e.target.value || null }))}
+              onChange={(e) => {
+                const nextDeptId = e.target.value || null;
+                const isDept = !!nextDeptId;
+                const validRoles = isDept ? ROLES_DEPARTMENT : ROLES_BPH;
+                const currentValid = validRoles.includes(form.role);
+                setForm((f) => ({
+                  ...f,
+                  departemenId: nextDeptId,
+                  role: currentValid ? f.role : validRoles[0],
+                }));
+              }}
               className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
             >
               <option value="">— BPH (tanpa departemen) —</option>
@@ -245,6 +245,21 @@ export default function AdminPengurus() {
                 <option key={d.id} value={d.id}>{d.title}</option>
               ))}
             </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Jabatan</label>
+            <select
+              value={form.role}
+              onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+            >
+              {(form.departemenId ? ROLES_DEPARTMENT : ROLES_BPH).map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+            {form.departemenId && (
+              <p className="mt-1 text-xs text-slate-500">Kepala atau Anggota departemen terkait.</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Periode</label>
