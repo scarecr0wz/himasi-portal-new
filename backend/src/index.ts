@@ -5,6 +5,7 @@ import { auth } from "./routes/auth.js";
 import { content } from "./routes/content.js";
 import { profile } from "./routes/profile.js";
 import { adminCms } from "./routes/admin-cms.js";
+import { forum } from "./routes/forum.js";
 import { uploads, serveUploadFile } from "./routes/uploads.js";
 import { authMiddleware } from "./lib/auth.js";
 import type { AuthVariables } from "./lib/auth.js";
@@ -29,6 +30,7 @@ app.route("/api/auth", auth);
 app.route("/api/profile", profile);
 app.route("/api", uploads);
 app.route("/api", content);
+app.route("/api", forum);
 app.route("/api", adminCms);
 
 app.get("/api/me", authMiddleware, (c) => {

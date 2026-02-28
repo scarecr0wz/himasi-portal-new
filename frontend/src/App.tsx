@@ -18,6 +18,11 @@ import AdminPengurus from "./pages/AdminPengurus";
 import Profile from "./pages/Profile";
 import BeritaList from "./pages/BeritaList";
 import BeritaDetail from "./pages/BeritaDetail";
+import AcaraList from "./pages/AcaraList";
+import AcaraDetail from "./pages/AcaraDetail";
+import Forum from "./pages/Forum";
+import ForumTopicDetail from "./pages/ForumTopicDetail";
+import DashboardAcara from "./pages/DashboardAcara";
 import Pengurus from "./pages/Pengurus";
 import DepartmentPortal from "./pages/DepartmentPortal";
 
@@ -49,6 +54,8 @@ export default function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/berita" element={<BeritaList />} />
       <Route path="/berita/:slug" element={<BeritaDetail />} />
+      <Route path="/acara" element={<AcaraList />} />
+      <Route path="/acara/:id" element={<AcaraDetail />} />
       <Route path="/pengurus" element={<Pengurus />} />
       <Route path="/pengurus/department/:id" element={<DepartmentPortal />} />
 
@@ -63,10 +70,11 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="profile" element={<Profile />} />
         <Route path="akademik" element={<Placeholder />} />
-        <Route path="acara" element={<Placeholder />} />
+        <Route path="acara" element={<DashboardAcara />} />
         <Route path="kehadiran" element={<Placeholder />} />
         <Route path="kas" element={<Placeholder />} />
-        <Route path="forum" element={<Placeholder />} />
+        <Route path="forum" element={<Forum />} />
+        <Route path="forum/:topicId" element={<ForumTopicDetail />} />
         <Route path="activities" element={<Placeholder />} />
       </Route>
 

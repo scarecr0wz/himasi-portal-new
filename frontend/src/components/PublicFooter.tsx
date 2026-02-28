@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { SocialMediaLinks, useSocialMedia } from "./SocialMediaLinks";
 
 export default function PublicFooter() {
+    const socialMedia = useSocialMedia();
     return (
         <footer id="footer" className="bg-white border-t border-slate-200 px-6 md:px-10 lg:px-40 py-16">
             <div className="max-w-[1280px] mx-auto">
@@ -12,20 +14,17 @@ export default function PublicFooter() {
                         <p className="text-slate-500 text-sm leading-relaxed">
                             Wadah mahasiswa Prodi Sistem Informasi Universitas Terbuka Bogor. Informasi, acara, dan layanan kemahasiswaan dalam satu portal.
                         </p>
-                        <div className="flex gap-4">
-                            <a className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-all" href="#" aria-label="Web">
-                                <span className="material-symbols-outlined text-lg">public</span>
-                            </a>
-                            <a className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-all" href="#" aria-label="Email">
-                                <span className="material-symbols-outlined text-lg">alternate_email</span>
-                            </a>
-                        </div>
+                        <SocialMediaLinks
+                            items={socialMedia}
+                            className="flex gap-4"
+                            iconClassName="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-all"
+                        />
                     </div>
                     <div className="flex flex-col gap-6">
                         <h4 className="text-slate-900 font-bold uppercase text-xs tracking-widest">Sumber</h4>
                         <ul className="flex flex-col gap-3 text-sm text-slate-500">
                             <li><Link to="/berita" className="hover:text-primary transition-colors">Berita</Link></li>
-                            <li><a href="/#acara" className="hover:text-primary transition-colors">Acara</a></li>
+                            <li><Link to="/acara" className="hover:text-primary transition-colors">Acara</Link></li>
                             <li><Link to="/pengurus" className="hover:text-primary transition-colors">Pengurus</Link></li>
                             <li><a href="/#program-kerja" className="hover:text-primary transition-colors">Program Kerja</a></li>
                             <li><a href="/#department" className="hover:text-primary transition-colors">Department</a></li>

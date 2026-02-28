@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import * as XLSX from "xlsx";
 import { authMiddleware, requirePermission } from "../lib/auth.js";
 import { prisma } from "../lib/db.js";
 import type { AuthVariables } from "../lib/auth.js";
@@ -331,6 +332,35 @@ admin.delete("/admin/pengurus/:id", async (c) => {
   return c.json({ ok: true });
 });
 
+// ---------- Settings: Social Media (untuk footer & akhir post berita) ----------
+const socialMediaItemSchema = z.object({
+  platform: z.string().min(1, "Platform wajib diisi").max(50),
+  url: z.string().url("URL tidak valid").max(512),
+  sortOrder: z.number().int().min(0).optional(),
+});
+
+admin.get("/admin/settings/social-media", async (c) => {
+  const list = await prisma.socialMedia.findMany({
+    orderBy: { sortOrder: "asc" },
+  });
+  return c.json(list);
+});
+
+admin.put("/admin/settings/social-media", zValidator("json", z.object({ items: z.array(socialMediaItemSchema) })), async (c) => {
+  const { items } = c.req.valid("json");
+  await prisma.socialMedia.deleteMany({});
+  if (items.length === 0) return c.json([]);
+  await prisma.socialMedia.createMany({
+    data: items.map((item, i) => ({
+      platform: item.platform.trim(),
+      url: item.url.trim(),
+      sortOrder: item.sortOrder ?? i,
+    })),
+  });
+  const list = await prisma.socialMedia.findMany({ orderBy: { sortOrder: "asc" } });
+  return c.json(list);
+});
+
 // ---------- Settings: User Administrasi (users with admin/superadmin role) ----------
 const ADMIN_ROLE_NAMES = ["admin", "superadmin"];
 
@@ -480,6 +510,85 @@ admin.get("/admin/mahasiswa", async (c) => {
   }));
 
   return c.json(list);
+});
+
+// ---------- Export data anggota ke Excel ----------
+admin.get("/admin/mahasiswa/export", async (c) => {
+  const search = c.req.query("search")?.trim() || "";
+
+  const where: { deletedAt: null; OR?: Array<{ nim?: { contains: string; mode: "insensitive" }; name?: { contains: string; mode: "insensitive" }; email?: { contains: string; mode: "insensitive" } }> } = {
+    deletedAt: null,
+  };
+  if (search.length > 0) {
+    where.OR = [
+      { nim: { contains: search, mode: "insensitive" } },
+      { name: { contains: search, mode: "insensitive" } },
+      { email: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  const users = await prisma.user.findMany({
+    where,
+    select: {
+      nim: true,
+      name: true,
+      email: true,
+      angkatan: true,
+      phoneNumber: true,
+      membershipStatus: true,
+      programStudi: true,
+      jabatan: { select: { value: true } },
+      departemen: { select: { title: true } },
+    },
+    orderBy: [{ name: "asc" }],
+  });
+
+  const rows = [
+    ["NIM", "Nama", "Email", "Angkatan", "No. HP", "Jabatan", "Departemen", "Status Keanggotaan", "Program Studi"],
+    ...users.map((u) => [
+      u.nim,
+      u.name,
+      u.email,
+      u.angkatan ?? "",
+      u.phoneNumber ?? "",
+      u.jabatan?.value ?? "",
+      u.departemen?.title ?? "",
+      u.membershipStatus,
+      u.programStudi ?? "",
+    ]),
+  ];
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  XLSX.utils.book_append_sheet(wb, ws, "Data Anggota");
+
+  const buf = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
+  const filename = `data-anggota-himasi-${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+  return new Response(buf, {
+    headers: {
+      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Disposition": `attachment; filename="${filename}"`,
+    },
+  });
+});
+
+// ---------- Detail satu mahasiswa (untuk modal detail di Data Anggota) ----------
+admin.get("/admin/mahasiswa/:id", async (c) => {
+  const userId = c.req.param("id");
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
+    include: {
+      jabatan: { select: { id: true, key: true, value: true } },
+      departemen: { select: { id: true, title: true } },
+      mahasiswaProfile: true,
+      modelHasRoles: { include: { role: { select: { name: true } } } },
+    },
+  });
+  if (!user) return c.json({ message: "Anggota tidak ditemukan" }, 404);
+  const { password: _p, modelHasRoles: _roles, ...safeUser } = user;
+  const roles = user.modelHasRoles?.map((r) => r.role.name) ?? [];
+  return c.json({ ...safeUser, roles });
 });
 
 // ---------- Admin update mahasiswa (status keanggotaan, divisi) ----------

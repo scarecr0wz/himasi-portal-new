@@ -119,3 +119,66 @@ profile.put("/", zValidator("json", profileUpdateSchema), async (c) => {
     mahasiswaProfile: user?.mahasiswaProfile ?? null,
   });
 });
+
+// ---------- Acara yang user terdaftar (untuk halaman Dashboard > Acara) ----------
+profile.get("/activities/registered", async (c) => {
+  const userId = c.get("userId") as string;
+  const participations = await prisma.mahasiswaEventParticipation.findMany({
+    where: { userId, activity: { deletedAt: null } },
+    orderBy: { participatedAt: "desc" },
+    include: {
+      activity: {
+        include: { departemen: { select: { id: true, title: true } } },
+      },
+    },
+  });
+  const list = participations.map((p) => ({
+    ...p.activity,
+    participatedAt: p.participatedAt,
+    attended: p.attended,
+  }));
+  return c.json(list);
+});
+
+// ---------- Pendaftaran acara (anggota & admin bisa daftar) ----------
+profile.get("/activities/:activityId/registered", async (c) => {
+  const userId = c.get("userId") as string;
+  const activityId = c.req.param("activityId");
+  const activity = await prisma.activity.findFirst({
+    where: { id: activityId, deletedAt: null },
+    select: { id: true },
+  });
+  if (!activity) return c.json({ message: "Acara tidak ditemukan" }, 404);
+  const participation = await prisma.mahasiswaEventParticipation.findUnique({
+    where: { userId_activityId: { userId, activityId } },
+  });
+  return c.json({ registered: !!participation });
+});
+
+profile.post("/activities/:activityId/register", async (c) => {
+  const userId = c.get("userId") as string;
+  const activityId = c.req.param("activityId");
+  const activity = await prisma.activity.findFirst({
+    where: { id: activityId, deletedAt: null, isActive: true },
+    select: { id: true },
+  });
+  if (!activity) return c.json({ message: "Acara tidak ditemukan atau tidak aktif" }, 404);
+  const existing = await prisma.mahasiswaEventParticipation.findUnique({
+    where: { userId_activityId: { userId, activityId } },
+  });
+  if (existing) return c.json({ message: "Anda sudah terdaftar di acara ini" }, 400);
+  await prisma.mahasiswaEventParticipation.create({
+    data: { userId, activityId },
+  });
+  return c.json({ message: "Pendaftaran berhasil", registered: true }, 201);
+});
+
+profile.delete("/activities/:activityId/register", async (c) => {
+  const userId = c.get("userId") as string;
+  const activityId = c.req.param("activityId");
+  const deleted = await prisma.mahasiswaEventParticipation.deleteMany({
+    where: { userId, activityId },
+  });
+  if (deleted.count === 0) return c.json({ message: "Anda belum terdaftar di acara ini" }, 404);
+  return c.json({ message: "Pendaftaran dibatalkan", registered: false });
+});

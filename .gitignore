@@ -12,3 +12,7 @@ logs/
 .vscode/
 .DS_Store
 *.tsbuildinfo
+
+# SQL dumps (sensitive / large)
+backend/himasi-dump.sql
+**/himasi-dump.sql
