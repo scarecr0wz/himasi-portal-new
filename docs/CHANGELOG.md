@@ -12,6 +12,16 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 
 ---
 
+### Social Sharing — Content Engagement
+
+- **Social Share Buttons:** Fitur baru untuk membagikan konten ke platform populer:
+  - **WhatsApp, Facebook, X (Twitter), & Telegram:** Integrasi link berbagi untuk meningkatkan jangkauan konten.
+  - **Copy Link Feature:** Tombol salin URL cepat dengan feedback visual (checkmark & toast notification).
+  - **UI/UX Premium:** Desain glassmorphism dengan hover micro-interactions, tooltip, dan transisi halus yang selaras dengan tema portal.
+- **Berita Detail:** Integrasi penuh Share Buttons di bagian bawah setiap artikel berita.
+
+---
+
 ## Perubahan yang sudah dilakukan (riwayat fitur)
 
 ### Landing & Berita Detail — UI Consistency
