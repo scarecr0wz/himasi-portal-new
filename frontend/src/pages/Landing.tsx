@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/lib/auth";
-import Avatar from "@/components/Avatar";
 import PublicFooter from "../components/PublicFooter";
+import PublicNavbar from "../components/PublicNavbar";
 
 const API = "/api";
 
@@ -79,10 +78,9 @@ function formatDateBadge(d: string): { day: string; month: string } {
 }
 
 export default function Landing() {
-  const { token, user, isAdmin, logout } = useAuth();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const [news, setNews] = useState<NewsItem[]>([]);
+
+
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [departments, setDepartments] = useState<DepartemenItem[]>([]);
   const [prokers, setProkers] = useState<ProkerItem[]>([]);
@@ -91,18 +89,6 @@ export default function Landing() {
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [faqOpenId, setFaqOpenId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
-    };
-    const t = setTimeout(() => document.addEventListener("click", handleClickOutside), 50);
-    return () => {
-      clearTimeout(t);
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, [menuOpen]);
 
   useEffect(() => {
     Promise.all([
@@ -137,94 +123,10 @@ export default function Landing() {
   return (
     <div className="font-display bg-background-light text-slate-900 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-300">
       <div className="flex flex-col grow">
-        {/* Top Navigation Bar */}
-        <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md px-6 md:px-10 lg:px-40 py-3">
-          <div className="flex items-center justify-between gap-8 max-w-[1280px] mx-auto">
-            <div className="flex items-center gap-8">
-              <Link to="/" className="flex items-center gap-3">
-                <img src="/logo-himasi.png" alt="HIMASI" className="h-10 w-auto object-contain" />
-              </Link>
-              <nav className="hidden lg:flex items-center gap-6">
-                <a href="#berita" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Berita</a>
-                <a href="#acara" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Acara</a>
-                <Link to="/pengurus" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Pengurus</Link>
-                <a href="#program-kerja" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Program Kerja</a>
-                <a href="#department" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Department</a>
-                <a href="#faq" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">FAQ</a>
-                <a href="#tentang" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Tentang</a>
-              </nav>
-            </div>
-            <div className="flex flex-1 justify-end items-center gap-4">
-              <label className="hidden md:flex items-center relative min-w-40 max-w-64 h-10 group">
-                <span className="absolute left-3 text-slate-400 group-focus-within:text-primary transition-colors material-symbols-outlined text-xl">search</span>
-                <input className="w-full h-full pl-10 pr-4 rounded-lg border-none bg-slate-100 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary text-sm transition-all" placeholder="Cari..." />
-              </label>
-              {token && user ? (
-                <div className="relative" ref={menuRef}>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setMenuOpen((o) => !o);
-                    }}
-                    className="flex items-center gap-3 rounded-xl p-1.5 pr-3 hover:bg-slate-100 transition-colors outline-none focus:ring-2 focus:ring-primary/30"
-                    aria-expanded={menuOpen}
-                    aria-haspopup="true"
-                  >
-                    <div className="flex flex-col items-end hidden sm:block">
-                      <span className="text-slate-900 text-sm font-bold leading-tight">{user.name}</span>
-                      <span className="text-slate-500 text-xs font-medium">{user.nim || user.email || "—"}</span>
-                    </div>
-                    <Avatar avatar={user.avatar} className="w-10 h-10 rounded-full" />
-                  </button>
-                  {menuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-slate-200 bg-white shadow-xl py-2 z-50">
-                      <div className="px-4 py-2 border-b border-slate-100">
-                        <p className="text-slate-900 font-semibold text-sm truncate">{user.name}</p>
-                        <p className="text-slate-500 text-xs">{user.nim || user.email}</p>
-                      </div>
-                      <Link
-                        to="/dashboard"
-                        className="flex items-center gap-2 px-4 py-2.5 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-colors"
-                        onClick={() => setMenuOpen(false)}
-                      >
-                        <span className="material-symbols-outlined text-lg">person</span>
-                        Portal Mahasiswa
-                      </Link>
-                      {isAdmin === true && (
-                        <Link
-                          to="/admin"
-                          className="flex items-center gap-2 px-4 py-2.5 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-colors"
-                          onClick={() => setMenuOpen(false)}
-                        >
-                          <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
-                          Admin
-                        </Link>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => { setMenuOpen(false); logout(); }}
-                        className="flex items-center gap-2 w-full px-4 py-2.5 text-slate-600 hover:bg-slate-50 text-sm font-medium transition-colors"
-                      >
-                        <span className="material-symbols-outlined text-lg">logout</span>
-                        Keluar
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Link
-                  to="/login"
-                  className="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all"
-                >
-                  Masuk
-                </Link>
-              )}
-            </div>
-          </div>
-        </header>
+        <PublicNavbar />
 
         <main className="flex-1 max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-12">
+
           {/* Hero Section */}
           <div className="mb-16">
             <div className="flex flex-col gap-10 md:flex-row md:items-center">
@@ -344,38 +246,38 @@ export default function Landing() {
               {displayActivities.length === 0 ? (
                 <p className="text-slate-500 py-6">Belum ada acara mendatang. Kelola konten di <strong>Admin &gt; Konten (CMS)</strong>.</p>
               ) : (
-              displayActivities.map((item) => {
-                const badge = formatDateBadge(item.startAt);
-                const start = new Date(item.startAt);
-                const end = new Date(item.endAt);
-                const timeStr = `${start.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })} - ${end.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}`;
-                return (
-                  <div
-                    key={item.id}
-                    className="flex flex-wrap items-center gap-4 md:gap-6 p-4 rounded-xl bg-white border border-slate-100 hover:border-primary transition-colors shadow-sm group"
-                  >
-                    <div className="flex flex-col items-center justify-center min-w-[70px] h-[70px] bg-primary/10 text-primary rounded-xl">
-                      <span className="text-2xl font-black">{badge.day}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-widest">{badge.month}</span>
-                    </div>
-                    <div className="flex flex-col gap-1 flex-1 min-w-0">
-                      <h4 className="text-slate-900 font-bold group-hover:text-primary transition-colors">{item.title}</h4>
-                      <div className="flex flex-wrap items-center gap-4 text-slate-500 text-sm">
-                        <span className="flex items-center gap-1">
-                          <span className="material-symbols-outlined text-base">schedule</span>
-                          {timeStr}
-                        </span>
-                      </div>
-                    </div>
-                    <Link
-                      to={`/acara/${item.id}`}
-                      className="px-4 py-2 text-primary font-bold text-sm border-2 border-primary/20 rounded-lg hover:bg-primary hover:text-white transition-all shrink-0"
+                displayActivities.map((item) => {
+                  const badge = formatDateBadge(item.startAt);
+                  const start = new Date(item.startAt);
+                  const end = new Date(item.endAt);
+                  const timeStr = `${start.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })} - ${end.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}`;
+                  return (
+                    <div
+                      key={item.id}
+                      className="flex flex-wrap items-center gap-4 md:gap-6 p-4 rounded-xl bg-white border border-slate-100 hover:border-primary transition-colors shadow-sm group"
                     >
-                      Detail & Daftar
-                    </Link>
-                  </div>
-                );
-              })
+                      <div className="flex flex-col items-center justify-center min-w-[70px] h-[70px] bg-primary/10 text-primary rounded-xl">
+                        <span className="text-2xl font-black">{badge.day}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest">{badge.month}</span>
+                      </div>
+                      <div className="flex flex-col gap-1 flex-1 min-w-0">
+                        <h4 className="text-slate-900 font-bold group-hover:text-primary transition-colors">{item.title}</h4>
+                        <div className="flex flex-wrap items-center gap-4 text-slate-500 text-sm">
+                          <span className="flex items-center gap-1">
+                            <span className="material-symbols-outlined text-base">schedule</span>
+                            {timeStr}
+                          </span>
+                        </div>
+                      </div>
+                      <Link
+                        to={`/acara/${item.id}`}
+                        className="px-4 py-2 text-primary font-bold text-sm border-2 border-primary/20 rounded-lg hover:bg-primary hover:text-white transition-all shrink-0"
+                      >
+                        Detail & Daftar
+                      </Link>
+                    </div>
+                  );
+                })
               )}
             </div>
             {displayActivities.length > 0 && (

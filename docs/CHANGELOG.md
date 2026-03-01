@@ -14,6 +14,32 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 
 ## Perubahan yang sudah dilakukan (riwayat fitur)
 
+### Landing & Berita Detail — UI Consistency
+
+- **Public Header/Footer:** Integrasi komponen `PublicNavbar` dan `PublicFooter` secara global:
+  - **Berita Detail:** Mengganti header minimalis dengan navbar situs lengkap untuk navigasi yang lebih baik dari halaman artikel.
+  - **Landing Page:** Refaktorisasi header inline menjadi komponen `PublicNavbar` yang terpusat untuk kemudahan pemeliharaan.
+- **Berita Layout:** Peningkatan tipografi dan tata letak artikel detail (padding, font size, dan shadow pada gambar) untuk kenyamanan baca.
+- **Social Integration:** Update desain Social Media Links dengan gaya premium shadowed yang konsisten di seluruh situs.
+
+### Content Editor & Markdown Engine — Reliability & UX
+
+- **Live Preview System:** Penambahan fitur tab "Tulis" dan "Pratinjau" pada Admin Content Editor untuk verifikasi real-time sebelum publikasi.
+- **Format Content:**
+  - Integrasi library `marked` dan `remark-gfm` untuk rendering markdown yang lebih tangguh dan mendukung GitHub Flavored Markdown (List, Bold, Tables).
+  - Pemasangan `@tailwindcss/typography` (Tailwind 4) untuk styling otomatis konten `.prose`.
+  - Penambahan CSS manual override pada `index.css` untuk menjamin ketebalan font **Bold** dan indentasi **Lists** tetap terjaga meskipun ada global CSS reset.
+- **Editor Toolbar:** Toolbar baru dengan shortcut untuk Bold (Mark), Italic, Heading, Bullet/Numbered List, Link, dan Quotes.
+- **Stats:** Penambahan fitur penghitung kata (word count) pada editor berita.
+
+### Pendaftaran (Register) — UI/UX Optimization
+
+- **Optimalisasi Mobile & Desktop:**
+  - **Tombol Navigasi:** Peningkatan ketebalan tombol "Langkah Berikutnya" dan "Kembali" menggunakan padding vertikal (`py-5`) untuk kenyamanan tap yang lebih baik (premium feel).
+  - **Keyboard Mobile:** Penambahan `inputMode="numeric"` pada field NIM dan `inputMode="tel"` pada field WhatsApp agar keyboard numerik otomatis muncul di HP.
+  - **Fokus Input:** Peningkatan visual fokus ring (`ring-8`) dan efek hover pada semua input field.
+  - **Halaman Berhasil:** Overhaul total tampilan "Pendaftaran Berhasil" dengan desain celebratory premium, animasi dekoratif, dan panduan langkah selanjutnya (verifikasi admin 1x24 jam).
+
 ### Data anggota & import
 
 - **Import user dari dump MySQL (himasi.sql):**

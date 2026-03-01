@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { marked } from "marked";
 import { useAuth } from "@/lib/auth";
 
 const API = "/api";
@@ -38,6 +39,7 @@ export default function AdminContentEditor() {
   const [loading, setLoading] = useState(isEdit);
   const [uploading, setUploading] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [view, setView] = useState<"edit" | "preview">("edit");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const featuredImageInputRef = useRef<HTMLInputElement>(null);
@@ -271,252 +273,299 @@ export default function AdminContentEditor() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-6 md:gap-8">
-      {/* Left: Editor */}
-      <div className="flex-1 flex flex-col gap-6 min-w-0">
-        <div className="flex items-center gap-2 text-sm">
-          <Link to="/admin/content" className="text-slate-500 hover:text-primary">
-            Konten (CMS)
-          </Link>
-          <span className="material-symbols-outlined text-xs text-slate-400">chevron_right</span>
-          <span className="text-slate-900 font-medium">{isEdit ? "Edit Berita" : "Buat Berita Baru"}</span>
+        {/* Left: Editor */}
+        <div className="flex-1 flex flex-col gap-6 min-w-0">
+          <div className="flex items-center gap-2 text-sm">
+            <Link to="/admin/content" className="text-slate-500 hover:text-primary">
+              Konten (CMS)
+            </Link>
+            <span className="material-symbols-outlined text-xs text-slate-400">chevron_right</span>
+            <span className="text-slate-900 font-medium">{isEdit ? "Edit Berita" : "Buat Berita Baru"}</span>
+          </div>
+
+          {error && (
+            <div className="p-3 rounded-lg bg-red-50 text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-1">Editor</h1>
+              <p className="text-slate-500 text-sm">
+                {isEdit ? "Menyunting berita yang tampil di landing page." : "Menulis berita atau pengumuman untuk landing page."}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700">Judul Konten</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                onBlur={() => { if (!slug.trim()) setSlug(slugify(title)); }}
+                placeholder="Masukkan judul yang deskriptif..."
+                className="w-full text-xl font-bold p-4 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+              />
+            </div>
+
+            <div className="flex flex-col border border-slate-200 rounded-xl bg-white overflow-hidden min-h-[500px]">
+              <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-4">
+                <div className="flex">
+                  <button
+                    type="button"
+                    onClick={() => setView("edit")}
+                    className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${view === "edit" ? "border-primary text-primary" : "border-transparent text-slate-500 hover:text-slate-700"}`}
+                  >
+                    Tulis
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setView("preview")}
+                    className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${view === "preview" ? "border-primary text-primary" : "border-transparent text-slate-500 hover:text-slate-700"}`}
+                  >
+                    Pratinjau
+                  </button>
+                </div>
+                <div className="text-[11px] text-slate-400 font-medium bg-white px-2 py-1 rounded border border-slate-100">
+                  Markdown
+                </div>
+              </div>
+
+              {view === "edit" ? (
+                <>
+                  <div className="flex flex-wrap items-center gap-1 p-2 border-b border-slate-100 bg-white">
+                    <button type="button" onClick={() => insertAtCursor("**", "**")} className="p-2 hover:bg-slate-100 rounded transition-colors text-slate-600" title="Bold">
+                      <span className="material-symbols-outlined text-[20px]">format_bold</span>
+                    </button>
+                    <button type="button" onClick={() => insertAtCursor("_", "_")} className="p-2 hover:bg-slate-100 rounded transition-colors text-slate-600" title="Italic">
+                      <span className="material-symbols-outlined text-[20px]">format_italic</span>
+                    </button>
+                    <button type="button" onClick={() => insertAtCursor("### ", "")} className="p-2 hover:bg-slate-100 rounded transition-colors text-slate-600" title="Heading">
+                      <span className="material-symbols-outlined text-[20px]">format_size</span>
+                    </button>
+                    <div className="w-px h-6 bg-slate-200 mx-1" />
+                    <button type="button" onClick={() => insertAtCursor("\n- ", "")} className="p-2 hover:bg-slate-100 rounded transition-colors text-slate-600" title="Bullet list">
+                      <span className="material-symbols-outlined text-[20px]">format_list_bulleted</span>
+                    </button>
+                    <button type="button" onClick={() => insertAtCursor("\n1. ", "")} className="p-2 hover:bg-slate-100 rounded transition-colors text-slate-600" title="Numbered list">
+                      <span className="material-symbols-outlined text-[20px]">format_list_numbered</span>
+                    </button>
+                    <div className="w-px h-6 bg-slate-200 mx-1" />
+                    <button type="button" onClick={() => { const u = prompt("URL:"); if (u) insertAtCursor(`[`, `](${u})`); }} className="p-2 hover:bg-slate-100 rounded transition-colors text-slate-600" title="Link">
+                      <span className="material-symbols-outlined text-[20px]">link</span>
+                    </button>
+                    <span className="inline-flex items-center gap-1">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        className="hidden"
+                        onChange={handleImageUpload}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploading}
+                        className="p-2 hover:bg-slate-100 rounded transition-colors text-slate-600 disabled:opacity-50"
+                        title="Upload gambar"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">image</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={insertImageByUrl}
+                        className="px-1.5 py-1 text-[11px] text-slate-500 hover:text-primary hover:bg-slate-100 rounded transition-colors"
+                        title="Pakai URL gambar"
+                      >
+                        URL
+                      </button>
+                    </span>
+                    <button type="button" onClick={() => insertAtCursor("\n> ", "")} className="p-2 hover:bg-slate-100 rounded transition-colors text-slate-600" title="Quote">
+                      <span className="material-symbols-outlined text-[20px]">format_quote</span>
+                    </button>
+                  </div>
+                  <textarea
+                    ref={textareaRef}
+                    value={desc}
+                    onChange={(e) => setDesc(e.target.value)}
+                    placeholder="Tulis isi berita di sini..."
+                    className="flex-1 p-6 min-h-[350px] resize-none border-none bg-transparent text-slate-800 leading-relaxed text-base placeholder:text-slate-400 focus:ring-0 focus:outline-none"
+                    spellCheck
+                  />
+                </>
+              ) : (
+                <div className="flex-1 p-8 bg-slate-50/30 overflow-y-auto max-h-[600px]">
+                  {desc.trim() ? (
+                    <div
+                      className="prose prose-slate prose-sm md:prose-base max-w-none"
+                      dangerouslySetInnerHTML={{ __html: marked.parse(desc) }}
+                    />
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center text-slate-400 py-20">
+                      <span className="material-symbols-outlined text-4xl mb-2">visibility_off</span>
+                      <p className="text-sm font-medium">Belum ada konten untuk ditampilkan</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="p-3 border-t border-slate-100 bg-white text-[11px] text-slate-400 flex justify-between items-center">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                  {view === "edit" ? "Sedang Menulis" : "Mode Pratinjau"}
+                </span>
+                <span className="font-bold">{wordCount} KATA</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {error && (
-          <div className="p-3 rounded-lg bg-red-50 text-red-700 text-sm">
-            {error}
-          </div>
-        )}
+        {/* Right: Publish Settings */}
+        <aside className="w-full md:w-80 flex flex-col gap-6 order-3 flex-shrink-0">
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden p-6 shadow-sm">
+            <h3 className="text-lg font-bold text-slate-900 mb-5 flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary">settings</span>
+              Pengaturan Publikasi
+            </h3>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">Kategori</label>
+                <select
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                  className="w-full p-2.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                >
+                  {categories.length === 0 && <option value="">— Pilih —</option>}
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>{c.value}</option>
+                  ))}
+                </select>
+              </div>
 
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-1">Editor</h1>
-            <p className="text-slate-500 text-sm">
-              {isEdit ? "Menyunting berita yang tampil di landing page." : "Menulis berita atau pengumuman untuk landing page."}
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700">Judul Konten</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              onBlur={() => { if (!slug.trim()) setSlug(slugify(title)); }}
-              placeholder="Masukkan judul yang deskriptif..."
-              className="w-full text-xl font-bold p-4 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-            />
-          </div>
-
-          <div className="flex flex-col border border-slate-200 rounded-xl bg-white overflow-hidden min-h-[400px]">
-            <div className="flex flex-wrap items-center gap-1 p-2 border-b border-slate-100 bg-slate-50">
-              <button type="button" onClick={() => insertAtCursor("**", "**")} className="p-2 hover:bg-white rounded transition-colors text-slate-600" title="Bold">
-                <span className="material-symbols-outlined text-[20px]">format_bold</span>
-              </button>
-              <button type="button" onClick={() => insertAtCursor("_", "_")} className="p-2 hover:bg-white rounded transition-colors text-slate-600" title="Italic">
-                <span className="material-symbols-outlined text-[20px]">format_italic</span>
-              </button>
-              <button type="button" onClick={() => insertAtCursor("\n- ", "")} className="p-2 hover:bg-white rounded transition-colors text-slate-600" title="Bullet list">
-                <span className="material-symbols-outlined text-[20px]">format_list_bulleted</span>
-              </button>
-              <button type="button" onClick={() => insertAtCursor("\n1. ", "")} className="p-2 hover:bg-white rounded transition-colors text-slate-600" title="Numbered list">
-                <span className="material-symbols-outlined text-[20px]">format_list_numbered</span>
-              </button>
-              <div className="w-px h-6 bg-slate-200 mx-1" />
-              <button type="button" onClick={() => { const u = prompt("URL:"); if (u) insertAtCursor(`[`, `](${u})`); }} className="p-2 hover:bg-white rounded transition-colors text-slate-600" title="Link">
-                <span className="material-symbols-outlined text-[20px]">link</span>
-              </button>
-              <span className="inline-flex items-center">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">Slug (URL)</label>
                 <input
-                  ref={fileInputRef}
+                  type="text"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  placeholder="url-berita"
+                  className="w-full p-2.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">Author</label>
+                <input
+                  type="text"
+                  value={author}
+                  onChange={(e) => setAuthor(e.target.value)}
+                  placeholder="HIMASI"
+                  className="w-full p-2.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">Gambar Utama</label>
+                <input
+                  ref={featuredImageInputRef}
                   type="file"
                   accept="image/jpeg,image/png,image/gif,image/webp"
                   className="hidden"
-                  onChange={handleImageUpload}
+                  onChange={handleFeaturedImageUpload}
                 />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                  className="p-2 hover:bg-white rounded transition-colors text-slate-600 disabled:opacity-50"
-                  title="Upload gambar"
-                >
-                  <span className="material-symbols-outlined text-[20px]">image</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={insertImageByUrl}
-                  className="px-1.5 py-1 text-[11px] text-slate-500 hover:text-primary hover:bg-white rounded"
-                  title="Pakai URL gambar"
-                >
-                  URL
-                </button>
-              </span>
-              <button type="button" onClick={() => insertAtCursor("\n> ", "")} className="p-2 hover:bg-white rounded transition-colors text-slate-600" title="Quote">
-                <span className="material-symbols-outlined text-[20px]">format_quote</span>
+                <div className="flex flex-col gap-2">
+                  {photo ? (
+                    <div className="relative rounded-xl overflow-hidden border border-slate-200 aspect-video bg-slate-100">
+                      <img src={photo} alt="" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setPhoto(null)}
+                        className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-lg text-slate-600 hover:bg-white"
+                      >
+                        <span className="material-symbols-outlined text-lg">close</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => { if (!uploadingPhoto) featuredImageInputRef.current?.click(); }}
+                        onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && !uploadingPhoto) { e.preventDefault(); featuredImageInputRef.current?.click(); } }}
+                        className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-xl p-6 transition-all hover:border-primary/50 bg-slate-50 cursor-pointer disabled:opacity-60"
+                      >
+                        <span className="material-symbols-outlined text-slate-400 text-3xl mb-2">cloud_upload</span>
+                        <p className="text-xs text-slate-500 text-center">
+                          {uploadingPhoto ? "Mengunggah..." : "Klik untuk upload gambar"}
+                        </p>
+                        <p className="text-[10px] text-slate-400 mt-1">PNG, JPG, GIF, WebP hingga 10MB</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={setPhotoByUrl}
+                        className="text-xs text-slate-500 hover:text-primary"
+                      >
+                        atau isi URL gambar
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">Tanggal Terbit</label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={publishedAt}
+                    onChange={(e) => setPublishedAt(e.target.value)}
+                    className="w-full p-2.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-10"
+                  />
+                  <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 pointer-events-none">calendar_today</span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-slate-50 rounded-lg space-y-1">
+                <p className="text-sm font-semibold text-slate-700">Status</p>
+                <p className="text-[11px] text-slate-500">
+                  {newsStatus === "draf" && "Draf — tidak tampil di beranda"}
+                  {newsStatus === "publikasi" && "Publikasi — tampil di landing"}
+                  {newsStatus === "batal" && "Batal — tidak tampil di beranda"}
+                </p>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase ${newsStatus === "draf" ? "bg-slate-200 text-slate-700" :
+                    newsStatus === "publikasi" ? "bg-primary/20 text-primary" : "bg-red-100 text-red-700"
+                    }`}>
+                    {newsStatus === "draf" ? "Draf" : newsStatus === "publikasi" ? "Publikasi" : "Batal"}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="mt-8 pt-6 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={handleDiscard}
+                className="w-full flex items-center justify-center gap-2 p-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+              >
+                <span className="material-symbols-outlined">delete</span>
+                Buang Konten
               </button>
             </div>
-            <textarea
-              ref={textareaRef}
-              value={desc}
-              onChange={(e) => setDesc(e.target.value)}
-              placeholder="Tulis isi berita di sini..."
-              className="flex-1 p-6 min-h-[320px] resize-none border-none bg-transparent text-slate-800 leading-relaxed text-base placeholder:text-slate-400 focus:ring-0 focus:outline-none"
-              spellCheck
-            />
-            <div className="p-3 border-t border-slate-100 text-xs text-slate-400 flex justify-between items-center">
-              <span>Markdown editor</span>
-              <span>{wordCount} kata</span>
-            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Right: Publish Settings */}
-      <aside className="w-full md:w-80 flex flex-col gap-6 order-3 flex-shrink-0">
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden p-6 shadow-sm">
-          <h3 className="text-lg font-bold text-slate-900 mb-5 flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary">settings</span>
-            Pengaturan Publikasi
-          </h3>
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">Kategori</label>
-              <select
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full p-2.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary"
-              >
-                {categories.length === 0 && <option value="">— Pilih —</option>}
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>{c.value}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">Slug (URL)</label>
-              <input
-                type="text"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                placeholder="url-berita"
-                className="w-full p-2.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">Author</label>
-              <input
-                type="text"
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                placeholder="HIMASI"
-                className="w-full p-2.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">Gambar Utama</label>
-              <input
-                ref={featuredImageInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/gif,image/webp"
-                className="hidden"
-                onChange={handleFeaturedImageUpload}
-              />
-              <div className="flex flex-col gap-2">
-                {photo ? (
-                  <div className="relative rounded-xl overflow-hidden border border-slate-200 aspect-video bg-slate-100">
-                    <img src={photo} alt="" className="w-full h-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => setPhoto(null)}
-                      className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-lg text-slate-600 hover:bg-white"
-                    >
-                      <span className="material-symbols-outlined text-lg">close</span>
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => { if (!uploadingPhoto) featuredImageInputRef.current?.click(); }}
-                      onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && !uploadingPhoto) { e.preventDefault(); featuredImageInputRef.current?.click(); } }}
-                      className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-xl p-6 transition-all hover:border-primary/50 bg-slate-50 cursor-pointer disabled:opacity-60"
-                    >
-                      <span className="material-symbols-outlined text-slate-400 text-3xl mb-2">cloud_upload</span>
-                      <p className="text-xs text-slate-500 text-center">
-                        {uploadingPhoto ? "Mengunggah..." : "Klik untuk upload gambar"}
-                      </p>
-                      <p className="text-[10px] text-slate-400 mt-1">PNG, JPG, GIF, WebP hingga 10MB</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={setPhotoByUrl}
-                      className="text-xs text-slate-500 hover:text-primary"
-                    >
-                      atau isi URL gambar
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">Tanggal Terbit</label>
-              <div className="relative">
-                <input
-                  type="date"
-                  value={publishedAt}
-                  onChange={(e) => setPublishedAt(e.target.value)}
-                  className="w-full p-2.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-10"
-                />
-                <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 pointer-events-none">calendar_today</span>
-              </div>
-            </div>
-
-            <div className="p-3 bg-slate-50 rounded-lg space-y-1">
-              <p className="text-sm font-semibold text-slate-700">Status</p>
-              <p className="text-[11px] text-slate-500">
-                {newsStatus === "draf" && "Draf — tidak tampil di beranda"}
-                {newsStatus === "publikasi" && "Publikasi — tampil di landing"}
-                {newsStatus === "batal" && "Batal — tidak tampil di beranda"}
-              </p>
-              <div className="flex items-center gap-2 mt-2">
-                <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase ${
-                  newsStatus === "draf" ? "bg-slate-200 text-slate-700" :
-                  newsStatus === "publikasi" ? "bg-primary/20 text-primary" : "bg-red-100 text-red-700"
-                }`}>
-                  {newsStatus === "draf" ? "Draf" : newsStatus === "publikasi" ? "Publikasi" : "Batal"}
-                </span>
+          <div className="bg-primary/5 rounded-xl p-5 border border-primary/10">
+            <div className="flex gap-3">
+              <span className="material-symbols-outlined text-primary text-xl">lightbulb</span>
+              <div>
+                <p className="text-sm font-bold text-slate-900 mb-1">Tip Menulis</p>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Gunakan gambar berkualitas dan judul yang jelas agar berita mudah dibaca dan menjangkau lebih banyak pembaca.
+                </p>
               </div>
             </div>
           </div>
-          <div className="mt-8 pt-6 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={handleDiscard}
-              className="w-full flex items-center justify-center gap-2 p-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              <span className="material-symbols-outlined">delete</span>
-              Buang Konten
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-primary/5 rounded-xl p-5 border border-primary/10">
-          <div className="flex gap-3">
-            <span className="material-symbols-outlined text-primary text-xl">lightbulb</span>
-            <div>
-              <p className="text-sm font-bold text-slate-900 mb-1">Tip Menulis</p>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Gunakan gambar berkualitas dan judul yang jelas agar berita mudah dibaca dan menjangkau lebih banyak pembaca.
-              </p>
-            </div>
-          </div>
-        </div>
-      </aside>
+        </aside>
       </div>
     </div>
   );
