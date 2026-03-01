@@ -49,6 +49,8 @@ model User {
   eventParticipations MahasiswaEventParticipation[]
   badges              MahasiswaBadge[]
   kontribusi          MahasiswaKontribusi[]
+  forumTopics         ForumTopic[]
+  forumReplies        ForumReply[]
 }
 
 model Enumeration {
@@ -60,7 +62,8 @@ model Enumeration {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
-  usersAsJabatan User[] @relation("UserJabatan")
+  usersAsJabatan User[]     @relation("UserJabatan")
+  forumTopics   ForumTopic[]
 }
 
 model Departemen {
@@ -307,4 +310,45 @@ model MahasiswaKontribusi {
   createdAt   DateTime @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Ruang Terbuka (bulletin board / forum)
+model ForumTopic {
+  id         String    @id @default(uuid()) @db.Uuid
+  categoryId String    @map("category_id") @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  title      String
+  content    String    @db.Text
+  imagePath  String?   @map("image_path") @db.VarChar(512)
+  isPinned   Boolean   @default(false) @map("is_pinned")
+  deletedAt  DateTime? @map("deleted_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  category Enumeration @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replies  ForumReply[]
+}
+
+model ForumReply {
+  id          String    @id @default(uuid()) @db.Uuid
+  forumTopicId String   @map("forum_topic_id") @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  content     String    @db.Text
+  deletedAt   DateTime? @map("deleted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  forumTopic ForumTopic @relation(fields: [forumTopicId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Link sosial media (footer & akhir post berita). Dikelola di Admin > Pengaturan.
+model SocialMedia {
+  id        String   @id @default(uuid()) @db.Uuid
+  platform  String   @db.VarChar(50)   // instagram, twitter, facebook, youtube, linkedin, tiktok, web, dll
+  url       String   @db.VarChar(512)
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 }

@@ -107,14 +107,14 @@ export default function Landing() {
   useEffect(() => {
     Promise.all([
       fetch(`${API}/content/news`).then((r) => (r.ok ? r.json() : [])),
-      fetch(`${API}/content/activities`).then((r) => (r.ok ? r.json() : [])),
+      fetch(`${API}/content/activities/upcoming?limit=3`).then((r) => (r.ok ? r.json() : [])),
       fetch(`${API}/content/departments`).then((r) => (r.ok ? r.json() : [])),
       fetch(`${API}/content/prokers`).then((r) => (r.ok ? r.json() : [])),
       fetch(`${API}/content/faqs`).then((r) => (r.ok ? r.json() : [])),
     ])
       .then(([n, a, d, p, f]) => {
         setNews(Array.isArray(n) ? n.slice(0, 3) : []);
-        setActivities(Array.isArray(a) ? a.slice(0, 6) : []);
+        setActivities(Array.isArray(a) ? a : []);
         setDepartments(Array.isArray(d) ? d : []);
         setProkers(Array.isArray(p) ? p : []);
         setFaqs(Array.isArray(f) ? f : []);
@@ -333,18 +333,18 @@ export default function Landing() {
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-slate-900 text-2xl font-bold tracking-tight">Acara Mendatang</h2>
               <Link
-                to="/login"
+                to="/acara"
                 className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-slate-200 transition-colors"
               >
                 <span className="material-symbols-outlined text-lg">calendar_month</span>
-                Kalender
+                Semua Acara
               </Link>
             </div>
             <div className="space-y-4">
               {displayActivities.length === 0 ? (
-                <p className="text-slate-500 py-6">Belum ada acara. Kelola konten di <strong>Admin &gt; Konten (CMS)</strong>.</p>
+                <p className="text-slate-500 py-6">Belum ada acara mendatang. Kelola konten di <strong>Admin &gt; Konten (CMS)</strong>.</p>
               ) : (
-              displayActivities.slice(0, 3).map((item) => {
+              displayActivities.map((item) => {
                 const badge = formatDateBadge(item.startAt);
                 const start = new Date(item.startAt);
                 const end = new Date(item.endAt);
@@ -368,16 +368,23 @@ export default function Landing() {
                       </div>
                     </div>
                     <Link
-                      to="/login"
+                      to={`/acara/${item.id}`}
                       className="px-4 py-2 text-primary font-bold text-sm border-2 border-primary/20 rounded-lg hover:bg-primary hover:text-white transition-all shrink-0"
                     >
-                      Daftar
+                      Detail & Daftar
                     </Link>
                   </div>
                 );
               })
               )}
             </div>
+            {displayActivities.length > 0 && (
+              <div className="mt-6 text-right">
+                <Link to="/acara" className="text-primary text-sm font-bold flex items-center gap-1 hover:underline inline-flex ml-auto">
+                  Lihat Semua Acara <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                </Link>
+              </div>
+            )}
           </section>
 
           {/* Tentang HIMASI */}

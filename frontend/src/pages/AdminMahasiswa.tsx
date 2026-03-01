@@ -17,7 +17,37 @@ type Mahasiswa = {
   departemen: { id: string; title: string } | null;
 };
 
+type MahasiswaDetail = Mahasiswa & {
+  avatar?: string | null;
+  fakultas?: string | null;
+  joinedAt?: string | null;
+  birthDate?: string | null;
+  address?: string | null;
+  instagramAccount?: string | null;
+  jabatan?: { id: string; key: string; value: string } | null;
+  roles?: string[];
+  mahasiswaProfile?: {
+    domisiliCity?: string | null;
+    minatFokus?: string | null;
+    skillsJson?: string | null;
+    portfolioGithub?: string | null;
+    portfolioLinkedin?: string | null;
+    portfolioBehance?: string | null;
+    communicationPreference?: string | null;
+    notificationHours?: string | null;
+    cvPath?: string | null;
+  } | null;
+};
+
 type Departemen = { id: string; title: string; icon?: string; desc?: string };
+
+function loadDetail(token: string, id: string): Promise<MahasiswaDetail> {
+  return fetch(`${API}/admin/mahasiswa/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+    .then((r) => {
+      if (!r.ok) throw new Error("Gagal memuat detail anggota");
+      return r.json();
+    });
+}
 
 function loadList(token: string, search: string): Promise<Mahasiswa[]> {
   const url = `${API}/admin/mahasiswa${search ? `?search=${encodeURIComponent(search)}` : ""}`;
@@ -36,7 +66,10 @@ export default function AdminMahasiswa() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [actionMenuId, setActionMenuId] = useState<string | null>(null);
-  const [modalDetail, setModalDetail] = useState<Mahasiswa | null>(null);
+  const [detailUserId, setDetailUserId] = useState<string | null>(null);
+  const [detailData, setDetailData] = useState<MahasiswaDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState<string | null>(null);
   const [modalStatus, setModalStatus] = useState<Mahasiswa | null>(null);
   const [modalDivisi, setModalDivisi] = useState<Mahasiswa | null>(null);
   const [editStatus, setEditStatus] = useState<string>("PENDING");
@@ -47,7 +80,29 @@ export default function AdminMahasiswa() {
   const [deleteTarget, setDeleteTarget] = useState<Mahasiswa | null>(null);
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  async function handleExportExcel() {
+    if (!token) return;
+    setExporting(true);
+    try {
+      const url = `${API}/admin/mahasiswa/export${search ? `?search=${encodeURIComponent(search)}` : ""}`;
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) throw new Error("Gagal mengunduh export");
+      const blob = await res.blob();
+      const name = res.headers.get("Content-Disposition")?.match(/filename="?([^";]+)"?/)?.[1] ?? "data-anggota-himasi.xlsx";
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Gagal export");
+    } finally {
+      setExporting(false);
+    }
+  }
 
   useEffect(() => {
     if (!token) {
@@ -76,6 +131,20 @@ export default function AdminMahasiswa() {
       .then((d) => setDepartemens(Array.isArray(d) ? d : []))
       .catch(() => {});
   }, [token]);
+
+  useEffect(() => {
+    if (!token || !detailUserId) {
+      setDetailData(null);
+      setDetailError(null);
+      return;
+    }
+    setDetailLoading(true);
+    setDetailError(null);
+    loadDetail(token, detailUserId)
+      .then((data) => { setDetailData(data); setDetailError(null); })
+      .catch((e) => { setDetailData(null); setDetailError(e instanceof Error ? e.message : "Gagal memuat detail"); })
+      .finally(() => setDetailLoading(false));
+  }, [token, detailUserId]);
 
   useEffect(() => {
     if (!actionMenuId) return;
@@ -209,17 +278,28 @@ export default function AdminMahasiswa() {
             <div className="w-1 h-5 bg-primary rounded-full" />
             <h2 className="text-lg font-bold text-slate-800">Daftar Anggota</h2>
           </div>
-          <div className="relative w-full sm:w-72">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">
-              search
-            </span>
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari NIM, nama, email..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
-            />
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <div className="relative w-full sm:w-72">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">
+                search
+              </span>
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cari NIM, nama, email..."
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleExportExcel}
+              disabled={exporting || !token}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 hover:border-slate-300 disabled:opacity-50 disabled:pointer-events-none transition-colors"
+            >
+              <span className="material-symbols-outlined text-lg text-emerald-600">download</span>
+              {exporting ? "Mengunduh..." : "Export Excel"}
+            </button>
           </div>
         </div>
 
@@ -262,14 +342,26 @@ export default function AdminMahasiswa() {
                 !error &&
                 list.map((m) => (
                   <tr key={m.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-mono text-sm text-slate-700">{m.nim}</td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="size-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold text-sm">
+                      <button
+                        type="button"
+                        onClick={() => setDetailUserId(m.id)}
+                        className="font-mono text-sm text-slate-700 hover:text-primary hover:underline text-left"
+                      >
+                        {m.nim}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4">
+                      <button
+                        type="button"
+                        onClick={() => setDetailUserId(m.id)}
+                        className="flex items-center gap-3 w-full text-left hover:opacity-80 transition-opacity"
+                      >
+                        <div className="size-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold text-sm shrink-0">
                           {m.name.charAt(0).toUpperCase()}
                         </div>
                         <span className="font-medium text-slate-800 text-sm">{m.name}</span>
-                      </div>
+                      </button>
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-500">{m.email}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">{m.angkatan ?? "—"}</td>
@@ -308,7 +400,7 @@ export default function AdminMahasiswa() {
                             type="button"
                             onClick={() => {
                               setActionMenuId(null);
-                              setModalDetail(m);
+                              setDetailUserId(m.id);
                             }}
                             className="flex items-center gap-2 w-full px-4 py-2.5 text-left text-slate-700 hover:bg-slate-50 text-sm"
                           >
@@ -354,74 +446,89 @@ export default function AdminMahasiswa() {
         </div>
       </div>
 
-      {/* Modal Lihat detail */}
-      {modalDetail && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Detail Anggota</h3>
-            <dl className="space-y-3 text-sm">
-              <div>
-                <dt className="text-slate-500">NIM</dt>
-                <dd className="font-mono text-slate-800">{modalDetail.nim}</dd>
-              </div>
-              <div>
-                <dt className="text-slate-500">Nama</dt>
-                <dd className="text-slate-800">{modalDetail.name}</dd>
-              </div>
-              <div>
-                <dt className="text-slate-500">Email</dt>
-                <dd className="text-slate-800">{modalDetail.email}</dd>
-              </div>
-              <div>
-                <dt className="text-slate-500">No HP</dt>
-                <dd className="text-slate-800">{modalDetail.phoneNumber ?? "—"}</dd>
-              </div>
-              <div>
-                <dt className="text-slate-500">Angkatan</dt>
-                <dd className="text-slate-800">{modalDetail.angkatan ?? "—"}</dd>
-              </div>
-              {modalDetail.registrationReason && (
-                <div>
-                  <dt className="text-slate-500">Alasan bergabung</dt>
-                  <dd className="text-slate-800 text-sm mt-1 whitespace-pre-wrap">{modalDetail.registrationReason}</dd>
-                </div>
-              )}
-              <div>
-                <dt className="text-slate-500">Program studi</dt>
-                <dd className="text-slate-800">{modalDetail.programStudi}</dd>
-              </div>
-              <div>
-                <dt className="text-slate-500">Status verifikasi</dt>
-                <dd>
-                  <span
-                    className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${
-                      modalDetail.membershipStatus === "APPROVED" || modalDetail.membershipStatus === "ACTIVE"
-                        ? "bg-green-50 text-green-700"
-                        : modalDetail.membershipStatus === "PENDING"
-                          ? "bg-amber-50 text-amber-700"
-                          : modalDetail.membershipStatus === "REJECTED"
-                            ? "bg-red-50 text-red-700"
-                            : "bg-slate-100 text-slate-600"
-                    }`}
-                  >
-                    {modalDetail.membershipStatus}
-                  </span>
-                </dd>
-              </div>
-              <div>
-                <dt className="text-slate-500">Divisi</dt>
-                <dd className="text-slate-800">{modalDetail.departemen?.title ?? "—"}</dd>
-              </div>
-            </dl>
-            <div className="mt-6 flex justify-end">
+      {/* Modal Detail Anggota (data lengkap) */}
+      {detailUserId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => !detailLoading && setDetailUserId(null)}>
+          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between shrink-0">
+              <h3 className="text-lg font-bold text-slate-800">Detail Anggota</h3>
               <button
                 type="button"
-                onClick={() => setModalDetail(null)}
-                className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200"
+                onClick={() => setDetailUserId(null)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                aria-label="Tutup"
               >
-                Tutup
+                <span className="material-symbols-outlined">close</span>
               </button>
             </div>
+            <div className="p-6 overflow-y-auto flex-1 min-h-0">
+              {detailLoading && (
+                <p className="text-slate-500 text-sm py-8 text-center">Memuat detail...</p>
+              )}
+              {detailError && (
+                <p className="text-red-600 text-sm py-4">{detailError}</p>
+              )}
+              {!detailLoading && !detailError && detailData && (
+                <div className="space-y-6">
+                  {/* Data dasar */}
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Data Dasar</h4>
+                    <dl className="space-y-2.5 text-sm">
+                      <div><dt className="text-slate-500">Nama</dt><dd className="text-slate-800 font-medium">{detailData.name}</dd></div>
+                      <div><dt className="text-slate-500">NIM</dt><dd className="font-mono text-slate-800">{detailData.nim}</dd></div>
+                      <div><dt className="text-slate-500">Email</dt><dd className="text-slate-800">{detailData.email}</dd></div>
+                      <div><dt className="text-slate-500">No. HP</dt><dd className="text-slate-800">{detailData.phoneNumber ?? "—"}</dd></div>
+                      <div><dt className="text-slate-500">Angkatan</dt><dd className="text-slate-800">{detailData.angkatan ?? "—"}</dd></div>
+                      <div><dt className="text-slate-500">Program studi</dt><dd className="text-slate-800">{detailData.programStudi ?? "—"}</dd></div>
+                      <div><dt className="text-slate-500">Fakultas</dt><dd className="text-slate-800">{detailData.fakultas ?? "—"}</dd></div>
+                      <div><dt className="text-slate-500">Jabatan</dt><dd className="text-slate-800">{detailData.jabatan?.value ?? "—"}</dd></div>
+                      <div><dt className="text-slate-500">Divisi / Departemen</dt><dd className="text-slate-800">{detailData.departemen?.title ?? "—"}</dd></div>
+                      <div><dt className="text-slate-500">Status keanggotaan</dt>
+                        <dd>
+                          <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${
+                            detailData.membershipStatus === "APPROVED" || detailData.membershipStatus === "ACTIVE" ? "bg-green-50 text-green-700" :
+                            detailData.membershipStatus === "PENDING" ? "bg-amber-50 text-amber-700" :
+                            detailData.membershipStatus === "REJECTED" ? "bg-red-50 text-red-700" : "bg-slate-100 text-slate-600"
+                          }`}>{detailData.membershipStatus}</span>
+                        </dd>
+                      </div>
+                      {(detailData.roles?.length ?? 0) > 0 && (
+                        <div><dt className="text-slate-500">Role</dt><dd className="flex flex-wrap gap-1">{detailData.roles!.map((r) => <span key={r} className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">{r}</span>)}</dd></div>
+                      )}
+                      {detailData.joinedAt && <div><dt className="text-slate-500">Tanggal bergabung</dt><dd className="text-slate-800">{new Date(detailData.joinedAt).toLocaleDateString("id-ID")}</dd></div>}
+                      {detailData.birthDate && <div><dt className="text-slate-500">Tanggal lahir</dt><dd className="text-slate-800">{new Date(detailData.birthDate).toLocaleDateString("id-ID")}</dd></div>}
+                      {detailData.address && <div><dt className="text-slate-500">Alamat</dt><dd className="text-slate-800 text-sm whitespace-pre-wrap">{detailData.address}</dd></div>}
+                      {detailData.instagramAccount && <div><dt className="text-slate-500">Instagram</dt><dd className="text-slate-800">{detailData.instagramAccount}</dd></div>}
+                      {detailData.registrationReason && <div><dt className="text-slate-500">Alasan bergabung</dt><dd className="text-slate-800 text-sm mt-1 whitespace-pre-wrap">{detailData.registrationReason}</dd></div>}
+                    </dl>
+                  </div>
+                  {/* Profil mahasiswa (Level 2 & 3) */}
+                  {detailData.mahasiswaProfile && (
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Profil Mahasiswa</h4>
+                      <dl className="space-y-2.5 text-sm">
+                        {detailData.mahasiswaProfile.domisiliCity != null && <div><dt className="text-slate-500">Kota domisili</dt><dd className="text-slate-800">{detailData.mahasiswaProfile.domisiliCity || "—"}</dd></div>}
+                        {detailData.mahasiswaProfile.minatFokus != null && <div><dt className="text-slate-500">Minat / fokus</dt><dd className="text-slate-800">{detailData.mahasiswaProfile.minatFokus || "—"}</dd></div>}
+                        {detailData.mahasiswaProfile.skillsJson != null && <div><dt className="text-slate-500">Skill</dt><dd className="text-slate-800 text-sm whitespace-pre-wrap">{detailData.mahasiswaProfile.skillsJson || "—"}</dd></div>}
+                        {detailData.mahasiswaProfile.portfolioGithub != null && <div><dt className="text-slate-500">Portfolio GitHub</dt><dd className="text-slate-800"><a href={detailData.mahasiswaProfile.portfolioGithub} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate block max-w-full">{detailData.mahasiswaProfile.portfolioGithub || "—"}</a></dd></div>}
+                        {detailData.mahasiswaProfile.portfolioLinkedin != null && <div><dt className="text-slate-500">Portfolio LinkedIn</dt><dd className="text-slate-800"><a href={detailData.mahasiswaProfile.portfolioLinkedin} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate block max-w-full">{detailData.mahasiswaProfile.portfolioLinkedin || "—"}</a></dd></div>}
+                        {detailData.mahasiswaProfile.portfolioBehance != null && <div><dt className="text-slate-500">Portfolio Behance</dt><dd className="text-slate-800"><a href={detailData.mahasiswaProfile.portfolioBehance} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate block max-w-full">{detailData.mahasiswaProfile.portfolioBehance || "—"}</a></dd></div>}
+                        {detailData.mahasiswaProfile.communicationPreference != null && <div><dt className="text-slate-500">Preferensi komunikasi</dt><dd className="text-slate-800">{detailData.mahasiswaProfile.communicationPreference || "—"}</dd></div>}
+                        {detailData.mahasiswaProfile.notificationHours != null && <div><dt className="text-slate-500">Jam notifikasi</dt><dd className="text-slate-800">{detailData.mahasiswaProfile.notificationHours || "—"}</dd></div>}
+                        {detailData.mahasiswaProfile.cvPath != null && <div><dt className="text-slate-500">CV</dt><dd className="text-slate-800 text-sm">{detailData.mahasiswaProfile.cvPath || "—"}</dd></div>}
+                      </dl>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            {!detailLoading && (detailData || detailError) && (
+              <div className="p-4 border-t border-slate-100 shrink-0">
+                <button type="button" onClick={() => setDetailUserId(null)} className="w-full py-2.5 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200">
+                  Tutup
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

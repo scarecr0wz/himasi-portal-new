@@ -50,14 +50,73 @@ content.get("/content/prokers", async (c) => {
   return c.json(list);
 });
 
+// 3 acara terbaru mendatang (untuk landing). Harus di atas /content/activities/:id
+content.get("/content/activities/upcoming", async (c) => {
+  const limit = Math.min(Number(c.req.query("limit")) || 3, 10);
+  const now = new Date();
+  const list = await prisma.activity.findMany({
+    where: { deletedAt: null, isActive: true, startAt: { gte: now } },
+    orderBy: { startAt: "asc" },
+    take: limit,
+    include: { departemen: { select: { id: true, title: true } } },
+  });
+  return c.json(list);
+});
+
 content.get("/content/activities", async (c) => {
   const departemenId = c.req.query("departemenId");
   const where: { deletedAt: null; isActive: true; departemenId?: string | null } = { deletedAt: null, isActive: true };
   if (departemenId && departemenId.trim()) where.departemenId = departemenId.trim();
   const list = await prisma.activity.findMany({
     where,
-    orderBy: { startAt: "desc" },
+    orderBy: { startAt: "asc" },
     include: { departemen: { select: { id: true, title: true } } },
+  });
+  return c.json(list);
+});
+
+content.get("/content/activities/:id", async (c) => {
+  const id = c.req.param("id");
+  const activity = await prisma.activity.findFirst({
+    where: { id, deletedAt: null, isActive: true },
+    include: { departemen: { select: { id: true, title: true } } },
+  });
+  if (!activity) return c.json({ message: "Acara tidak ditemukan" }, 404);
+  return c.json(activity);
+});
+
+content.get("/content/activities/:id/participants", async (c) => {
+  const activityId = c.req.param("id");
+  const activity = await prisma.activity.findFirst({
+    where: { id: activityId, deletedAt: null },
+    select: { id: true },
+  });
+  if (!activity) return c.json({ message: "Acara tidak ditemukan" }, 404);
+  const participations = await prisma.mahasiswaEventParticipation.findMany({
+    where: { activityId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          nim: true,
+          modelHasRoles: { include: { role: { select: { name: true } } } },
+        },
+      },
+    },
+    orderBy: { participatedAt: "asc" },
+  });
+  const ADMIN_ROLES = ["admin", "superadmin"];
+  const list = participations.map((p) => {
+    const roles = p.user.modelHasRoles?.map((r) => r.role.name) ?? [];
+    const isAdmin = roles.some((r) => ADMIN_ROLES.includes(r));
+    return {
+      userId: p.user.id,
+      name: p.user.name,
+      nim: p.user.nim,
+      isAdmin,
+      participatedAt: p.participatedAt,
+    };
   });
   return c.json(list);
 });
@@ -80,6 +139,13 @@ content.get("/content/pengurus", async (c) => {
     where,
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     include: { departemen: { select: { id: true, title: true, icon: true } } },
+  });
+  return c.json(list);
+});
+
+content.get("/content/social-media", async (c) => {
+  const list = await prisma.socialMedia.findMany({
+    orderBy: { sortOrder: "asc" },
   });
   return c.json(list);
 });

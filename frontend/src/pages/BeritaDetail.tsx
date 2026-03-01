@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import { SocialMediaLinks, useSocialMedia } from "@/components/SocialMediaLinks";
 
 const API = "/api";
 
@@ -32,6 +33,7 @@ export default function BeritaDetail() {
   const [article, setArticle] = useState<NewsDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const socialMedia = useSocialMedia();
 
   useEffect(() => {
     if (!slug) {
@@ -127,6 +129,17 @@ export default function BeritaDetail() {
             {article.desc}
           </ReactMarkdown>
         </div>
+
+        {socialMedia.length > 0 && (
+          <div className="mt-10 pt-8 border-t border-slate-200">
+            <p className="text-slate-600 text-sm font-semibold mb-3">Ikuti kami</p>
+            <SocialMediaLinks
+              items={socialMedia}
+              className="flex flex-wrap gap-3"
+              iconClassName="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-all"
+            />
+          </div>
+        )}
 
         <div className="mt-10 pt-6 border-t border-slate-200">
           <Link

@@ -29,7 +29,7 @@ export default function PublicNavbar() {
           </Link>
           <nav className="hidden lg:flex items-center gap-6">
             <Link to="/berita" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Berita</Link>
-            <a href="/#acara" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Acara</a>
+            <Link to="/acara" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Acara</Link>
             <Link to="/pengurus" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Pengurus</Link>
             <a href="/#program-kerja" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Program Kerja</a>
             <a href="/#department" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Department</a>

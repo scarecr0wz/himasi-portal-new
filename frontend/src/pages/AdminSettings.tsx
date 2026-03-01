@@ -6,6 +6,18 @@ const API = "/api";
 
 type AdminUser = { id: string; name: string; email: string; nim: string; roles: string[] };
 
+type SocialMediaItem = { id: string; platform: string; url: string; sortOrder: number };
+
+const SOCIAL_PLATFORMS: { value: string; label: string }[] = [
+  { value: "instagram", label: "Instagram" },
+  { value: "twitter", label: "Twitter / X" },
+  { value: "facebook", label: "Facebook" },
+  { value: "youtube", label: "YouTube" },
+  { value: "linkedin", label: "LinkedIn" },
+  { value: "tiktok", label: "TikTok" },
+  { value: "web", label: "Website" },
+];
+
 export default function AdminSettings() {
   const { token } = useAuth();
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
@@ -110,6 +122,84 @@ export default function AdminSettings() {
       setRevokeError("Gagal mencabut role.");
     } finally {
       setRevokeSubmitting(false);
+    }
+  };
+
+  // Sosial Media (footer & akhir post berita)
+  const [socialMedia, setSocialMedia] = useState<SocialMediaItem[]>([]);
+  const [socialMediaLoading, setSocialMediaLoading] = useState(true);
+  const [socialMediaError, setSocialMediaError] = useState<string | null>(null);
+  const [socialMediaSaving, setSocialMediaSaving] = useState(false);
+  const [socialMediaMessage, setSocialMediaMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [newPlatform, setNewPlatform] = useState("instagram");
+  const [newSocialUrl, setNewSocialUrl] = useState("");
+
+  const fetchSocialMedia = () => {
+    if (!token) return;
+    setSocialMediaLoading(true);
+    setSocialMediaError(null);
+    fetch(`${API}/admin/settings/social-media`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => {
+        if (!r.ok) throw new Error("Gagal memuat data");
+        return r.json();
+      })
+      .then((data) => setSocialMedia(Array.isArray(data) ? data : []))
+      .catch((e) => setSocialMediaError(e instanceof Error ? e.message : "Gagal memuat data"))
+      .finally(() => setSocialMediaLoading(false));
+  };
+
+  useEffect(() => {
+    if (!token) {
+      setSocialMediaLoading(false);
+      return;
+    }
+    fetchSocialMedia();
+  }, [token]);
+
+  const handleAddSocial = () => {
+    const url = newSocialUrl.trim();
+    if (!url) return;
+    try {
+      new URL(url);
+    } catch {
+      setSocialMediaMessage({ type: "error", text: "URL tidak valid." });
+      return;
+    }
+    setSocialMediaMessage(null);
+    setSocialMedia((prev) => [...prev, { id: `draft-${Date.now()}`, platform: newPlatform, url, sortOrder: prev.length }]);
+    setNewSocialUrl("");
+  };
+
+  const handleRemoveSocial = (index: number) => {
+    setSocialMedia((prev) => prev.filter((_, i) => i !== index));
+    setSocialMediaMessage(null);
+  };
+
+  const handleSaveSocialMedia = async () => {
+    setSocialMediaMessage(null);
+    setSocialMediaSaving(true);
+    try {
+      const res = await fetch(`${API}/admin/settings/social-media`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          items: socialMedia.map((item, i) => ({ platform: item.platform, url: item.url, sortOrder: i })),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setSocialMediaMessage({ type: "error", text: data.message || "Gagal menyimpan link sosial media." });
+        return;
+      }
+      setSocialMedia(Array.isArray(data) ? data : socialMedia);
+      setSocialMediaMessage({ type: "success", text: "Link sosial media berhasil disimpan. Tampil di footer dan akhir setiap post berita." });
+    } catch {
+      setSocialMediaMessage({ type: "error", text: "Gagal menyimpan link sosial media." });
+    } finally {
+      setSocialMediaSaving(false);
     }
   };
 
@@ -310,6 +400,122 @@ export default function AdminSettings() {
             <span className="material-symbols-outlined text-lg">person_add</span>
             Tambah user administrasi
           </button>
+        </div>
+      </div>
+
+      {/* Sosial Media (footer & akhir post berita) */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-5 bg-primary rounded-full" />
+            <h2 className="text-lg font-bold text-slate-800">Sosial Media</h2>
+          </div>
+          <p className="text-slate-500 text-sm mt-2">
+            Link sosial media akan ditampilkan di footer situs dan di bagian akhir setiap post berita.
+          </p>
+        </div>
+        <div className="p-6 space-y-4">
+          {socialMediaMessage && (
+            <div
+              className={`rounded-xl px-4 py-3 text-sm ${
+                socialMediaMessage.type === "success"
+                  ? "bg-green-50 text-green-800 border border-green-200"
+                  : "bg-red-50 text-red-800 border border-red-200"
+              }`}
+            >
+              {socialMediaMessage.text}
+            </div>
+          )}
+          {socialMediaLoading && (
+            <p className="text-slate-500 text-sm">Memuat...</p>
+          )}
+          {!socialMediaLoading && socialMediaError && (
+            <p className="text-red-600 text-sm">{socialMediaError}</p>
+          )}
+          {!socialMediaLoading && !socialMediaError && (
+            <>
+              <div className="flex flex-wrap items-end gap-3">
+                <div className="flex-1 min-w-[200px]">
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Platform</label>
+                  <select
+                    value={newPlatform}
+                    onChange={(e) => setNewPlatform(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
+                  >
+                    {SOCIAL_PLATFORMS.map((p) => (
+                      <option key={p.value} value={p.value}>{p.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex-[2] min-w-[220px]">
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">URL</label>
+                  <input
+                    type="url"
+                    value={newSocialUrl}
+                    onChange={(e) => setNewSocialUrl(e.target.value)}
+                    placeholder="https://instagram.com/himasi..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAddSocial}
+                  className="bg-slate-100 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-200 flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-lg">add_link</span>
+                  Tambah
+                </button>
+              </div>
+              <ul className="divide-y divide-slate-100">
+                {socialMedia.length === 0 && (
+                  <li className="py-4 text-slate-500 text-sm">Belum ada link sosial media. Tambah di atas lalu klik Simpan.</li>
+                )}
+                {socialMedia.map((item, index) => (
+                  <li key={item.id} className="py-3 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="text-slate-400 shrink-0">
+                        <span className="material-symbols-outlined">link</span>
+                      </span>
+                      <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider shrink-0 w-24">
+                        {SOCIAL_PLATFORMS.find((p) => p.value === item.platform)?.label ?? item.platform}
+                      </span>
+                      <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary truncate hover:underline">
+                        {item.url}
+                      </a>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveSocial(index)}
+                      className="text-slate-400 hover:text-red-600 p-2 shrink-0"
+                      aria-label="Hapus"
+                    >
+                      <span className="material-symbols-outlined text-lg">delete</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleSaveSocialMedia}
+                  disabled={socialMediaSaving}
+                  className="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {socialMediaSaving ? (
+                    <>
+                      <span className="material-symbols-outlined text-lg animate-spin">progress_activity</span>
+                      Menyimpan...
+                    </>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-lg">save</span>
+                      Simpan Link Sosial Media
+                    </>
+                  )}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
