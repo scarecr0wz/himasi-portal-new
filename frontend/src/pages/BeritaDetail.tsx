@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { marked } from "marked";
 import { SocialMediaLinks, useSocialMedia } from "@/components/SocialMediaLinks";
+import ShareButtons from "../components/ShareButtons";
 import PublicNavbar from "../components/PublicNavbar";
 import PublicFooter from "../components/PublicFooter";
 
@@ -129,16 +130,25 @@ export default function BeritaDetail() {
             dangerouslySetInnerHTML={{ __html: marked.parse(article.desc) }}
           />
 
-          {socialMedia.length > 0 && (
-            <div className="mt-16 pt-10 border-t border-slate-200">
-              <p className="text-slate-900 text-sm font-bold uppercase tracking-wider mb-4">Bagikan & Ikuti kami</p>
-              <SocialMediaLinks
-                items={socialMedia}
-                className="flex flex-wrap gap-4"
-                iconClassName="w-12 h-12 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white hover:border-primary transition-all shadow-sm"
-              />
+          <div className="mt-16 pt-10 border-t border-slate-200">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+              <div>
+                <p className="text-slate-900 text-sm font-bold uppercase tracking-wider mb-4">Bagikan Berita</p>
+                <ShareButtons title={article.title} />
+              </div>
+
+              {socialMedia.length > 0 && (
+                <div>
+                  <p className="text-slate-900 text-sm font-bold uppercase tracking-wider mb-4">Ikuti Kami</p>
+                  <SocialMediaLinks
+                    items={socialMedia}
+                    className="flex flex-wrap gap-3"
+                    iconClassName="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-all shadow-sm"
+                  />
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
           <div className="mt-12 pt-8 border-t border-slate-200">
             <Link
