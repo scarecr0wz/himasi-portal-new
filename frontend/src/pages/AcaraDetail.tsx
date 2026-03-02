@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { useAuth } from "@/lib/auth";
 import PublicNavbar from "../components/PublicNavbar";
 import PublicFooter from "../components/PublicFooter";
+import SEO from "../components/SEO";
 
 const API = "/api";
 
@@ -94,7 +95,7 @@ export default function AcaraDetail() {
     fetch(`${API}/content/activities/${id}/participants`)
       .then((r) => (r.ok ? r.json() : []))
       .then((data) => setParticipants(Array.isArray(data) ? data : []))
-      .catch(() => {});
+      .catch(() => { });
   };
 
   const handleRegister = async () => {
@@ -178,6 +179,14 @@ export default function AcaraDetail() {
   return (
     <div className="font-display bg-background-light text-slate-900 min-h-screen flex flex-col">
       <PublicNavbar />
+
+      {activity && (
+        <SEO
+          title={activity.title}
+          description={activity.desc?.replace(/[#*`~_]/g, '').substring(0, 160).trim() + "..."}
+          image={activity.image || undefined}
+        />
+      )}
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-6 md:px-10 lg:px-16 py-12">
         <Link

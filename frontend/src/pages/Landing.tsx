@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import PublicFooter from "../components/PublicFooter";
 import PublicNavbar from "../components/PublicNavbar";
+import SEO from "../components/SEO";
 
 const API = "/api";
 
@@ -124,6 +125,7 @@ export default function Landing() {
     <div className="font-display bg-background-light text-slate-900 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-300">
       <div className="flex flex-col grow">
         <PublicNavbar />
+        <SEO />
 
         <main className="flex-1 max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-12">
 

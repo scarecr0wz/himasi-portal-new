@@ -12,13 +12,17 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 
 ---
 
-### Social Sharing — Content Engagement
+### Social Sharing & SEO — Engagement Optimization
 
 - **Social Share Buttons:** Fitur baru untuk membagikan konten ke platform populer:
   - **WhatsApp, Facebook, X (Twitter), & Telegram:** Integrasi link berbagi untuk meningkatkan jangkauan konten.
   - **Copy Link Feature:** Tombol salin URL cepat dengan feedback visual (checkmark & toast notification).
   - **UI/UX Premium:** Desain glassmorphism dengan hover micro-interactions, tooltip, dan transisi halus yang selaras dengan tema portal.
-- **Berita Detail:** Integrasi penuh Share Buttons di bagian bawah setiap artikel berita.
+- **Dynamic Meta Tags (SEO Engine):** Implementasi komponen `SEO` reusable untuk optimasi preview saat link dibagikan:
+  - **Berita & Acara:** Preview kini menyertakan Judul, Deskripsi dinamis (auto-clean markdown), dan Foto Utama secara akurat.
+  - **Social Media Crawler Support:** Dukungan untuk Open Graph (Facebook/WhatsApp) dan Twitter Cards.
+  - **Global Metadata:** Update metadata pada Landing Page dan Portal Departemen untuk konsistensi branding.
+- **Berita Detail:** Integrasi penuh Share Buttons dan Metadata dynamic di setiap artikel.
 
 ---
 

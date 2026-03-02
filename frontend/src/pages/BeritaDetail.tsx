@@ -5,6 +5,7 @@ import { SocialMediaLinks, useSocialMedia } from "@/components/SocialMediaLinks"
 import ShareButtons from "../components/ShareButtons";
 import PublicNavbar from "../components/PublicNavbar";
 import PublicFooter from "../components/PublicFooter";
+import SEO from "../components/SEO";
 
 const API = "/api";
 
@@ -86,6 +87,14 @@ export default function BeritaDetail() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-display">
       <PublicNavbar />
+
+      {article && (
+        <SEO
+          title={article.title}
+          description={article.desc.replace(/[#*`~_]/g, '').substring(0, 160).trim() + "..."}
+          image={article.photo || undefined}
+        />
+      )}
 
       <main className="flex-1">
         <article className="max-w-3xl mx-auto px-6 py-10 md:py-16">

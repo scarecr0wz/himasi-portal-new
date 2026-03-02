@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import PublicNavbar from "../components/PublicNavbar";
 import PublicFooter from "../components/PublicFooter";
+import SEO from "../components/SEO";
 
 const API = "/api";
 const DEFAULT_PERIODE = "2025/2026";
@@ -164,6 +165,13 @@ export default function DepartmentPortal() {
   return (
     <div className="font-display bg-background-light text-slate-900 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-300">
       <PublicNavbar />
+
+      {department && (
+        <SEO
+          title={department.title}
+          description={department.desc || `Portal resmi departemen ${department.title} HIMASI UT Bogor.`}
+        />
+      )}
 
       <section className="bg-primary text-white">
         <div className="max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-10 md:py-14">
