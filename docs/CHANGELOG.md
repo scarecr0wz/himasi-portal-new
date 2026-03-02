@@ -9,6 +9,7 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 ### Direncanakan
 
 - **Enhanced Link Management (Menu Publik):** Admin > Menu akan mengatur link navbar & footer landing (saat ini link hardcode). Rencana dan TODO tercatat di [docs/PLAN_ENHANCED_LINK_MENU.md](./PLAN_ENHANCED_LINK_MENU.md). Implementasi belum dilakukan.
+- **Manajemen Kas (Iuran):** Admin belum punya fitur manajemen kas; di portal mahasiswa menu Kas masih placeholder. Rencana sistem kas simple, transparan, dan siap audit (masuk/keluar + penggunaan, setoran per anggota, ringkasan untuk anggota, export laporan) tercatat di [docs/PLAN_MANAJEMEN_KAS.md](./PLAN_MANAJEMEN_KAS.md). Implementasi mengikuti TODO di dokumen tersebut.
 
 ---
 
@@ -85,6 +86,10 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 
 - **Backend:** `GET /api/profile/activities/registered` — daftar acara yang **user saat ini terdaftar** (participation), beserta data acara dan `participatedAt`, `attended`.
 - **Frontend:** Halaman **Acara** di dashboard (`/dashboard/acara`) menampilkan **hanya acara yang pengguna terdaftar** (Acara Saya), dengan link ke "Lihat semua acara" (`/acara`) untuk daftar acara lain.
+
+### Admin — CMS (Konten)
+
+- **Program Kerja — upload gambar di Pengaturan:** Di editor Program Kerja (Admin > Konten > Program Kerja), sidebar "Pengaturan" sekarang menyediakan **upload file** untuk foto (sama seperti Gambar Utama di Berita): area klik untuk upload, preview gambar, opsi "atau isi URL gambar", batas 10MB (JPEG/PNG/GIF/WebP). Sebelumnya field Foto hanya input link/URL.
 
 ### Lain-lain
 

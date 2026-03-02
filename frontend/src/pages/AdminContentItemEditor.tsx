@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 
@@ -35,6 +35,11 @@ export default function AdminContentItemEditor() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(isEdit);
+  const [uploading, setUploading] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const descRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   const headers = useCallback((): HeadersInit => ({
     "Content-Type": "application/json",
@@ -151,6 +156,105 @@ export default function AdminContentItemEditor() {
   };
 
   const set = (key: string, value: unknown) => setForm((f) => ({ ...f, [key]: value }));
+
+  const insertAtCursor = (before: string, after: string = "") => {
+    const ta = descRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const text = String(form.desc ?? "");
+    const selected = text.slice(start, end);
+    const newText = text.slice(0, start) + before + selected + after + text.slice(end);
+    set("desc", newText);
+    setTimeout(() => {
+      ta.focus();
+      ta.setSelectionRange(start + before.length, end + before.length);
+    }, 0);
+  };
+
+  const insertImageByUrl = () => {
+    const url = prompt("URL gambar:");
+    if (!url?.trim()) return;
+    const alt = prompt("Deskripsi gambar (opsional):") ?? "Gambar";
+    insertAtCursor(`\n![${alt}](${url.trim()})\n`, "");
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !token) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Pilih file gambar (JPEG, PNG, GIF, atau WebP).");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Ukuran file maksimal 10MB.");
+      return;
+    }
+    setError(null);
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const r = await fetch(`${API}/uploads`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (!r.ok) {
+        const data = await r.json().catch(() => ({}));
+        throw new Error(data.message ?? "Gagal mengunggah");
+      }
+      const data = await r.json();
+      const url = typeof data.url === "string" ? data.url : "";
+      if (url) insertAtCursor(`\n![${file.name}](${url})\n`, "");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal mengunggah gambar");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !token) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Pilih file gambar (JPEG, PNG, GIF, atau WebP).");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Ukuran file maksimal 10MB.");
+      return;
+    }
+    setError(null);
+    setUploadingPhoto(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const r = await fetch(`${API}/uploads`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (!r.ok) {
+        const data = await r.json().catch(() => ({}));
+        throw new Error(data.message ?? "Gagal mengunggah");
+      }
+      const data = await r.json();
+      const url = typeof data.url === "string" ? data.url : "";
+      if (url) set("photo", url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal mengunggah foto");
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  const setPhotoByUrl = () => {
+    const u = prompt("URL gambar:");
+    if (u?.trim()) set("photo", u.trim());
+  };
 
   if (!isValidType) {
     return (
@@ -300,12 +404,66 @@ export default function AdminContentItemEditor() {
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-1">Deskripsi</label>
-                  <textarea
-                    value={String(form.desc ?? "")}
-                    onChange={(e) => set("desc", e.target.value)}
-                    rows={4}
-                    className="w-full p-4 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                  />
+                  <div className="flex flex-col border border-slate-200 rounded-xl bg-white overflow-hidden min-h-[280px]">
+                    <div className="flex flex-wrap items-center gap-1 p-2 border-b border-slate-100 bg-slate-50">
+                      <button type="button" onClick={() => insertAtCursor("**", "**")} className="p-2 hover:bg-white rounded transition-colors text-slate-600" title="Bold">
+                        <span className="material-symbols-outlined text-[20px]">format_bold</span>
+                      </button>
+                      <button type="button" onClick={() => insertAtCursor("_", "_")} className="p-2 hover:bg-white rounded transition-colors text-slate-600" title="Italic">
+                        <span className="material-symbols-outlined text-[20px]">format_italic</span>
+                      </button>
+                      <button type="button" onClick={() => insertAtCursor("\n- ", "")} className="p-2 hover:bg-white rounded transition-colors text-slate-600" title="Bullet list">
+                        <span className="material-symbols-outlined text-[20px]">format_list_bulleted</span>
+                      </button>
+                      <button type="button" onClick={() => insertAtCursor("\n1. ", "")} className="p-2 hover:bg-white rounded transition-colors text-slate-600" title="Numbered list">
+                        <span className="material-symbols-outlined text-[20px]">format_list_numbered</span>
+                      </button>
+                      <div className="w-px h-6 bg-slate-200 mx-1" />
+                      <button type="button" onClick={() => { const u = prompt("URL:"); if (u) insertAtCursor(`[`, `](${u})`); }} className="p-2 hover:bg-white rounded transition-colors text-slate-600" title="Link">
+                        <span className="material-symbols-outlined text-[20px]">link</span>
+                      </button>
+                      <span className="inline-flex items-center">
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/gif,image/webp"
+                          className="hidden"
+                          onChange={handleImageUpload}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={uploading}
+                          className="p-2 hover:bg-white rounded transition-colors text-slate-600 disabled:opacity-50"
+                          title="Upload gambar"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">image</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={insertImageByUrl}
+                          className="px-1.5 py-1 text-[11px] text-slate-500 hover:text-primary hover:bg-white rounded"
+                          title="Pakai URL gambar"
+                        >
+                          URL
+                        </button>
+                      </span>
+                      <button type="button" onClick={() => insertAtCursor("\n> ", "")} className="p-2 hover:bg-white rounded transition-colors text-slate-600" title="Quote">
+                        <span className="material-symbols-outlined text-[20px]">format_quote</span>
+                      </button>
+                    </div>
+                    <textarea
+                      ref={descRef}
+                      value={String(form.desc ?? "")}
+                      onChange={(e) => set("desc", e.target.value)}
+                      placeholder="Tulis deskripsi program kerja (Markdown)..."
+                      className="flex-1 p-6 min-h-[200px] resize-none border-none bg-transparent text-slate-800 leading-relaxed text-base placeholder:text-slate-400 focus:ring-0 focus:outline-none"
+                      spellCheck
+                    />
+                    <div className="p-3 border-t border-slate-100 text-xs text-slate-400">
+                      Markdown editor — gunakan tombol gambar untuk menyisipkan gambar.
+                    </div>
+                  </div>
                 </div>
               </>
             )}
@@ -384,14 +542,51 @@ export default function AdminContentItemEditor() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Foto (URL opsional)</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Foto</label>
                   <input
-                    type="text"
-                    value={String(form.photo ?? "")}
-                    onChange={(e) => set("photo", e.target.value)}
-                    placeholder="/api/uploads/xxx.png"
-                    className="w-full p-2.5 rounded-lg border border-slate-200 bg-white"
+                    ref={photoInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                    className="hidden"
+                    onChange={handlePhotoUpload}
                   />
+                  <div className="flex flex-col gap-2">
+                    {form.photo ? (
+                      <div className="relative rounded-xl overflow-hidden border border-slate-200 aspect-video bg-slate-100">
+                        <img src={String(form.photo)} alt="" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => set("photo", "")}
+                          className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-lg text-slate-600 hover:bg-white"
+                        >
+                          <span className="material-symbols-outlined text-lg">close</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => { if (!uploadingPhoto) photoInputRef.current?.click(); }}
+                          onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && !uploadingPhoto) { e.preventDefault(); photoInputRef.current?.click(); } }}
+                          className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-xl p-6 transition-all hover:border-primary/50 bg-slate-50 cursor-pointer disabled:opacity-60"
+                        >
+                          <span className="material-symbols-outlined text-slate-400 text-3xl mb-2">cloud_upload</span>
+                          <p className="text-xs text-slate-500 text-center">
+                            {uploadingPhoto ? "Mengunggah..." : "Klik untuk upload gambar"}
+                          </p>
+                          <p className="text-[10px] text-slate-400 mt-1">PNG, JPG, GIF, WebP hingga 10MB</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={setPhotoByUrl}
+                          className="text-xs text-slate-500 hover:text-primary"
+                        >
+                          atau isi URL gambar
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Link aksi (opsional)</label>
