@@ -1,79 +1,98 @@
 import { useEffect } from "react";
 
+/** Strip markdown untuk SEO description (og:description, meta description). */
+export function stripMarkdownForSEO(md: string): string {
+  return md
+    .replace(/!\[.*?\]\(.*?\)/g, "") // hapus ![alt](url)
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1") // [text](url) -> text
+    .replace(/[*_~`#>|-]/g, "") // formatting
+    .replace(/\n+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Truncate teks untuk description, tambah "..." hanya jika dipotong. */
+export function truncateDescription(text: string, maxLength: number = 155): string {
+  const cleaned = text.trim();
+  if (cleaned.length <= maxLength) return cleaned;
+  return cleaned.slice(0, maxLength).trim() + "...";
+}
+
+const DEFAULT_OG_IMAGE = "https://placehold.co/1200x630/1e3a5f/ffffff?text=HIMASI+UT+Bogor";
+
+function toAbsoluteImageUrl(img: string): string {
+  if (img.startsWith("http://") || img.startsWith("https://")) return img;
+  const origin = window.location.origin;
+  const path = img.startsWith("/") ? img : `/${img}`;
+  return `${origin}${path}`;
+}
+
 interface SEOProps {
-    title?: string;
-    description?: string;
-    image?: string;
-    url?: string;
-    type?: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  defaultImage?: string;
+  url?: string;
+  type?: string;
 }
 
 export default function SEO({
-    title,
-    description,
-    image,
-    url = window.location.href,
-    type = "article"
+  title,
+  description,
+  image,
+  defaultImage = DEFAULT_OG_IMAGE,
+  url = typeof window !== "undefined" ? window.location.href : "",
+  type = "article",
 }: SEOProps) {
-    const defaultTitle = "HIMASI Portal — Universitas Terbuka Bogor";
-    const defaultDescription = "Portal Resmi Himpunan Mahasiswa Sistem Informasi (HIMASI) Universitas Terbuka Bogor.";
-    const siteName = "HIMASI UT Bogor";
+  const defaultTitle = "HIMASI Portal — Universitas Terbuka Bogor";
+  const defaultDescription =
+    "Portal Resmi Himpunan Mahasiswa Sistem Informasi (HIMASI) Universitas Terbuka Bogor.";
+  const siteName = "HIMASI UT Bogor";
 
-    useEffect(() => {
-        // 1. Update Title
-        const finalTitle = title ? `${title} | ${siteName}` : defaultTitle;
-        document.title = finalTitle;
+  useEffect(() => {
+    const finalTitle = title ? `${title} | ${siteName}` : defaultTitle;
+    document.title = finalTitle;
 
-        // 2. Helper to get/create meta tags
-        const updateMeta = (name: string, content: string, isProperty: boolean = false) => {
-            if (!content) return;
+    const updateMeta = (name: string, content: string, isProperty = false) => {
+      if (!content) return;
+      const attr = isProperty ? "property" : "name";
+      const selector = `meta[${attr}="${name}"]`;
+      let el = document.querySelector(selector);
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute(attr, name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", content);
+    };
 
-            const selector = isProperty ? `meta[property="${name}"]` : `meta[name="${name}"]`;
-            let element = document.querySelector(selector);
+    const finalDescription = description || defaultDescription;
+    updateMeta("description", finalDescription);
 
-            if (!element) {
-                element = document.createElement("meta");
-                if (isProperty) {
-                    element.setAttribute("property", name);
-                } else {
-                    element.setAttribute("name", name);
-                }
-                document.head.appendChild(element);
-            }
-            element.setAttribute("content", content);
-        };
+    updateMeta("og:title", finalTitle, true);
+    updateMeta("og:description", finalDescription, true);
+    updateMeta("og:type", type, true);
+    updateMeta("og:url", url, true);
+    updateMeta("og:site_name", siteName, true);
 
-        // 3. Update Standard Meta Tags
-        updateMeta("description", description || defaultDescription);
+    const finalImage = image || defaultImage;
+    if (finalImage) {
+      const absoluteImage = toAbsoluteImageUrl(finalImage);
+      updateMeta("og:image", absoluteImage, true);
+      if (absoluteImage.startsWith("https://")) {
+        updateMeta("og:image:secure_url", absoluteImage, true);
+      }
+      updateMeta("og:image:width", "1200", true);
+      updateMeta("og:image:height", "630", true);
+    }
 
-        // 4. Update Open Graph (Facebook, WhatsApp, etc.)
-        updateMeta("og:title", finalTitle, true);
-        updateMeta("og:description", description || defaultDescription, true);
-        updateMeta("og:type", type, true);
-        updateMeta("og:url", url, true);
-        updateMeta("og:site_name", siteName, true);
+    updateMeta("twitter:card", "summary_large_image");
+    updateMeta("twitter:title", finalTitle);
+    updateMeta("twitter:description", finalDescription);
+    if (finalImage) {
+      updateMeta("twitter:image", toAbsoluteImageUrl(finalImage));
+    }
+  }, [title, description, image, defaultImage, url, type]);
 
-        if (image) {
-            // Ensure image URL is absolute
-            const absoluteImage = image.startsWith('http')
-                ? image
-                : `${window.location.origin}${image.startsWith('/') ? '' : '/'}${image}`;
-            updateMeta("og:image", absoluteImage, true);
-        }
-
-        // 5. Update Twitter Cards
-        updateMeta("twitter:card", "summary_large_image");
-        updateMeta("twitter:title", finalTitle);
-        updateMeta("twitter:description", description || defaultDescription);
-        if (image) {
-            const absoluteImage = image.startsWith('http')
-                ? image
-                : `${window.location.origin}${image.startsWith('/') ? '' : '/'}${image}`;
-            updateMeta("twitter:image", absoluteImage);
-        }
-
-        // Optional: Cleanup if needed on unmount (though usually we want to keep them until next page)
-    }, [title, description, image, url, type]);
-
-    return null; // This component doesn't render anything
+  return null;
 }

@@ -5,7 +5,7 @@ import { SocialMediaLinks, useSocialMedia } from "@/components/SocialMediaLinks"
 import ShareButtons from "../components/ShareButtons";
 import PublicNavbar from "../components/PublicNavbar";
 import PublicFooter from "../components/PublicFooter";
-import SEO from "../components/SEO";
+import SEO, { stripMarkdownForSEO, truncateDescription } from "../components/SEO";
 
 const API = "/api";
 
@@ -91,7 +91,7 @@ export default function BeritaDetail() {
       {article && (
         <SEO
           title={article.title}
-          description={article.desc.replace(/[#*`~_]/g, '').substring(0, 160).trim() + "..."}
+          description={truncateDescription(stripMarkdownForSEO(article.desc))}
           image={article.photo || undefined}
         />
       )}

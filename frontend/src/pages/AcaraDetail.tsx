@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { useAuth } from "@/lib/auth";
 import PublicNavbar from "../components/PublicNavbar";
 import PublicFooter from "../components/PublicFooter";
-import SEO from "../components/SEO";
+import SEO, { stripMarkdownForSEO, truncateDescription } from "../components/SEO";
 
 const API = "/api";
 
@@ -183,7 +183,7 @@ export default function AcaraDetail() {
       {activity && (
         <SEO
           title={activity.title}
-          description={activity.desc?.replace(/[#*`~_]/g, '').substring(0, 160).trim() + "..."}
+          description={truncateDescription(stripMarkdownForSEO(activity.desc ?? ""))}
           image={activity.image || undefined}
         />
       )}

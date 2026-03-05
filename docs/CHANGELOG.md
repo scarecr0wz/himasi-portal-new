@@ -24,6 +24,15 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 
 ---
 
+### SEO & Share Thumbnail — Optimasi
+
+- **Fallback Thumbnail:** Berita/acara tanpa foto kini tetap menampilkan thumbnail saat dibagikan (OG image fallback via URL).
+- **Open Graph:** Penambahan `og:image:secure_url`, `og:image:width`, `og:image:height` untuk kompatibilitas crawler yang lebih baik.
+- **Deskripsi:** Perbaikan stripping markdown dan truncation — `stripMarkdownForSEO()` dan `truncateDescription()` untuk preview yang lebih bersih.
+- **URL absolut:** Helper `toAbsoluteImageUrl()` memastikan URL gambar valid untuk Facebook, WhatsApp, Twitter.
+
+---
+
 ### Social Sharing & SEO — Engagement Optimization
 
 - **Social Share Buttons:** Fitur baru untuk membagikan konten ke platform populer:
