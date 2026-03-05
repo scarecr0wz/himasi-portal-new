@@ -61,6 +61,7 @@ export default function BeritaDetail() {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col uppercase font-display">
         <PublicNavbar />
+        <SEO title="Memuat Berita..." />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-slate-500">Memuat berita...</p>
         </div>
@@ -73,6 +74,7 @@ export default function BeritaDetail() {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col font-display">
         <PublicNavbar />
+        <SEO title="Berita Tidak Ditemukan" />
         <div className="flex-1 flex flex-col items-center justify-center p-6">
           <p className="text-slate-600 mb-4">{error ?? "Berita tidak ditemukan"}</p>
           <Link to="/" className="text-primary font-semibold hover:underline">
@@ -87,14 +89,11 @@ export default function BeritaDetail() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-display">
       <PublicNavbar />
-
-      {article && (
-        <SEO
-          title={article.title}
-          description={truncateDescription(stripMarkdownForSEO(article.desc))}
-          image={article.photo || undefined}
-        />
-      )}
+      <SEO
+        title={article.title}
+        description={truncateDescription(stripMarkdownForSEO(article.desc))}
+        image={article.photo || undefined}
+      />
 
       <main className="flex-1">
         <article className="max-w-3xl mx-auto px-6 py-10 md:py-16">

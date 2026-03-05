@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import PublicNavbar from "../components/PublicNavbar";
 import PublicFooter from "../components/PublicFooter";
+import SEO from "../components/SEO";
 
 const API = "/api";
+
 
 type NewsItem = {
   id: string;
@@ -59,16 +61,20 @@ export default function BeritaList() {
   const searchLower = search.trim().toLowerCase();
   const filteredNews = searchLower
     ? news.filter(
-        (item) =>
-          (item.title && item.title.toLowerCase().includes(searchLower)) ||
-          (item.author && item.author.toLowerCase().includes(searchLower)) ||
-          (item.desc && stripMarkdown(item.desc).toLowerCase().includes(searchLower))
-      )
+      (item) =>
+        (item.title && item.title.toLowerCase().includes(searchLower)) ||
+        (item.author && item.author.toLowerCase().includes(searchLower)) ||
+        (item.desc && stripMarkdown(item.desc).toLowerCase().includes(searchLower))
+    )
     : news;
 
   return (
     <div className="font-display bg-background-light text-slate-900 min-h-screen flex flex-col">
       <PublicNavbar />
+      <SEO
+        title="Berita"
+        description="Kumpulan berita, pengumuman, dan informasi terkini dari HIMASI Universitas Terbuka Bogor."
+      />
 
       <main className="flex-1 max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-12">
         <div className="mb-10">

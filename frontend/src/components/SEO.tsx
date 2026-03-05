@@ -89,9 +89,26 @@ export default function SEO({
     updateMeta("twitter:card", "summary_large_image");
     updateMeta("twitter:title", finalTitle);
     updateMeta("twitter:description", finalDescription);
+    updateMeta("twitter:site", "@himasi_utbogor"); // Atur jika ada akun twitter resmi
     if (finalImage) {
       updateMeta("twitter:image", toAbsoluteImageUrl(finalImage));
     }
+
+    // Canonical link
+    const updateLink = (rel: string, href: string) => {
+      if (!href) return;
+      let el = document.querySelector(`link[rel="${rel}"]`);
+      if (!el) {
+        el = document.createElement("link");
+        el.setAttribute("rel", rel);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("href", href);
+    };
+    updateLink("canonical", url);
+
+    // Lang
+    document.documentElement.lang = "id";
   }, [title, description, image, defaultImage, url, type]);
 
   return null;
