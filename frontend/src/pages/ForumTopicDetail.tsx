@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useAuth } from "@/lib/auth";
 import { avatarUrl } from "@/lib/auth";
+import MarkdownEditor from "@/components/MarkdownEditor";
 
 const API = "/api";
 
@@ -175,8 +178,8 @@ export default function ForumTopicDetail() {
           <span>{formatDate(topic.updatedAt)}</span>
         </div>
 
-        <div className="prose prose-slate max-w-none text-slate-700 whitespace-pre-wrap">
-          {topic.content}
+        <div className="prose prose-slate max-w-none text-slate-700">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{topic.content}</ReactMarkdown>
         </div>
 
         {topic.replies.length > 0 && (
@@ -196,7 +199,9 @@ export default function ForumTopicDetail() {
                       {formatDate(r.createdAt)}
                     </span>
                   </div>
-                  <p className="text-slate-700 text-sm whitespace-pre-wrap">{r.content}</p>
+                  <div className="prose prose-slate prose-sm max-w-none text-slate-700">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{r.content}</ReactMarkdown>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -207,13 +212,13 @@ export default function ForumTopicDetail() {
           <h2 className="text-lg font-bold text-slate-800 mb-4">Tulis balasan</h2>
           <form onSubmit={handleSubmitReply} className="space-y-4">
             {replyError && <p className="text-red-600 text-sm">{replyError}</p>}
-            <textarea
+            <MarkdownEditor
               value={replyContent}
-              onChange={(e) => setReplyContent(e.target.value)}
+              onChange={setReplyContent}
               placeholder="Tulis balasan..."
-              rows={4}
-              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 resize-y"
-              required
+              minRows={4}
+              onError={setReplyError}
+              hideFooter
             />
             <button
               type="submit"

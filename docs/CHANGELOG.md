@@ -13,6 +13,17 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 
 ---
 
+### Ruang Terbuka — Markdown Editor
+
+- **Editor Rich Text:** Penggantian textarea plain di Ruang Terbuka dengan Markdown editor yang sama seperti Content → Tambah Program Kerja:
+  - **Toolbar:** Bold, Italic, bullet list, numbered list, Link, Gambar (upload + URL), Quote.
+  - **Buat topik:** Modal "Buat topik baru" kini menggunakan Markdown editor untuk field Isi.
+  - **Balasan:** Form tulis balasan memakai Markdown editor.
+- **Rendering:** Konten topik dan balasan dirender dengan `ReactMarkdown` dan `remark-gfm` (dukungan GitHub Flavored Markdown).
+- **Komponen Reusable:** Ekstraksi `MarkdownEditor` untuk dipakai di Forum dan editor Program Kerja.
+
+---
+
 ### Social Sharing & SEO — Engagement Optimization
 
 - **Social Share Buttons:** Fitur baru untuk membagikan konten ke platform populer:

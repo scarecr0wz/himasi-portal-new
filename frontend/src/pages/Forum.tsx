@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
+import MarkdownEditor from "@/components/MarkdownEditor";
 
 const API = "/api";
 
@@ -262,13 +263,13 @@ export default function Forum() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Isi</label>
-                <textarea
+                <MarkdownEditor
                   value={createContent}
-                  onChange={(e) => setCreateContent(e.target.value)}
+                  onChange={setCreateContent}
                   placeholder="Tulis isi topik..."
-                  rows={5}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 placeholder:text-slate-400 resize-y"
-                  required
+                  minRows={5}
+                  onError={setCreateError}
+                  hideFooter
                 />
               </div>
               <div className="flex gap-3 pt-2">
