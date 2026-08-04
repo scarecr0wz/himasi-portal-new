@@ -25,6 +25,9 @@ import ForumTopicDetail from "./pages/ForumTopicDetail";
 import DashboardAcara from "./pages/DashboardAcara";
 import Pengurus from "./pages/Pengurus";
 import DepartmentPortal from "./pages/DepartmentPortal";
+import ProgramKerja from "./pages/ProgramKerja";
+import DepartemenList from "./pages/DepartemenList";
+import FaqList from "./pages/FaqList";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuth();
@@ -58,6 +61,9 @@ export default function App() {
       <Route path="/acara/:id" element={<AcaraDetail />} />
       <Route path="/pengurus" element={<Pengurus />} />
       <Route path="/pengurus/department/:id" element={<DepartmentPortal />} />
+      <Route path="/program-kerja" element={<ProgramKerja />} />
+      <Route path="/departemen" element={<DepartemenList />} />
+      <Route path="/faq" element={<FaqList />} />
 
       <Route
         path="/dashboard"

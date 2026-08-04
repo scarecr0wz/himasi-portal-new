@@ -26,9 +26,9 @@ export default function PublicFooter() {
                             <li><Link to="/berita" className="hover:text-primary transition-colors">Berita</Link></li>
                             <li><Link to="/acara" className="hover:text-primary transition-colors">Acara</Link></li>
                             <li><Link to="/pengurus" className="hover:text-primary transition-colors">Pengurus</Link></li>
-                            <li><a href="/#program-kerja" className="hover:text-primary transition-colors">Program Kerja</a></li>
-                            <li><a href="/#department" className="hover:text-primary transition-colors">Departemen</a></li>
-                            <li><a href="/#faq" className="hover:text-primary transition-colors">FAQ</a></li>
+                            <li><Link to="/program-kerja" className="hover:text-primary transition-colors">Program Kerja</Link></li>
+                            <li><Link to="/departemen" className="hover:text-primary transition-colors">Departemen</Link></li>
+                            <li><Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
                             <li><Link to="/login" className="hover:text-primary transition-colors">Portal Mahasiswa</Link></li>
                         </ul>
                     </div>

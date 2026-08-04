@@ -32,9 +32,9 @@ export default function PublicNavbar() {
             <Link to="/berita" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Berita</Link>
             <Link to="/acara" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Acara</Link>
             <Link to="/pengurus" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Pengurus</Link>
-            <a href="/#program-kerja" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Program Kerja</a>
-            <a href="/#department" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Departemen</a>
-            <a href="/#faq" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">FAQ</a>
+            <Link to="/program-kerja" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Program Kerja</Link>
+            <Link to="/departemen" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Departemen</Link>
+            <Link to="/faq" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">FAQ</Link>
           </nav>
         </div>
         <div className="flex flex-1 justify-end items-center gap-4">
@@ -123,9 +123,9 @@ export default function PublicNavbar() {
             <Link to="/berita" onClick={() => setMobileNavOpen(false)}>Berita</Link>
             <Link to="/acara" onClick={() => setMobileNavOpen(false)}>Acara</Link>
             <Link to="/pengurus" onClick={() => setMobileNavOpen(false)}>Pengurus</Link>
-            <a href="/#program-kerja" onClick={() => setMobileNavOpen(false)}>Program Kerja</a>
-            <a href="/#department" onClick={() => setMobileNavOpen(false)}>Departemen</a>
-            <a href="/#tentang" onClick={() => setMobileNavOpen(false)}>Tentang</a>
+            <Link to="/program-kerja" onClick={() => setMobileNavOpen(false)}>Program Kerja</Link>
+            <Link to="/departemen" onClick={() => setMobileNavOpen(false)}>Departemen</Link>
+            <Link to="/faq" onClick={() => setMobileNavOpen(false)}>FAQ</Link>
           </div>
         </nav>
       )}
