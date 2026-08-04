@@ -3,10 +3,9 @@ import { Link } from "react-router-dom";
 import PublicNavbar from "../components/PublicNavbar";
 import PublicFooter from "../components/PublicFooter";
 import SEO from "../components/SEO";
+import DepartmentLogo from "../components/DepartmentLogo";
 
 const API = "/api";
-const ICON_FALLBACK = "folder";
-
 type DepartmentItem = {
   id: string;
   title: string;
@@ -107,9 +106,11 @@ export default function DepartemenList() {
                     style={{ animationDelay: `${Math.min(index, 8) * 70}ms` }}
                   >
                     <span className="department-card-index">{String(index + 1).padStart(2, "0")}</span>
-                    <span className="department-card-icon material-symbols-outlined" aria-hidden="true">
-                      {department.icon?.match(/^[a-z0-9_]+$/) ? department.icon : ICON_FALLBACK}
-                    </span>
+                    <DepartmentLogo
+                      title={department.title}
+                      icon={department.icon}
+                      className="department-card-logo"
+                    />
                     <div className="department-card-copy">
                       <h3>{department.title}</h3>
                       <p>{department.desc || "Ruang kolaborasi dan pengembangan mahasiswa HIMASI."}</p>

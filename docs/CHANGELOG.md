@@ -6,6 +6,13 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 
 ## [Unreleased]
 
+### Public UI — Department Branding
+
+- **Logo Departemen:** Menambahkan aset identitas visual departemen dari `frontend/public/departement-logs`.
+- **Homepage:** Mengganti ikon generik pada section Departemen dengan logo resmi masing-masing departemen.
+- **Halaman Departemen:** Menampilkan logo departemen pada directory card di `/departemen` dengan ukuran responsif.
+- **Pemetaan Dinamis:** Menambahkan komponen `DepartmentLogo` untuk memetakan judul departemen dari CMS ke aset yang sesuai, lengkap dengan fallback ikon untuk departemen baru.
+
 ### Direncanakan
 
 - **Enhanced Link Management (Menu Publik):** Admin > Menu akan mengatur link navbar & footer landing (saat ini link hardcode). Rencana dan TODO tercatat di [docs/PLAN_ENHANCED_LINK_MENU.md](./PLAN_ENHANCED_LINK_MENU.md). Implementasi belum dilakukan.

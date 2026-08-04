@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import PublicFooter from "../components/PublicFooter";
 import PublicNavbar from "../components/PublicNavbar";
 import SEO from "../components/SEO";
+import DepartmentLogo from "../components/DepartmentLogo";
 
 const API = "/api";
 
@@ -400,27 +401,27 @@ export default function Landing() {
             <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-8">Departemen HIMASI</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-3">
-                <span className="material-symbols-outlined text-3xl text-primary" aria-hidden>emoji_events</span>
+                <DepartmentLogo title="Acara & Humas" icon="emoji_events" className="landing-department-logo" />
                 <h3 className="text-slate-900 font-bold text-lg">Acara & Kehumasan</h3>
                 <p className="text-slate-600 text-sm leading-relaxed">Menyelenggarakan event dan menjalin hubungan dengan pihak luar.</p>
               </div>
               <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-3">
-                <span className="material-symbols-outlined text-3xl text-primary" aria-hidden>menu_book</span>
+                <DepartmentLogo title="Akademik & Keilmuan" icon="menu_book" className="landing-department-logo" />
                 <h3 className="text-slate-900 font-bold text-lg">Akademik & Keilmuan</h3>
                 <p className="text-slate-600 text-sm leading-relaxed">Fokus pada pengembangan akademik dan wawasan teknologi informasi mahasiswa.</p>
               </div>
               <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-3">
-                <span className="material-symbols-outlined text-3xl text-primary" aria-hidden>campaign</span>
+                <DepartmentLogo title="Media & Publikasi" icon="campaign" className="landing-department-logo" />
                 <h3 className="text-slate-900 font-bold text-lg">Media & Publikasi</h3>
                 <p className="text-slate-600 text-sm leading-relaxed">Mengelola informasi, media sosial, dan branding organisasi.</p>
               </div>
               <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-3">
-                <span className="material-symbols-outlined text-3xl text-primary" aria-hidden>sports_basketball</span>
+                <DepartmentLogo title="Olahraga & Seni" icon="sports_basketball" className="landing-department-logo" />
                 <h3 className="text-slate-900 font-bold text-lg">Olahraga & Seni</h3>
                 <p className="text-slate-600 text-sm leading-relaxed">Menampung minat dan bakat mahasiswa di bidang olahraga.</p>
               </div>
               <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-3 sm:col-span-2 lg:col-span-1">
-                <span className="material-symbols-outlined text-3xl text-primary" aria-hidden>groups</span>
+                <DepartmentLogo title="PSDM" icon="groups" className="landing-department-logo" />
                 <h3 className="text-slate-900 font-bold text-lg">PSDM</h3>
                 <p className="text-slate-600 text-sm leading-relaxed">Pengembangan Sumber Daya Mahasiswa, kaderisasi, dan pelatihan soft skill.</p>
               </div>
