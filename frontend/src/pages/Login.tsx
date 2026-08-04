@@ -743,6 +743,162 @@ export default function Login() {
           transition: color 0.2s;
         }
         .login-back-link a:hover { color: #137fec; }
+
+        /* HIMASI public theme alignment */
+        .login-root {
+          background:
+            radial-gradient(circle at 88% 8%, rgba(22, 81, 164, 0.08), transparent 26rem),
+            linear-gradient(180deg, #f8fbff 0%, #f1f5f9 100%);
+        }
+
+        .login-brand-overlay {
+          background: linear-gradient(
+            150deg,
+            rgba(28, 57, 106, 0.95) 0%,
+            rgba(28, 57, 106, 0.82) 48%,
+            rgba(22, 81, 164, 0.76) 100%
+          );
+        }
+
+        .login-brand-vignette {
+          background: radial-gradient(ellipse at center, transparent 35%, rgba(8, 24, 50, 0.28) 100%);
+        }
+
+        .login-brand-shimmer {
+          height: 240px;
+          background: linear-gradient(to top, rgba(22, 81, 164, 0.25), transparent);
+        }
+
+        .login-logo-glow {
+          display: none;
+        }
+
+        .login-logo-ring {
+          display: none;
+        }
+
+        .login-logo-border {
+          display: none;
+        }
+
+        .login-logo-wrap {
+          width: 136px;
+          height: 136px;
+          margin-bottom: 1.75rem;
+        }
+
+        .login-logo-box {
+          width: 136px;
+          height: 136px;
+          border-radius: 24px;
+          background: rgba(255, 255, 255, 0.94);
+          border-color: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          box-shadow:
+            0 1rem 2.5rem rgba(8, 24, 50, 0.25),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        .login-logo-box::after { display: none; }
+
+        .login-logo-img {
+          width: 92px;
+          height: 92px;
+        }
+
+        .login-brand-title span,
+        .login-mobile-hero-title span {
+          background: linear-gradient(135deg, #dbeafe, #a9caff);
+          -webkit-background-clip: text;
+          background-clip: text;
+          filter: none;
+        }
+
+        .login-brand-subtitle { color: rgba(226, 232, 240, 0.86); }
+        .login-brand-footer { color: rgba(226, 232, 240, 0.58); }
+
+        .login-form-panel {
+          background:
+            radial-gradient(circle at 88% 8%, rgba(22, 81, 164, 0.075), transparent 25rem),
+            linear-gradient(180deg, #f8fbff, #f1f5f9);
+        }
+
+        .login-form-panel::before {
+          background: radial-gradient(circle, rgba(22, 81, 164, 0.055), transparent 70%);
+        }
+
+        .login-form-panel::after {
+          background: radial-gradient(circle, rgba(28, 57, 106, 0.04), transparent 70%);
+        }
+
+        .login-card {
+          border-color: rgba(22, 81, 164, 0.13);
+          border-radius: 22px;
+          box-shadow:
+            0 0 0 1px rgba(22, 81, 164, 0.025),
+            0 1.5rem 4rem rgba(28, 57, 106, 0.1);
+        }
+
+        .login-card::before {
+          background: linear-gradient(90deg, transparent, rgba(22, 81, 164, 0.4), transparent);
+        }
+
+        .login-card-title { color: #1c396a; }
+        .login-label { color: #334766; }
+
+        .login-input:focus {
+          border-color: #1651a4;
+          box-shadow: 0 0 0 4px rgba(22, 81, 164, 0.09);
+        }
+
+        .login-input-wrap:focus-within .login-input-icon,
+        .login-pw-toggle:hover,
+        .login-back-link a:hover { color: #1651a4; }
+
+        .login-pw-toggle:hover { background: rgba(22, 81, 164, 0.08); }
+
+        .login-submit {
+          background: linear-gradient(135deg, #1651a4 0%, #1c396a 100%);
+          box-shadow: 0 0.55rem 1.4rem rgba(28, 57, 106, 0.25);
+        }
+
+        .login-submit:hover:not(:disabled) {
+          box-shadow: 0 0.85rem 2rem rgba(28, 57, 106, 0.32);
+        }
+
+        .login-submit:active:not(:disabled) {
+          box-shadow: 0 0.35rem 1rem rgba(28, 57, 106, 0.24);
+        }
+
+        .login-trust-item svg { stroke: #1651a4; }
+
+        @media (max-width: 1023px) {
+          .login-form-panel { background: #f8fafc; }
+          .login-mobile-hero-overlay {
+            background: linear-gradient(155deg, rgba(28, 57, 106, 0.92), rgba(22, 81, 164, 0.72));
+          }
+          .login-mobile-hero-fade { background: linear-gradient(to bottom, transparent, #f8fafc); }
+          .login-mobile-logo-box {
+            border-radius: 18px;
+            box-shadow: 0 0.6rem 1.8rem rgba(8, 24, 50, 0.24);
+          }
+          .login-mobile-logo-box::before { display: none; }
+          .login-card {
+            box-shadow:
+              0 -4px 0 rgba(22, 81, 164, 0.06),
+              0 0 0 1px rgba(22, 81, 164, 0.04),
+              0 1rem 2.5rem rgba(28, 57, 106, 0.11);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .login-logo-glow,
+          .login-card,
+          .login-card-badge-dot,
+          .login-spinner { animation: none; }
+          .login-card { opacity: 1; transform: none; }
+        }
       `}</style>
 
       <div className="login-root">
