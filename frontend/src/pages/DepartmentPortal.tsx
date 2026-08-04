@@ -134,7 +134,7 @@ export default function DepartmentPortal() {
     return (
       <div className="font-display bg-background-light text-slate-900 min-h-screen flex flex-col">
         <PublicNavbar />
-        <main className="flex-1 max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-12 flex justify-center items-center">
+        <main className="flex-1 max-w-[1440px] mx-auto w-full px-5 md:px-10 lg:px-14 xl:px-16 py-12 flex justify-center items-center">
           <p className="text-slate-500">Memuat portal departemen...</p>
         </main>
         <PublicFooter />
@@ -146,7 +146,7 @@ export default function DepartmentPortal() {
     return (
       <div className="font-display bg-background-light text-slate-900 min-h-screen flex flex-col">
         <PublicNavbar />
-        <main className="flex-1 max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-12 flex flex-col items-center justify-center text-center">
+        <main className="flex-1 max-w-[1440px] mx-auto w-full px-5 md:px-10 lg:px-14 xl:px-16 py-12 flex flex-col items-center justify-center text-center">
           <span className="material-symbols-outlined text-6xl text-slate-300 mb-4">folder_off</span>
           <h1 className="text-xl font-bold text-slate-800 mb-2">Departemen tidak ditemukan</h1>
           <p className="text-slate-500 mb-6">URL mungkin salah atau departemen sudah tidak tersedia.</p>
@@ -174,7 +174,7 @@ export default function DepartmentPortal() {
       )}
 
       <section className="bg-primary text-white">
-        <div className="max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-10 md:py-14">
+        <div className="max-w-[1440px] mx-auto w-full px-5 md:px-10 lg:px-14 xl:px-16 py-10 md:py-14">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
@@ -207,7 +207,7 @@ export default function DepartmentPortal() {
         </div>
       </section>
 
-      <main className="flex-1 max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-10 md:py-14">
+      <main className="flex-1 max-w-[1440px] mx-auto w-full px-5 md:px-10 lg:px-14 xl:px-16 py-10 md:py-14">
         {/* Pengurus Departemen */}
         <section className="mb-14 md:mb-16" aria-labelledby="pengurus-heading">
           <h2 id="pengurus-heading" className="text-slate-900 text-xl md:text-2xl font-bold mb-2 flex items-center gap-2">

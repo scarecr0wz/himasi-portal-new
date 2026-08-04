@@ -72,7 +72,7 @@ export default function Pengurus() {
 
       {/* Hero / Banner */}
       <section className="bg-primary text-white">
-        <div className="max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-10 md:py-14">
+        <div className="max-w-[1440px] mx-auto w-full px-5 md:px-10 lg:px-14 xl:px-16 py-10 md:py-14">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <div className="inline-block px-4 py-1.5 bg-white/20 rounded-full text-xs font-bold uppercase tracking-widest mb-4">
@@ -93,7 +93,7 @@ export default function Pengurus() {
         </div>
       </section>
 
-      <main className="flex-1 max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-10 md:py-14">
+      <main className="flex-1 max-w-[1440px] mx-auto w-full px-5 md:px-10 lg:px-14 xl:px-16 py-10 md:py-14">
         <nav className="flex items-center gap-2 text-sm text-slate-500 mb-8" aria-label="Breadcrumb">
           <Link to="/" className="hover:text-primary transition-colors">Beranda</Link>
           <span className="material-symbols-outlined text-sm">chevron_right</span>

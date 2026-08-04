@@ -172,7 +172,8 @@ export default function Layout() {
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <header className="h-14 md:h-20 flex items-center justify-between gap-2 px-4 md:px-10 bg-white border-b border-slate-200 shadow-sm relative z-10">
+        <header className="h-14 md:h-20 bg-white border-b border-slate-200 shadow-sm relative z-10">
+          <div className="h-full w-full max-w-[1440px] mx-auto flex items-center justify-between gap-2 px-4 md:px-10 lg:px-14 xl:px-16">
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}
@@ -260,10 +261,13 @@ export default function Layout() {
               )}
             </div>
           </div>
+          </div>
         </header>
 
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 md:p-10">
-          <Outlet />
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+          <div className="w-full max-w-[1440px] mx-auto p-4 md:p-10 lg:px-14 xl:px-16">
+            <Outlet />
+          </div>
         </div>
 
         <footer className="py-3 px-4 md:py-4 md:px-10 border-t border-slate-200 bg-white text-[10px] md:text-[11px] text-slate-500 text-center md:text-left">

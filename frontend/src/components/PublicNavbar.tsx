@@ -6,6 +6,7 @@ import Avatar from "@/components/Avatar";
 export default function PublicNavbar() {
   const { token, user, isAdmin, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -21,10 +22,10 @@ export default function PublicNavbar() {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md px-6 md:px-10 lg:px-40 py-3">
-      <div className="flex items-center justify-between gap-8 max-w-[1280px] mx-auto">
+    <header className="public-navbar sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/85 backdrop-blur-xl py-3">
+      <div className="flex items-center justify-between gap-6 w-full max-w-[1440px] mx-auto px-5 md:px-10 lg:px-14 xl:px-16">
         <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3" aria-label="HIMASI - Beranda">
             <img src="/logo-himasi.png" alt="HIMASI" className="h-10 w-auto object-contain" />
           </Link>
           <nav className="hidden lg:flex items-center gap-6">
@@ -32,16 +33,11 @@ export default function PublicNavbar() {
             <Link to="/acara" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Acara</Link>
             <Link to="/pengurus" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Pengurus</Link>
             <a href="/#program-kerja" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Program Kerja</a>
-            <a href="/#department" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Department</a>
+            <a href="/#department" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Departemen</a>
             <a href="/#faq" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">FAQ</a>
-            <a href="/#tentang" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Tentang</a>
           </nav>
         </div>
         <div className="flex flex-1 justify-end items-center gap-4">
-          <label className="hidden md:flex items-center relative min-w-40 max-w-64 h-10 group">
-            <span className="absolute left-3 text-slate-400 group-focus-within:text-primary transition-colors material-symbols-outlined text-xl">search</span>
-            <input className="w-full h-full pl-10 pr-4 rounded-lg border-none bg-slate-100 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary text-sm transition-all" placeholder="Cari..." />
-          </label>
           {token ? (
             user ? (
             <div className="relative" ref={menuRef}>
@@ -110,8 +106,29 @@ export default function PublicNavbar() {
               Masuk
             </Link>
           )}
+          <button
+            type="button"
+            onClick={() => setMobileNavOpen((open) => !open)}
+            className="lg:hidden grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white text-slate-700 transition-colors hover:border-primary/30 hover:text-primary"
+            aria-label={mobileNavOpen ? "Tutup navigasi" : "Buka navigasi"}
+            aria-expanded={mobileNavOpen}
+          >
+            <span className="material-symbols-outlined">{mobileNavOpen ? "close" : "menu"}</span>
+          </button>
         </div>
       </div>
+      {mobileNavOpen && (
+        <nav className="mobile-public-nav w-full max-w-[1440px] mx-auto mt-3 border-t border-slate-100 px-5 md:px-10 pt-3 pb-2 lg:hidden" aria-label="Navigasi mobile">
+          <div className="grid grid-cols-2 gap-1">
+            <Link to="/berita" onClick={() => setMobileNavOpen(false)}>Berita</Link>
+            <Link to="/acara" onClick={() => setMobileNavOpen(false)}>Acara</Link>
+            <Link to="/pengurus" onClick={() => setMobileNavOpen(false)}>Pengurus</Link>
+            <a href="/#program-kerja" onClick={() => setMobileNavOpen(false)}>Program Kerja</a>
+            <a href="/#department" onClick={() => setMobileNavOpen(false)}>Departemen</a>
+            <a href="/#tentang" onClick={() => setMobileNavOpen(false)}>Tentang</a>
+          </div>
+        </nav>
+      )}
     </header>
   );
 }

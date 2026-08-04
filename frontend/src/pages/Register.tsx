@@ -106,7 +106,7 @@ export default function Register() {
     return (
       <div className="font-display bg-slate-50 text-slate-900 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-300">
         <PublicNavbar />
-        <main className="flex-1 max-w-[1280px] mx-auto w-full px-6 py-12 md:py-20 flex items-center justify-center relative">
+        <main className="flex-1 max-w-[1440px] mx-auto w-full px-5 md:px-10 lg:px-14 xl:px-16 py-12 md:py-20 flex items-center justify-center relative">
           {/* Enhanced Background Decorations */}
           <div className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] -z-10 animate-pulse"></div>
           <div className="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-blue-400/10 rounded-full blur-[100px] -z-10 animate-pulse" style={{ animationDelay: '2s' }}></div>

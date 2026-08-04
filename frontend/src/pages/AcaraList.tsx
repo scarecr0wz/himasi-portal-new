@@ -59,7 +59,7 @@ export default function AcaraList() {
     <div className="font-display bg-background-light text-slate-900 min-h-screen flex flex-col">
       <PublicNavbar />
 
-      <main className="flex-1 max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-12">
+      <main className="flex-1 max-w-[1440px] mx-auto w-full px-5 md:px-10 lg:px-14 xl:px-16 py-12">
         <div className="mb-10">
           <Link
             to="/"

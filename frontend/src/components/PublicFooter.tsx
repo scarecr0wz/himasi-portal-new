@@ -4,8 +4,8 @@ import { SocialMediaLinks, useSocialMedia } from "./SocialMediaLinks";
 export default function PublicFooter() {
     const socialMedia = useSocialMedia();
     return (
-        <footer id="footer" className="bg-white border-t border-slate-200 px-6 md:px-10 lg:px-40 py-16">
-            <div className="max-w-[1280px] mx-auto">
+        <footer id="footer" className="bg-white border-t border-slate-200 py-16">
+            <div className="w-full max-w-[1440px] mx-auto px-5 md:px-10 lg:px-14 xl:px-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
                     <div className="flex flex-col gap-6">
                         <div className="flex items-center gap-2">
@@ -27,7 +27,7 @@ export default function PublicFooter() {
                             <li><Link to="/acara" className="hover:text-primary transition-colors">Acara</Link></li>
                             <li><Link to="/pengurus" className="hover:text-primary transition-colors">Pengurus</Link></li>
                             <li><a href="/#program-kerja" className="hover:text-primary transition-colors">Program Kerja</a></li>
-                            <li><a href="/#department" className="hover:text-primary transition-colors">Department</a></li>
+                            <li><a href="/#department" className="hover:text-primary transition-colors">Departemen</a></li>
                             <li><a href="/#faq" className="hover:text-primary transition-colors">FAQ</a></li>
                             <li><Link to="/login" className="hover:text-primary transition-colors">Portal Mahasiswa</Link></li>
                         </ul>
@@ -51,7 +51,7 @@ export default function PublicFooter() {
                     </div>
                 </div>
                 <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <p className="text-slate-400 text-[10px] font-medium tracking-wide">© 2024 HIMASI Universitas Terbuka Bogor. Dikelola oleh Departemen Media & Publikasi.</p>
+                    <p className="text-slate-400 text-[10px] font-medium tracking-wide">© {new Date().getFullYear()} HIMASI Universitas Terbuka Bogor. Dikelola oleh Departemen Media & Publikasi.</p>
                     <div className="flex gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                         <a href="#" className="hover:text-primary">Kebijakan Privasi</a>
                         <a href="#" className="hover:text-primary">Syarat Layanan</a>

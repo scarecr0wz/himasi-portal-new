@@ -45,7 +45,6 @@ type FaqItem = {
   desc: string;
 };
 
-const HERO_IMAGE = "/hero-himasi.png";
 const CARD_IMAGES = [
   "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80",
   "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&q=80",
@@ -110,6 +109,28 @@ export default function Landing() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    const elements = Array.from(document.querySelectorAll<HTMLElement>(".landing-page [data-reveal]"));
+    if (!("IntersectionObserver" in window)) {
+      elements.forEach((element) => element.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+    );
+
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
+
   const filteredProkers = selectedDeptId
     ? prokers.filter((pr) => pr.departemenId === selectedDeptId)
     : prokers;
@@ -122,53 +143,70 @@ export default function Landing() {
   const displayActivities = activities;
 
   return (
-    <div className="font-display bg-background-light text-slate-900 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-300">
+    <div className="landing-page font-display bg-background-light text-slate-900 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-300">
       <div className="flex flex-col grow">
         <PublicNavbar />
         <SEO />
 
-        <main className="flex-1 max-w-[1280px] mx-auto w-full px-6 md:px-10 lg:px-40 py-12">
-
-          {/* Hero Section */}
-          <div className="mb-16">
-            <div className="flex flex-col gap-10 md:flex-row md:items-center">
-              <div
-                className="w-full md:w-1/2 aspect-video bg-cover bg-center rounded-2xl shadow-2xl relative overflow-hidden group"
-                style={{ backgroundImage: `url(${HERO_IMAGE})` }}
-              >
-                <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors duration-500" />
-              </div>
-              <div className="flex flex-col gap-8 md:w-1/2">
-                <div className="flex flex-col gap-4">
-                  <span className="text-primary font-bold tracking-widest uppercase text-xs">Level Up Potensi, Ciptakan Dampak.</span>
-                  <h1 className="text-slate-900 text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl">
-                    Bangun <span className="text-primary">Masa Depanmu</span> di Sini.
+        {/* Hero Section */}
+        <section className="hero-shell mb-20 md:mb-24" aria-labelledby="hero-title">
+          <div className="hero-inner">
+            <div className="hero-content relative z-10">
+              <div className="flex flex-col gap-7">
+                <div className="flex flex-col gap-5">
+                  <h1 id="hero-title" className="max-w-2xl text-slate-950 text-4xl font-black leading-[1.06] tracking-[-0.045em] sm:text-5xl lg:text-[4.25rem]">
+                    Tempat mahasiswa SI <span className="hero-title-accent">bertumbuh bersama.</span>
                   </h1>
-                  <p className="text-slate-600 text-lg leading-relaxed max-w-xl">
-                    Ekosistem digital untuk mahasiswa Sistem Informasi yang ingin berkembang, terhubung, dan melangkah lebih jauh. Semua peluang, komunitas, dan event ada dalam satu platform.
+                  <p className="text-slate-600 text-base md:text-lg leading-relaxed max-w-2xl">
+                    Di sini kita saling kenal, belajar bareng, bertukar pengalaman, dan bikin kegiatan yang benar-benar berguna untuk mahasiswa Sistem Informasi.
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-4">
+                <div className="hero-actions flex flex-col sm:flex-row gap-3">
                   <Link
                     to="/register"
-                    className="flex min-w-[160px] items-center justify-center rounded-xl h-14 px-8 bg-primary text-white text-base font-bold shadow-xl shadow-primary/30 hover:shadow-primary/40 transition-all"
+                    className="hero-primary-button group flex items-center justify-center gap-2 rounded-xl h-13 px-6 bg-primary text-white text-sm font-bold shadow-xl shadow-primary/25 transition-all"
                   >
-                    Mulai perjalananmu sekarang
+                    Gabung HIMASI
+                    <span className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
                   </Link>
                   <a
                     href="#acara"
-                    className="flex min-w-[160px] items-center justify-center rounded-xl h-14 px-8 bg-white border-2 border-slate-100 text-slate-900 text-base font-bold hover:bg-slate-50 transition-all"
+                    className="flex items-center justify-center gap-2 rounded-xl h-13 px-6 bg-white/85 border border-slate-200 text-slate-800 text-sm font-bold hover:bg-white hover:border-primary/30 transition-all"
                   >
+                    <span className="material-symbols-outlined text-lg text-primary">calendar_month</span>
                     Lihat Acara
                   </a>
                 </div>
               </div>
             </div>
+            <div className="hero-particles" aria-hidden="true">
+              <div className="hero-particle hero-particle-main">
+                <span className="material-symbols-outlined">hub</span>
+                <div><strong>Grow together</strong><small>make meaningful impact</small></div>
+              </div>
+              <div className="hero-particle">
+                <span className="material-symbols-outlined">auto_stories</span>
+                <strong>Learn together</strong>
+              </div>
+              <div className="hero-particle">
+                <span className="material-symbols-outlined">lightbulb</span>
+                <strong>Create together</strong>
+              </div>
+              <div className="hero-particle">
+                <span className="material-symbols-outlined">rocket_launch</span>
+                <strong>Move together</strong>
+              </div>
+            </div>
+            <span className="sr-only">Latar menampilkan kebersamaan mahasiswa HIMASI Universitas Terbuka Bogor.</span>
           </div>
+        </section>
+
+        <main className="landing-main flex-1 max-w-[1440px] mx-auto w-full px-5 md:px-10 lg:px-14 xl:px-16 pb-8 md:pb-12">
 
           {/* HIMASI Infopedia - Berita */}
-          <section id="berita" className="mb-16">
+          <section id="berita" className="mb-16" data-reveal="section">
             <div className="mb-8">
+              <span className="section-kicker">Wawasan & kabar kampus</span>
               <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-2">HIMASI Infopedia</h2>
               <p className="text-slate-600 text-lg max-w-2xl">
                 Pusat informasi terkini, berisikan info akademik, kegiatan, dan inovasi seputar Sistem Informasi.
@@ -179,7 +217,7 @@ export default function Landing() {
             ) : displayNews.length === 0 ? (
               <p className="text-slate-500 py-8">Belum ada berita. Kelola konten di <strong>Admin &gt; Konten (CMS)</strong>.</p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-7">
                 {displayNews.slice(0, 3).map((item, i) => (
                   <article key={item.id} className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col">
                     <div className="relative w-full aspect-[16/10] rounded-t-2xl overflow-hidden">
@@ -233,9 +271,12 @@ export default function Landing() {
           </section>
 
           {/* Upcoming Events Section */}
-          <section id="acara" className="mb-16">
+          <section id="acara" className="event-section mb-16" data-reveal="section">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-slate-900 text-2xl font-bold tracking-tight">Acara Mendatang</h2>
+              <div>
+                <span className="section-kicker">Jangan lewatkan</span>
+                <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight">Acara Mendatang</h2>
+              </div>
               <Link
                 to="/acara"
                 className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-slate-200 transition-colors"
@@ -292,16 +333,16 @@ export default function Landing() {
           </section>
 
           {/* Tentang HIMASI */}
-          <section id="tentang" className="mb-16">
-            <div className="flex flex-col gap-10 md:flex-row md:items-center">
-              <div className="w-full md:w-1/2">
+          <section id="tentang" className="about-editorial mb-16" data-reveal="editorial">
+            <div className="about-layout">
+              <div className="about-image-wrap about-editorial-photo w-full">
                 <img
                   src="/tentang-himasi.png"
                   alt="Himpunan Mahasiswa Sistem Informasi Universitas Terbuka Bogor"
                   className="w-full rounded-2xl shadow-lg object-cover aspect-[4/3]"
                 />
               </div>
-              <div className="w-full md:w-1/2 flex flex-col gap-6">
+              <div className="about-copy w-full flex flex-col gap-6">
                 <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight">Tentang HIMASI</h2>
                 <p className="text-slate-600 text-lg leading-relaxed">
                   HIMASI adalah rumah bagi mahasiswa Sistem Informasi Universitas Terbuka Bogor untuk tumbuh, berkolaborasi, dan menciptakan dampak.
@@ -312,39 +353,22 @@ export default function Landing() {
                 <p className="text-slate-900 font-semibold text-lg">Bersama, kita berkembang.</p>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 md:gap-6 mt-10">
-              <div className="bg-white rounded-xl shadow-md p-6 text-center">
-                <div className="text-2xl md:text-3xl font-bold text-slate-800">5</div>
-                <div className="text-sm text-slate-500 mt-1">Departemen</div>
-              </div>
-              <div className="bg-white rounded-xl shadow-md p-6 text-center">
-                <div className="text-2xl md:text-3xl font-bold text-slate-800">100+</div>
-                <div className="text-sm text-slate-500 mt-1">Anggota Aktif</div>
-              </div>
-              <div className="bg-white rounded-xl shadow-md p-6 text-center">
-                <div className="text-2xl md:text-3xl font-bold text-slate-800">12</div>
-                <div className="text-sm text-slate-500 mt-1">Program Kerja</div>
-              </div>
-              <div className="bg-white rounded-xl shadow-md p-6 text-center">
-                <div className="text-2xl md:text-3xl font-bold text-slate-800">8/10</div>
-                <div className="text-sm text-slate-500 mt-1">Kepuasan Anggota</div>
-              </div>
-            </div>
           </section>
 
           {/* Visi & Misi */}
-          <section id="visi-misi" className="mb-16">
-            <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-8">Visi dan Misi</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-              <div className="bg-white rounded-xl shadow-md p-6 md:p-8">
+          <section id="visi-misi" className="manifesto-section mb-16" data-reveal="manifesto">
+            <span className="section-kicker">Arah gerak kami</span>
+            <h2 className="manifesto-title text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-8">Yang kami tuju, dan cara kami berjalan ke sana.</h2>
+            <div className="manifesto-layout">
+              <div className="vision-statement bg-white rounded-xl shadow-md p-6 md:p-8">
                 <h3 className="text-slate-900 text-lg font-bold mb-4">Visi</h3>
                 <p className="text-slate-600 leading-relaxed italic">
                   &ldquo;Menjadi wadah pengembangan potensi, kreativitas, dan profesionalisme mahasiswa Sistem Informasi yang unggul, berintegritas, dan berdaya saing dalam bidang teknologi informasi.&rdquo;
                 </p>
               </div>
-              <div className="bg-white rounded-xl shadow-md p-6 md:p-8">
+              <div className="mission-list bg-white rounded-xl shadow-md p-6 md:p-8">
                 <h3 className="text-slate-900 text-lg font-bold mb-4">Misi</h3>
-                <ul className="space-y-3 text-slate-600 leading-relaxed">
+                <ul className="mission-steps space-y-3 text-slate-600 leading-relaxed">
                   <li className="flex gap-2">
                     <span className="text-primary shrink-0 mt-1">•</span>
                     <span>Meningkatkan kualitas dan partisipasi mahasiswa dalam kegiatan akademik maupun non-akademik yang mendukung pengembangan kompetensi di bidang Sistem Informasi</span>
@@ -370,9 +394,10 @@ export default function Landing() {
             </div>
           </section>
 
-          {/* Department - pakai primary saja biar aman di Tailwind v4 */}
-          <section id="department" className="mb-16 py-12 px-6 md:px-8 rounded-2xl bg-primary/5">
-            <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-8">Department</h2>
+          {/* Departemen - pakai primary saja biar aman di Tailwind v4 */}
+          <section id="department" className="mb-16 py-12 px-6 md:px-8 rounded-2xl bg-primary/5" data-reveal="directory">
+            <span className="section-kicker">Temukan ruang kontribusimu</span>
+            <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-8">Departemen HIMASI</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-3">
                 <span className="material-symbols-outlined text-3xl text-primary" aria-hidden>emoji_events</span>
@@ -403,8 +428,9 @@ export default function Landing() {
           </section>
 
           {/* Program Kerja / Proker Departemen */}
-          <section id="program-kerja" className="mb-16">
+          <section id="program-kerja" className="mb-16" data-reveal="section">
             <div className="mb-8">
+              <span className="section-kicker">Ide yang diwujudkan</span>
               <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-2">Program Kerja HIMASI</h2>
               <p className="text-slate-600 text-lg">Program kerja unggulan dari setiap departemen HIMASI.</p>
             </div>
@@ -439,7 +465,7 @@ export default function Landing() {
                       key={pr.id}
                       type="button"
                       onClick={() => setSelectedProkerId(pr.id)}
-                      className={`text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${selectedProker?.id === pr.id ? "bg-primary/10 text-primary border-l-4 border-primary pl-[calc(1rem-4px)]" : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-100"}`}
+                      className={`text-left px-4 py-3 rounded-lg border text-sm font-medium transition-colors ${selectedProker?.id === pr.id ? "bg-primary/10 text-primary border-primary/20" : "bg-white text-slate-700 hover:bg-slate-50 border-slate-100"}`}
                     >
                       {pr.title}
                     </button>
@@ -466,8 +492,9 @@ export default function Landing() {
           </section>
 
           {/* Keuntungan Bergabung / Ajakan Bergabung */}
-          <section id="bergabung" className="mb-16">
+          <section id="bergabung" className="hidden">
             <div className="text-center mb-12">
+              <span className="section-kicker mx-auto">Temukan versi terbaikmu</span>
               <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-3">Mari Bergabung dengan HIMASI</h2>
               <p className="text-slate-600 text-lg max-w-2xl mx-auto">
                 Bergabung dengan HIMASI memberikan berbagai manfaat untuk pengembangan diri Anda.
@@ -528,9 +555,10 @@ export default function Landing() {
           </section>
 
           {/* Frequently Asked Question */}
-          <section id="faq" className="mb-16">
+          <section id="faq" className="mb-16" data-reveal="section">
             <div className="mb-8">
-              <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-2">Frequently Asked Question</h2>
+              <span className="section-kicker">Perlu tahu lebih lanjut?</span>
+              <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-2">Pertanyaan yang Sering Ditanyakan</h2>
               <p className="text-slate-600 text-lg max-w-2xl">
                 Pertanyaan yang sering diajukan seputar HIMASI, keanggotaan, dan kegiatan.
               </p>
