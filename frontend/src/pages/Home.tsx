@@ -51,11 +51,22 @@ export default function Home() {
     : placeholderActivities;
 
   return (
-    <div className="min-w-0 w-full">
+    <div className="portal-dashboard min-w-0 w-full">
       <nav className="dashboard-breadcrumb" aria-label="Breadcrumb">
         <Link to="/">Home</Link>
         <span> &gt; Dashboard Mahasiswa</span>
       </nav>
+
+      <section className="portal-dashboard-intro">
+        <div>
+          <span className="portal-kicker">Ruang anggota HIMASI</span>
+          <h1>Semua aktivitasmu, dalam satu tempat.</h1>
+          <p>Pantau kehadiran, kas, aspirasi, dan kegiatan organisasi dengan lebih mudah.</p>
+        </div>
+        <div className="portal-intro-mark" aria-hidden="true">
+          <span className="material-symbols-outlined">hub</span>
+        </div>
+      </section>
 
       <section className="dashboard-section">
         <h2 className="section-title">
@@ -65,28 +76,28 @@ export default function Home() {
         <p className="section-subtitle">Ringkasan performa organisasi periode ini</p>
         <div className="stat-cards">
           <div className="stat-card">
-            <div className="stat-card-icon purple">👥</div>
+            <div className="stat-card-icon purple"><span className="material-symbols-outlined">how_to_reg</span></div>
             <div className="min-w-0 flex-1">
               <div className="stat-card-label">Kehadiran Saya</div>
               <div className="stat-card-value">0%</div>
             </div>
           </div>
           <div className="stat-card">
-            <div className="stat-card-icon green">💰</div>
+            <div className="stat-card-icon green"><span className="material-symbols-outlined">account_balance_wallet</span></div>
             <div className="min-w-0 flex-1">
               <div className="stat-card-label">Saldo Kas Saya</div>
               <div className="stat-card-value">Rp 0</div>
             </div>
           </div>
           <div className="stat-card">
-            <div className="stat-card-icon yellow">💡</div>
+            <div className="stat-card-icon yellow"><span className="material-symbols-outlined">lightbulb</span></div>
             <div className="min-w-0 flex-1">
               <div className="stat-card-label">Aspirasi Baru</div>
               <div className="stat-card-value">0</div>
             </div>
           </div>
           <div className="stat-card">
-            <div className="stat-card-icon red">📋</div>
+            <div className="stat-card-icon red"><span className="material-symbols-outlined">task_alt</span></div>
             <div className="min-w-0 flex-1">
               <div className="stat-card-label">Proker Aktif</div>
               <div className="stat-card-value">{loading ? "..." : prokerCount}</div>

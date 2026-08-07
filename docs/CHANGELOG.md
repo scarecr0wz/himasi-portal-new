@@ -6,6 +6,12 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 
 ## [Unreleased]
 
+### Admin & Portal Mahasiswa — UI Consistency
+
+- **Visual Selaras:** Menyamakan palet navy–biru, permukaan, radius, dan bayangan admin panel serta portal mahasiswa dengan homepage.
+- **Workspace Shell:** Memperbarui sidebar, header, logo HIMASI, latar konten, dan footer agar lebih konsisten dan responsif.
+- **Dashboard Utama:** Menambahkan area pengantar, merapikan kartu statistik dan akses cepat, serta mengganti ikon lama dengan Material Symbols.
+
 ### Authentication & Navigation
 
 - **Login Redirect:** Mengubah rute *redirect* setelah proses login berhasil. Pengguna kini langsung diarahkan ke halaman Dashboard Mahasiswa (`/dashboard`) alih-alih kembali ke halaman utama (Homepage).

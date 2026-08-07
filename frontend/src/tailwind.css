@@ -2,9 +2,9 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --color-primary: #137fec;
+  --color-primary: #1651a4;
   --color-accent-blue: #eff6ff;
-  --color-background-light: #f1f5f9;
+  --color-background-light: #f8fafc;
   --color-background-dark: #101922;
   --color-sidebar-bg: #f8fafc;
   --font-display: "Manrope", sans-serif;

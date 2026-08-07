@@ -29,7 +29,7 @@ export default function Layout() {
   }, [sidebarOpen]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background-light text-slate-900 max-w-[100vw] font-[family-name:var(--font-display)]">
+    <div className="portal-shell student-shell flex h-screen overflow-hidden text-slate-900 max-w-[100vw] font-[family-name:var(--font-display)]">
       {/* Overlay when sidebar open on mobile (same pattern as Admin) */}
       {sidebarOpen && (
         <button
@@ -41,21 +41,16 @@ export default function Layout() {
       )}
       {/* Sidebar: fixed on mobile (out of flow → main full width), in-flow on desktop */}
       <aside
-        className={`fixed top-0 left-0 bottom-0 z-40 w-[min(288px,85vw)] sm:w-72 flex-shrink-0 bg-sidebar-bg border-r border-slate-200 flex flex-col transition-transform duration-200 ease-out md:relative md:top-auto md:left-auto md:bottom-auto md:z-20 md:translate-x-0 ${
+        className={`portal-sidebar fixed top-0 left-0 bottom-0 z-40 w-[min(288px,85vw)] sm:w-72 flex-shrink-0 border-r flex flex-col transition-transform duration-200 ease-out md:relative md:top-auto md:left-auto md:bottom-auto md:z-20 md:translate-x-0 ${
           sidebarOpen ? "translate-x-0 shadow-xl" : "-translate-x-full"
         }`}
       >
-        <div className="p-4 flex items-center justify-between border-b border-slate-200 md:border-b-0 md:p-8">
+        <div className="portal-brand p-4 flex items-center justify-between border-b md:border-b-0 md:px-7 md:py-8">
           <div className="flex items-center gap-3">
-            <div className="bg-primary p-2 rounded-lg text-white shrink-0 md:p-2.5 md:rounded-xl md:shadow-lg">
-              <span className="material-symbols-outlined text-xl md:text-2xl">school</span>
-            </div>
+            <div className="portal-logo"><img src="/himasi-icon.png" alt="" /></div>
             <div className="min-w-0">
-              <h2 className="text-sm font-extrabold tracking-tight leading-none text-slate-800">PORTAL</h2>
-              <h2 className="text-[10px] md:text-sm font-medium tracking-tight leading-none text-slate-500 uppercase mt-1">
-                Mahasiswa
-              </h2>
-              <p className="md:hidden text-[11px] text-slate-500 font-medium mt-1">Menu navigasi</p>
+              <h2 className="text-sm font-extrabold tracking-tight leading-none">HIMASI</h2>
+              <p className="text-[10px] font-semibold tracking-[0.14em] uppercase mt-1">Portal Mahasiswa</p>
             </div>
           </div>
           <button
@@ -165,14 +160,14 @@ export default function Layout() {
               <span className="text-[10px] text-green-500 font-bold uppercase">Aktif</span>
             </div>
             <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-              <div className="h-full w-[100%] bg-slate-800" />
+              <div className="h-full w-[100%] bg-green-500" />
             </div>
           </div>
         </div>
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <header className="h-14 md:h-20 bg-white border-b border-slate-200 shadow-sm relative z-10">
+        <header className="portal-header h-14 md:h-20 border-b relative z-10">
           <div className="h-full w-full max-w-[1440px] mx-auto flex items-center justify-between gap-2 px-4 md:px-10 lg:px-14 xl:px-16">
           <button
             type="button"
@@ -264,13 +259,13 @@ export default function Layout() {
           </div>
         </header>
 
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+        <div className="portal-content flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
           <div className="w-full max-w-[1440px] mx-auto p-4 md:p-10 lg:px-14 xl:px-16">
             <Outlet />
           </div>
         </div>
 
-        <footer className="py-3 px-4 md:py-4 md:px-10 border-t border-slate-200 bg-white text-[10px] md:text-[11px] text-slate-500 text-center md:text-left">
+        <footer className="portal-footer py-3 px-4 md:py-4 md:px-10 border-t text-[10px] md:text-[11px] text-center md:text-left">
           <span className="block sm:inline">© 2024 HIMASI Universitas Terbuka Bogor.</span>
           <span className="hidden sm:inline"> </span>
           <span className="block sm:inline">Dikelola oleh Departemen Media & Publikasi.</span>

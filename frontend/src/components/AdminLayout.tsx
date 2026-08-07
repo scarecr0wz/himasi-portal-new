@@ -60,7 +60,7 @@ export default function AdminLayout() {
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background-light text-slate-900 font-[family-name:var(--font-display)]">
+    <div className="portal-shell admin-shell flex h-screen overflow-hidden text-slate-900 font-[family-name:var(--font-display)]">
       {/* Mobile overlay */}
       {mobileMenuOpen && (
         <button
@@ -73,16 +73,14 @@ export default function AdminLayout() {
 
       {/* Mobile drawer */}
       <aside
-        className={`fixed top-0 left-0 h-full w-72 flex-shrink-0 bg-sidebar-bg border-r border-slate-200 flex flex-col z-40 transform transition-transform duration-200 ease-out md:hidden ${
+        className={`portal-sidebar fixed top-0 left-0 h-full w-72 flex-shrink-0 border-r flex flex-col z-40 transform transition-transform duration-200 ease-out md:hidden ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="p-4 flex items-center justify-between border-b border-slate-200">
+        <div className="portal-brand p-4 flex items-center justify-between border-b">
           <div className="flex items-center gap-3">
-            <div className="bg-primary p-2 rounded-lg text-white">
-              <span className="material-symbols-outlined text-xl">school</span>
-            </div>
-            <span className="text-sm font-bold text-slate-800">ADMIN</span>
+            <div className="portal-logo"><img src="/himasi-icon.png" alt="" /></div>
+            <div><strong className="block text-sm">HIMASI</strong><span className="text-[10px] font-semibold tracking-[0.14em] uppercase">Admin Console</span></div>
           </div>
           <button
             type="button"
@@ -109,16 +107,12 @@ export default function AdminLayout() {
       </aside>
 
       {/* Desktop sidebar */}
-      <aside className="w-72 flex-shrink-0 bg-sidebar-bg border-r border-slate-200 hidden md:flex flex-col relative z-20">
-        <div className="p-8 flex items-center gap-4">
-          <div className="bg-primary p-2.5 rounded-xl text-white shadow-lg shadow-primary/20">
-            <span className="material-symbols-outlined text-2xl">school</span>
-          </div>
+      <aside className="portal-sidebar w-72 flex-shrink-0 border-r hidden md:flex flex-col relative z-20">
+        <div className="portal-brand px-7 py-8 flex items-center gap-4">
+          <div className="portal-logo"><img src="/himasi-icon.png" alt="" /></div>
           <div>
-            <h2 className="text-sm font-extrabold tracking-tight leading-none text-slate-800">ADMIN</h2>
-            <h2 className="text-sm font-medium tracking-tight leading-none text-slate-500 uppercase text-[10px] mt-1">
-              Portal Console
-            </h2>
+            <h2 className="text-sm font-extrabold tracking-tight leading-none">HIMASI</h2>
+            <p className="text-[10px] font-semibold tracking-[0.14em] uppercase mt-1">Admin Console</p>
           </div>
         </div>
 
@@ -146,14 +140,14 @@ export default function AdminLayout() {
               <span className="text-[10px] text-green-500 font-bold uppercase">Online</span>
             </div>
             <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-              <div className="bg-primary h-full w-[100%]" />
+              <div className="bg-green-500 h-full w-[100%]" />
             </div>
           </div>
         </div>
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-14 md:h-20 bg-white border-b border-slate-200 shadow-sm relative z-10">
+        <header className="portal-header h-14 md:h-20 border-b relative z-10">
           <div className="h-full w-full max-w-[1440px] mx-auto flex items-center justify-between gap-2 px-4 md:px-10 lg:px-14 xl:px-16">
           <button
             type="button"
@@ -187,7 +181,7 @@ export default function AdminLayout() {
             </button>
             <Link
               to="/admin/content"
-              className="bg-primary text-white px-3 py-2 md:px-6 md:py-2.5 rounded-xl text-sm font-bold flex items-center gap-1.5 md:gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/25"
+              className="bg-[#137fec] text-white px-3 py-2 md:px-6 md:py-2.5 rounded-xl text-sm font-bold flex items-center gap-1.5 md:gap-2 hover:bg-[#1651a4] transition-all shadow-lg shadow-blue-500/25"
             >
               <span className="material-symbols-outlined text-lg">add</span>
               <span className="hidden sm:inline">Kelola Konten</span>
@@ -245,7 +239,7 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="portal-content flex-1 overflow-y-auto">
           <div className="w-full max-w-[1440px] mx-auto p-4 md:p-10 lg:px-14 xl:px-16">
             <Outlet />
           </div>

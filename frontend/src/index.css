@@ -26,9 +26,9 @@
   --primary-500: #334155;
   --primary-400: #64748b;
   /* Accent — muda, segar */
-  --accent: #0d9488;
-  --accent-light: #14b8a6;
-  --accent-bg: rgba(13, 148, 136, 0.08);
+  --accent: #137fec;
+  --accent-light: #3b9afe;
+  --accent-bg: rgba(19, 127, 236, 0.08);
   /* Surface */
   --bg-page: #f1f5f9;
   --bg-card: #ffffff;
@@ -672,6 +672,237 @@ body {
   height: 2rem;
   background: var(--color-primary, #137fec);
   border-radius: 0 4px 4px 0;
+}
+
+/* ========== HIMASI workspace shell ========== */
+.portal-shell {
+  background: #f8fafc;
+}
+
+.portal-sidebar {
+  border-color: rgba(255, 255, 255, 0.09);
+  background:
+    radial-gradient(circle at 18% 2%, rgba(70, 140, 229, 0.28), transparent 15rem),
+    linear-gradient(180deg, #1c396a 0%, #142e57 100%);
+  color: white;
+  box-shadow: 0.8rem 0 3rem rgba(15, 34, 66, 0.08);
+}
+
+.portal-brand {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.portal-brand h2,
+.portal-brand strong { color: white; }
+.portal-brand p,
+.portal-brand span { color: #a9caff; }
+
+.portal-logo {
+  display: grid;
+  width: 2.85rem;
+  height: 2.85rem;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 0.6rem 1.5rem rgba(7, 23, 49, 0.22);
+}
+
+.portal-logo img {
+  width: 2.2rem;
+  height: 2.2rem;
+  object-fit: contain;
+}
+
+.portal-sidebar .sidebar-item {
+  margin: 0.2rem 0.85rem;
+  padding-inline: 1rem;
+  border-radius: 0.8rem;
+  color: #c8d7eb;
+}
+
+.portal-sidebar .sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+.portal-sidebar .sidebar-active {
+  background: rgba(255, 255, 255, 0.96);
+  color: #1651a4;
+  box-shadow: 0 0.6rem 1.4rem rgba(7, 23, 49, 0.16);
+}
+
+.portal-sidebar .sidebar-active::before { display: none; }
+.portal-sidebar nav > div .h-px { background: rgba(255, 255, 255, 0.11); }
+.portal-sidebar nav > div a { color: #9db5d3; }
+.portal-sidebar nav > div a:hover { color: white; }
+
+.portal-sidebar > div:last-child > div {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: none;
+}
+
+.portal-sidebar > div:last-child p { color: #d8e4f3; }
+.portal-sidebar > div:last-child p:first-child { color: #8faacc; }
+.portal-sidebar button[aria-label="Tutup menu"] { color: #c8d7eb; }
+.portal-sidebar button[aria-label="Tutup menu"]:hover { background: rgba(255, 255, 255, 0.08); }
+
+.portal-header {
+  border-color: rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 0.35rem 1.5rem rgba(28, 57, 106, 0.045);
+  backdrop-filter: blur(18px);
+}
+
+.portal-content {
+  background:
+    radial-gradient(circle at 92% 0%, rgba(22, 81, 164, 0.07), transparent 25rem),
+    linear-gradient(180deg, #f7faff 0%, #f8fafc 28rem);
+}
+
+.portal-footer {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.88);
+  color: #718096;
+}
+
+.portal-dashboard-intro,
+.admin-dashboard-intro {
+  position: relative;
+  display: flex;
+  min-height: 12.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at 86% 18%, rgba(255, 255, 255, 0.14), transparent 12rem),
+    linear-gradient(135deg, #1c396a, #1651a4);
+  box-shadow: 0 1.3rem 3rem rgba(28, 57, 106, 0.16);
+  color: white;
+}
+
+.portal-kicker {
+  display: block;
+  margin-bottom: 0.65rem;
+  color: #a9caff;
+  font-size: 0.65rem;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.portal-dashboard-intro h1,
+.admin-dashboard-intro h1 {
+  max-width: 21ch;
+  margin: 0;
+  color: white;
+  font-size: clamp(1.75rem, 3.3vw, 2.8rem);
+  font-weight: 850;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+}
+
+.portal-dashboard-intro p,
+.admin-dashboard-intro p {
+  max-width: 38rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.65;
+}
+
+.portal-intro-mark {
+  display: grid;
+  width: 7rem;
+  height: 7rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  transform: rotate(8deg);
+}
+
+.portal-intro-mark .material-symbols-outlined { font-size: 3rem; }
+.portal-dashboard .dashboard-section { margin-bottom: 2.75rem; }
+.portal-dashboard .section-title { color: #1c396a; font-weight: 800; }
+.portal-dashboard .section-title-bar { background: #1651a4; }
+
+.portal-dashboard .stat-card,
+.portal-dashboard .activity-list,
+.admin-dashboard > .bg-white {
+  border-color: rgba(148, 163, 184, 0.2);
+  border-radius: 1.25rem;
+  box-shadow: 0 0.7rem 2.4rem rgba(28, 57, 106, 0.06);
+}
+
+.portal-dashboard .stat-card { padding: 1.45rem; }
+.portal-dashboard .stat-card:hover {
+  border-color: rgba(22, 81, 164, 0.25);
+  box-shadow: 0 1.1rem 2.7rem rgba(28, 57, 106, 0.11);
+}
+
+.portal-dashboard .stat-card-icon {
+  border-radius: 1rem;
+  background: #e8f1ff;
+  color: #1651a4;
+}
+
+.portal-dashboard .stat-card-icon .material-symbols-outlined { font-size: 1.45rem; }
+.portal-dashboard .activity-item { padding: 1.15rem 1.35rem; }
+.portal-dashboard .activity-item:hover { background: #f7faff; }
+
+.admin-dashboard-intro { display: block; }
+.admin-dashboard-intro nav { margin-bottom: 1.5rem; }
+.admin-dashboard-intro nav a,
+.admin-dashboard-intro nav span { color: rgba(255, 255, 255, 0.62); }
+.admin-dashboard-intro nav .text-slate-600 { color: white; }
+
+.admin-quick-grid > a {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(148, 163, 184, 0.2);
+  box-shadow: 0 0.7rem 2.4rem rgba(28, 57, 106, 0.055);
+}
+
+.admin-quick-grid > a::after {
+  content: "";
+  position: absolute;
+  right: -2.5rem;
+  bottom: -3rem;
+  width: 8rem;
+  height: 8rem;
+  border-radius: 999px;
+  background: rgba(22, 81, 164, 0.04);
+}
+
+.admin-quick-grid > a:hover {
+  border-color: rgba(22, 81, 164, 0.25);
+  box-shadow: 0 1.2rem 3rem rgba(28, 57, 106, 0.11);
+}
+
+.admin-quick-grid > a > div:first-child > div {
+  background: #e8f1ff;
+  color: #1651a4;
+}
+
+.admin-quick-grid > a:hover > div:first-child > div {
+  background: #1651a4;
+  color: white;
+}
+
+@media (max-width: 640px) {
+  .portal-dashboard-intro,
+  .admin-dashboard-intro { min-height: 0; padding: 1.5rem; border-radius: 1.25rem; }
+  .portal-dashboard-intro h1,
+  .admin-dashboard-intro h1 { font-size: 1.8rem; }
+  .portal-intro-mark { display: none; }
 }
 
 /* ========== Landing ========== */
