@@ -6,6 +6,12 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 
 ## [Unreleased]
 
+### Landing Page — Hero Carousel
+
+- **Auto-swipe Hero:** Menambahkan fitur *carousel* pada latar hero halaman Landing yang otomatis bergeser setiap 5 detik.
+- **Smooth Transition:** Pergantian gambar dikustomisasi menggunakan efek *crossfade* melalui transisi CSS.
+- **Persiapan CMS:** Transformasi pengaturan *background* dari CSS murni (`::before`) menjadi arsitektur state React agar kelak data gambar bisa diatur secara dinamis melalui Admin Panel.
+
 ### Public UI — Department Branding
 
 - **Logo Departemen:** Menambahkan aset identitas visual departemen dari `frontend/public/departement-logs`.
