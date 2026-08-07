@@ -11,7 +11,7 @@ Dokumen rencana pengembangan inti sistem **HIMASI Portal** dari sisi **admin/BPH
 - **Tujuan:** Mengembangkan core system dari kondisi saat ini menjadi platform kepengurusan: persuratan, keuangan/kas, event + absensi, akademik (LMS), dan kas user dengan payment gateway.
 - **Keputusan RBAC (Model Hybrid):** Role `admin` tetap jadi kunci masuk konsol + **role jabatan** sebagai template permission per kedudukan (Ketua, Sekretaris, Bendahara, Kadep, Wakadep, Anggota) + **scope data per departemen**. Semua level BPH & departemen boleh masuk admin, dibedakan permission-nya. Sudah dikonfirmasi (lihat section 3).
 - **Urutan prioritas (MVP):**
-  1. **Sekretaris** → Persuratan (surat masuk, surat keluar, dokumen penting)
+  1. ~~**Sekretaris** → Persuratan (surat masuk, surat keluar, dokumen penting)~~ ✅ **DONE**
   2. **Bendahara** → Keuangan & Kas (pemasukan / pengeluaran + tabulasi rentang waktu)
   3. **Event & Absensi** → Buat acara, user absen, rekap kehadiran & keaktifan
   4. **Akademik** → LMS sederhana (mata kuliah, materi, kuis)
@@ -116,10 +116,10 @@ Keterangan:
 
 ---
 
-## 4. Fase 1 — Persuratan (Sekretaris)
+## 4. Fase 1 — Persuratan (Sekretaris) - ✅ **DONE**
 
 ### 4.1 Tujuan
-Pencatatan **surat masuk**, **surat keluar**, dan **dokumen penting**. MVP fokus ke persuratan: input, nomor surat, kategori, lampiran, riwayat.
+Pencatatan **surat masuk**, **surat keluar**, dan **dokumen penting**. Fokus ke persuratan: input, nomor surat, keterangan, lampiran, riwayat. Telah diimplementasikan dengan UI berbasis grid/tabel dan dukungan drag & drop.
 
 ### 4.2 Model DB (baru) — `ArchiveDocument`
 
@@ -127,25 +127,21 @@ Pencatatan **surat masuk**, **surat keluar**, dan **dokumen penting**. MVP fokus
 |-------|------|------------|
 | `id` | UUID | |
 | `docType` | string | `SURAT_MASUK` \| `SURAT_KELUAR` \| `DOKUMEN` |
-| `categoryId` | UUID | → `Enumeration` key `archive_category` |
-| `noSurat` | string | nomor surat (bisa auto-generate) |
-| `from` / `to` | string | pengirim / penerima |
-| `subject` | string | perihal |
-| `letterDate` | date | tanggal surat |
-| `receivedDate` | date? | tanggal terima (surat masuk) |
-| `content` | text? | ringkasan / isi |
+| `noSurat` | string? | nomor surat (manual) |
+| `fromTo` | string? | pengirim (dari) / penerima (kepada) |
+| `subject` | string | perihal / judul |
+| `letterDate` | date? | tanggal surat / tanggal dokumen |
+| `description` | text? | ringkasan / keterangan tambahan |
 | `attachmentPath` | string? | upload lampiran (PDF/image) |
-| `status` | string | `DRAFT` \| `SENT` \| `ARCHIVED` |
 | `createdBy` | UUID | → `User` (pencatat) |
-| `createdAt`, `updatedAt`, `deletedAt` | | |
+| `createdAt`, `updatedAt` | | Timestamp otomatis |
 
 ### 4.3 API admin
-- `GET /admin/archive` — list + filter (`docType`, `categoryId`, rentang tanggal, pencarian)
-- `POST /admin/archive` — create + upload lampiran
-- `GET /admin/archive/:id` — detail
+- `GET /admin/archive` — list
+- `POST /admin/archive` — create
+- `POST /admin/archive/upload` - upload file terpisah
 - `PUT /admin/archive/:id` — update
-- `DELETE /admin/archive/:id` — soft delete
-- (Opsional) `GET /admin/archive/export` — Excel/PDF
+- `DELETE /admin/archive/:id` — soft/hard delete
 
 ### 4.4 Frontend
 - Admin: halaman `/admin/documents` (menu sidebar **"Persuratan"**) — tab **Surat Masuk / Surat Keluar / Dokumen**, form create (dengan preview/upload lampiran), detail, filter & pencarian, auto-generate nomor surat.
