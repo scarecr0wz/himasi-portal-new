@@ -6,6 +6,10 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 
 ## [Unreleased]
 
+### Authentication & Navigation
+
+- **Login Redirect:** Mengubah rute *redirect* setelah proses login berhasil. Pengguna kini langsung diarahkan ke halaman Dashboard Mahasiswa (`/dashboard`) alih-alih kembali ke halaman utama (Homepage).
+
 ### Landing Page — Hero Carousel
 
 - **Auto-swipe Hero:** Menambahkan fitur *carousel* pada latar hero halaman Landing yang otomatis bergeser setiap 5 detik.

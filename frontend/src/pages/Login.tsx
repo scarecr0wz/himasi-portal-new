@@ -23,7 +23,7 @@ export default function Login() {
     setLoading(true);
     try {
       await login(nim.trim(), password);
-      navigate("/", { replace: true });
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login gagal");
     } finally {
