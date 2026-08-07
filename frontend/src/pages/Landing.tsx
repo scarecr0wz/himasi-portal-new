@@ -52,6 +52,13 @@ const CARD_IMAGES = [
   "https://images.unsplash.com/photo-1569025743873-ea3a9ce58e43?w=600&q=80",
 ];
 
+const HERO_IMAGES = [
+  "/hero-himasi.png",
+  "/wadah-berkembang.png",
+  "/peningkatan-prestasi.png",
+  "/lebih-dari-organisasi.png",
+];
+
 function formatDate(d: string | null): string {
   if (!d) return "";
   try {
@@ -90,6 +97,14 @@ export default function Landing() {
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [faqOpenId, setFaqOpenId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentHeroImage, setCurrentHeroImage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeroImage((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     Promise.all([
@@ -151,6 +166,15 @@ export default function Landing() {
 
         {/* Hero Section */}
         <section className="hero-shell mb-20 md:mb-24" aria-labelledby="hero-title">
+          <div className="hero-carousel" aria-hidden="true">
+            {HERO_IMAGES.map((img, idx) => (
+              <div
+                key={img}
+                className={`hero-bg-slide ${idx === currentHeroImage ? "active" : ""}`}
+                style={{ backgroundImage: `url(${img})` }}
+              />
+            ))}
+          </div>
           <div className="hero-inner">
             <div className="hero-content relative z-10">
               <div className="flex flex-col gap-7">

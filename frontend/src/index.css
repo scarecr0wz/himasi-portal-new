@@ -1267,17 +1267,26 @@ body {
   padding: clamp(1.5rem, 4vw, 3.75rem) 1.25rem clamp(2.75rem, 6vw, 5rem);
 }
 
-.hero-shell::before {
-  content: "";
+.hero-carousel {
   position: absolute;
   z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-bg-slide {
+  position: absolute;
   inset: 0 0 0 45%;
-  background-image: url("/hero-himasi.png");
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
   background-position: center 48%;
   background-size: cover;
-  opacity: 0.9;
   filter: saturate(0.78) contrast(0.96);
-  clip-path: none;
+}
+
+.hero-bg-slide.active {
+  opacity: 0.9;
 }
 
 .hero-shell::after {
@@ -2384,13 +2393,15 @@ body {
     align-items: flex-start;
     padding: 2.5rem 1.25rem 3rem;
   }
-  .hero-shell::before {
+  .hero-bg-slide {
     inset: 43% 0 0;
     background-position: center;
-    opacity: 1;
     clip-path: none;
     -webkit-mask-image: none;
     mask-image: none;
+  }
+  .hero-bg-slide.active {
+    opacity: 1;
   }
   .hero-shell::after {
     background: linear-gradient(180deg, #1c396a 0%, #1c396a 48%, rgba(28, 57, 106, 0.94) 58%, rgba(28, 57, 106, 0.2) 82%, transparent 100%);
