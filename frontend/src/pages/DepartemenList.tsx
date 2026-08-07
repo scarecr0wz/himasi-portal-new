@@ -60,16 +60,6 @@ export default function DepartemenList() {
                 <p className="event-page-kicker">Departemen HIMASI</p>
                 <h1>Banyak ruang, satu tujuan bersama.</h1>
               </div>
-              <div className="people-summary department-summary" aria-label="Ringkasan departemen">
-                <div>
-                  <strong>{loading ? "—" : departments.length}</strong>
-                  <span>Departemen</span>
-                </div>
-                <div>
-                  <strong>{loading ? "—" : programs.length}</strong>
-                  <span>Program</span>
-                </div>
-              </div>
             </div>
           </div>
         </section>

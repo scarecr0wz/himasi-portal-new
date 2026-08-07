@@ -88,16 +88,6 @@ export default function ProgramKerja() {
                 <p className="event-page-kicker">Program Kerja HIMASI</p>
                 <h1>Ide yang bergerak menjadi dampak.</h1>
               </div>
-              <div className="people-summary program-summary" aria-label="Ringkasan program kerja">
-                <div>
-                  <strong>{loading ? "—" : programs.length}</strong>
-                  <span>Program</span>
-                </div>
-                <div>
-                  <strong>{loading ? "—" : activeDepartmentCount}</strong>
-                  <span>Departemen</span>
-                </div>
-              </div>
             </div>
           </div>
         </section>

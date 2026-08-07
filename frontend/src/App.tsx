@@ -15,6 +15,7 @@ import AdminContentItemEditor from "./pages/AdminContentItemEditor";
 import AdminSettings from "./pages/AdminSettings";
 import AdminMahasiswa from "./pages/AdminMahasiswa";
 import AdminPengurus from "./pages/AdminPengurus";
+import ArchivePage from "./pages/admin/ArchivePage";
 import Profile from "./pages/Profile";
 import BeritaList from "./pages/BeritaList";
 import BeritaDetail from "./pages/BeritaDetail";
@@ -101,6 +102,7 @@ export default function App() {
         <Route path="content/editor/:id" element={<AdminContentEditor />} />
         <Route path="content/:contentType" element={<AdminContentItemEditor />} />
         <Route path="content/:contentType/:id" element={<AdminContentItemEditor />} />
+        <Route path="persuratan" element={<ArchivePage />} />
         <Route path="pengurus" element={<AdminPengurus />} />
         <Route path="menus" element={<AdminPlaceholder />} />
         <Route path="settings" element={<AdminSettings />} />

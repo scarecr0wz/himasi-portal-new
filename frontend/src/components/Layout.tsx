@@ -150,7 +150,7 @@ export default function Layout() {
           </div>
         </nav>
 
-        <div className="p-6">
+        {/* <div className="p-6">
           <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
               PORTAL MAHASISWA
@@ -163,7 +163,7 @@ export default function Layout() {
               <div className="h-full w-[100%] bg-green-500" />
             </div>
           </div>
-        </div>
+        </div> */}
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden min-w-0">

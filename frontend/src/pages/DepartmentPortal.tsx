@@ -5,7 +5,6 @@ import PublicFooter from "../components/PublicFooter";
 import SEO from "../components/SEO";
 
 const API = "/api";
-const DEFAULT_PERIODE = "2025/2026";
 const ICON_FALLBACK = "folder";
 
 type DepartemenItem = {
@@ -48,6 +47,11 @@ function photoUrl(photo: string | null): string | null {
   if (!photo) return null;
   if (photo.startsWith("http") || photo.startsWith("/")) return photo;
   return `${API}/uploads/${photo}`;
+}
+
+function latestPeriode(items: PengurusItem[]): string {
+  return [...new Set(items.map((item) => item.periode).filter(Boolean))]
+    .sort((a, b) => b.localeCompare(a, "id", { numeric: true }))[0] ?? "";
 }
 
 function formatDate(d: string | null): string {
@@ -108,7 +112,7 @@ export default function DepartmentPortal() {
         if (r.status === 404) return null;
         return r.ok ? r.json() : null;
       }),
-      fetch(`${API}/content/pengurus?periode=${encodeURIComponent(DEFAULT_PERIODE)}`).then((r) => (r.ok ? r.json() : [])),
+      fetch(`${API}/content/pengurus`).then((r) => (r.ok ? r.json() : [])),
       fetch(`${API}/content/activities?departemenId=${encodeURIComponent(id!)}`).then((r) => (r.ok ? r.json() : [])),
       fetch(`${API}/content/news`).then((r) => (r.ok ? r.json() : [])),
     ])
@@ -119,7 +123,9 @@ export default function DepartmentPortal() {
         } else {
           setDepartment(dept);
         }
-        setPengurusList(Array.isArray(pengurus) ? pengurus.filter((p) => p.departemenId === id) : []);
+        const people = Array.isArray(pengurus) ? pengurus : [];
+        const activePeriode = latestPeriode(people);
+        setPengurusList(people.filter((person) => person.periode === activePeriode && person.departemenId === id));
         setActivities(Array.isArray(acts) ? acts : []);
         setNews(Array.isArray(newsList) ? newsList.slice(0, 6) : []);
       })

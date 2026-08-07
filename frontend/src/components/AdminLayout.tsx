@@ -17,6 +17,10 @@ const sidebarNav = (
       <span className="material-symbols-outlined">article</span>
       <span className="text-[14px]">Content</span>
     </NavLink>
+    <NavLink to="/admin/persuratan" className={({ isActive }) => `sidebar-item ${isActive ? "sidebar-active" : ""}`}>
+      <span className="material-symbols-outlined">folder_open</span>
+      <span className="text-[14px]">Persuratan</span>
+    </NavLink>
     <NavLink to="/admin/pengurus" className={({ isActive }) => `sidebar-item ${isActive ? "sidebar-active" : ""}`}>
       <span className="material-symbols-outlined">groups</span>
       <span className="text-[14px]">Pengurus</span>
@@ -130,7 +134,7 @@ export default function AdminLayout() {
           </div>
         </nav>
 
-        <div className="p-6">
+        {/* <div className="p-6">
           <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
               SYSTEM STATUS
@@ -143,7 +147,7 @@ export default function AdminLayout() {
               <div className="bg-green-500 h-full w-[100%]" />
             </div>
           </div>
-        </div>
+        </div> */}
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden">

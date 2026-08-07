@@ -11,8 +11,8 @@ const app = new Hono<{ Variables: AuthVariables }>();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const UPLOADS_DIR = process.env.UPLOADS_DIR ?? path.resolve(__dirname, "..", "..", "uploads");
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-const ALLOWED_EXT = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf"];
+const ALLOWED_EXT = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".pdf"];
 
 function getExt(mime: string): string {
   const map: Record<string, string> = {
@@ -68,6 +68,7 @@ const MIME_BY_EXT: Record<string, string> = {
   ".png": "image/png",
   ".gif": "image/gif",
   ".webp": "image/webp",
+  ".pdf": "application/pdf",
 };
 
 /** Public handler: serve uploaded file. Pasang di app utama GET /api/uploads/:filename agar tidak kena auth. */

@@ -91,13 +91,6 @@ export default function AcaraList() {
                 <p className="event-page-kicker">Kalender HIMASI</p>
                 <h1>Ruang untuk bertemu,<br className="hidden sm:block" /> belajar, dan bertumbuh.</h1>
               </div>
-              <div className="event-page-summary">
-                <span className="material-symbols-outlined" aria-hidden="true">calendar_month</span>
-                <div>
-                  <strong>{loading ? "—" : upcomingCount}</strong>
-                  <p>acara mendatang yang bisa kamu ikuti.</p>
-                </div>
-              </div>
             </div>
           </div>
         </section>

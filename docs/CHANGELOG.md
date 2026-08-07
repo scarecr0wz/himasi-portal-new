@@ -6,6 +6,13 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 
 ## [Unreleased]
 
+### Admin — Sistem Manajemen Persuratan & Dokumen (Fase 1)
+
+- **Manajemen Arsip Terpadu:** Menambahkan halaman baru (UI) di portal Admin khusus untuk mendata Surat Masuk, Surat Keluar, dan Dokumen Penting.
+- **Tampilan Dinamis:** Menyediakan mode grid (kartu) dan mode *list* (tabel) yang dapat di-switch sesuai kenyamanan baca pengurus.
+- **Drag & Drop Upload:** Formulir unggah dokumen dengan *drag and drop* didukung validasi ekstensi untuk PDF dan gambar.
+- **Baca PDF Langsung:** Dokumen PDF yang diunggah dapat di-klik langsung dari daftar dan terbuka secara presisi di *tab* browser baru.
+
 ### Public UI — Pengurus Hierarchy & Animation
 
 - **Struktur Hirarki Pengurus:** Memperbaiki tata letak (grid) pada seksi "Sekretariat & Keuangan" di halaman pengurus agar garis percabangan dari Wakil Ketua Umum terpusat dengan tepat.
