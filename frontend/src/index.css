@@ -3955,6 +3955,7 @@ body {
   height: 3rem;
   place-items: center;
   border-radius: 0.85rem;
+  overflow: hidden;
   background: #e8f1ff;
   color: #1651a4;
   font-size: 1.35rem;
