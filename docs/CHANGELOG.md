@@ -6,6 +6,13 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 
 ## [Unreleased]
 
+### Admin — Sistem Manajemen Keuangan & Kas (Fase 2)
+
+- **Buku Kas Interaktif:** Menambahkan halaman "Keuangan" untuk Bendahara guna mencatat arus kas (pemasukan dan pengeluaran).
+- **Dashboard Finansial:** Ringkasan otomatis berupa kartu (cards) untuk Total Pemasukan, Total Pengeluaran, dan Saldo Saat Ini.
+- **Tabel Pencatatan (Excel-like):** Menampilkan riwayat transaksi dalam format tabel akuntansi yang rapi (pemisahan kolom debit/kredit dan baris auto-sum di bawah).
+- **Filter Rentang Waktu:** Menggunakan filter berdasarkan bulan untuk melacak rekam jejak keuangan per periode.
+
 ### Admin — Sistem Manajemen Persuratan & Dokumen (Fase 1)
 
 - **Manajemen Arsip Terpadu:** Menambahkan halaman baru (UI) di portal Admin khusus untuk mendata Surat Masuk, Surat Keluar, dan Dokumen Penting.

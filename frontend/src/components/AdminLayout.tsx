@@ -21,6 +21,10 @@ const sidebarNav = (
       <span className="material-symbols-outlined">folder_open</span>
       <span className="text-[14px]">Persuratan</span>
     </NavLink>
+    <NavLink to="/admin/keuangan" className={({ isActive }) => `sidebar-item ${isActive ? "sidebar-active" : ""}`}>
+      <span className="material-symbols-outlined">account_balance_wallet</span>
+      <span className="text-[14px]">Keuangan</span>
+    </NavLink>
     <NavLink to="/admin/pengurus" className={({ isActive }) => `sidebar-item ${isActive ? "sidebar-active" : ""}`}>
       <span className="material-symbols-outlined">groups</span>
       <span className="text-[14px]">Pengurus</span>

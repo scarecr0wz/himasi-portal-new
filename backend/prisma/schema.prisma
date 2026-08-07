@@ -52,6 +52,7 @@ model User {
   forumTopics         ForumTopic[]
   forumReplies        ForumReply[]
   archiveDocuments    ArchiveDocument[]
+  financeTransactions FinanceTransaction[]
 }
 
 model Enumeration {
@@ -65,6 +66,7 @@ model Enumeration {
 
   usersAsJabatan User[]     @relation("UserJabatan")
   forumTopics   ForumTopic[]
+  financeTransactions FinanceTransaction[]
 }
 
 model Departemen {
@@ -142,6 +144,24 @@ model ModelHasRole {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([roleId, userId])
+}
+
+model FinanceTransaction {
+  id              String    @id @default(uuid()) @db.Uuid
+  type            String    @db.VarChar(50) // INCOME or EXPENSE
+  categoryId      String?   @map("category_id") @db.Uuid
+  amount          Decimal   @db.Decimal(15, 2)
+  description     String?   @db.Text
+  transactionDate DateTime  @map("transaction_date") @db.Date
+  evidencePath    String?   @map("evidence_path") @db.VarChar(512)
+  createdBy       String    @map("created_by") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  category        Enumeration? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  user            User         @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@map("finance_transactions")
 }
 
 model RoleHasPermission {
