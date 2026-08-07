@@ -4047,15 +4047,17 @@ body {
   .people-structure .people-roster-card:nth-child(2n),
   .people-structure .people-roster-card:nth-child(3n) { border-right: 1px solid rgba(148, 163, 184, 0.24); }
   .people-department-list { column-gap: 1.75rem; }
-  .people-support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); width: min(70%, 35rem); }
+  .people-support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); width: min(90%, 45rem); }
   .people-structure-group { grid-template-columns: 1fr; }
   .people-group-label { position: static; }
   .people-command-stage { width: min(100%, 59rem); gap: 1.25rem; }
   .people-leadership-grid::after,
+  .people-deputy-level::after,
+  .people-structure-tier + .people-structure-tier::before,
   .people-support-grid::before,
   .people-support-grid .people-roster-card::before,
   .people-support-grid .people-roster-card:nth-child(1)::after,
-  .people-support-grid .people-roster-card:nth-child(4)::after { display: none; }
+  .people-support-grid .people-roster-card:nth-child(4)::after { display: none !important; }
 }
 
 @media (max-width: 767px) {
@@ -4090,10 +4092,12 @@ body {
   .people-consult-line { display: none; }
   .people-deputy-level { width: min(82%, 15rem); }
   .people-leadership-grid::after,
+  .people-deputy-level::after,
+  .people-structure-tier + .people-structure-tier::before,
   .people-support-grid::before,
   .people-support-grid .people-roster-card::before,
   .people-support-grid .people-roster-card:nth-child(1)::after,
-  .people-support-grid .people-roster-card:nth-child(4)::after { display: none; }
+  .people-support-grid .people-roster-card:nth-child(4)::after { display: none !important; }
   .people-structure .people-roster-card,
   .people-structure .people-roster-card:nth-child(2n),
   .people-structure .people-roster-card:nth-child(3n) { border-right: 1px solid rgba(148, 163, 184, 0.24); }

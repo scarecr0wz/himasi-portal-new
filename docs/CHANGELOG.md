@@ -10,7 +10,7 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 
 - **Struktur Hirarki Pengurus:** Memperbaiki tata letak (grid) pada seksi "Sekretariat & Keuangan" di halaman pengurus agar garis percabangan dari Wakil Ketua Umum terpusat dengan tepat.
 - **Cabang Sekretaris & Bendahara 1:** Menghapus garis penghubung vertikal pada jabatan Sekretaris 1 dan Bendahara 1, lalu menambahkan garis horizontal untuk memvisualisasikan posisi staf sub-BPH yang bercabang langsung dari Sekretaris Umum dan Bendahara Umum.
-- **Animasi Garis Terstruktur:** Menambahkan animasi CSS (`@keyframes`) pada garis hirarki pengurus sehingga muncul merambat secara perlahan dari atas ke bawah, diikuti penyebaran horizontal ke samping.
+- **Animasi & Responsivitas:** Menambahkan animasi CSS (`@keyframes`) pada garis hirarki, serta memastikan garis-garis tersebut disembunyikan dengan benar pada tampilan *mobile* dan *tablet* agar struktur tidak menabrak atau rusak saat kolom menyempit.
 - **Logo Departemen di Daftar Pengurus:** Mengintegrasikan komponen `DepartmentLogo` pada daftar departemen di halaman Pengurus agar sinkron dengan logo grafis asli, menggantikan ikon material statis.
 
 ### Admin & Portal Mahasiswa — UI Consistency
