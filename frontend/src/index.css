@@ -20,12 +20,12 @@
 }
 
 :root {
-  /* Primary — akademik, tepercaya */
+  /* Primary â€” akademik, tepercaya */
   --primary: #0f172a;
   --primary-600: #1e293b;
   --primary-500: #334155;
   --primary-400: #64748b;
-  /* Accent — muda, segar */
+  /* Accent â€” muda, segar */
   --accent: #137fec;
   --accent-light: #3b9afe;
   --accent-bg: rgba(19, 127, 236, 0.08);
@@ -505,7 +505,7 @@ body {
   color: var(--text-muted);
 }
 
-/* ========== Portal Mahasiswa — responsive / mobile ========== */
+/* ========== Portal Mahasiswa â€” responsive / mobile ========== */
 @media (max-width: 640px) {
   .dashboard-breadcrumb {
     font-size: 0.7rem;
@@ -2300,7 +2300,7 @@ body {
 }
 
 .vision-statement::after {
-  content: "“";
+  content: "â€œ";
   position: absolute;
   right: 1.5rem;
   bottom: -2.5rem;
@@ -3570,6 +3570,332 @@ body {
 .people-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .people-avatar .material-symbols-outlined { font-size: 2rem; }
 
+.people-structure {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.people-structure-group {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(1.25rem, 3vw, 3rem);
+}
+
+.people-structure-group + .people-structure-group {
+  padding-top: clamp(2rem, 4vw, 3.5rem);
+  border-top: 1px solid rgba(28, 57, 106, 0.16);
+}
+
+.people-structure-group--plain { grid-template-columns: minmax(0, 1fr); }
+
+@media (min-width: 1024px) {
+  .people-operation-group {
+    display: block;
+    position: relative;
+  }
+  .people-operation-group .people-group-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 9rem;
+  }
+}
+
+.people-command-stage {
+  position: relative;
+  display: grid;
+  width: min(91%, 72rem);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 0.9fr);
+  align-items: center;
+  gap: clamp(1.5rem, 3vw, 3rem);
+  margin-inline: auto;
+}
+
+.people-command-slot {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.people-command-chair {
+  width: 90%;
+  justify-self: center;
+}
+
+.people-command-stage .people-roster-card--advisor { width: 100%; }
+
+.people-command-advisors {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 0.75rem;
+  width: 112%;
+  transform-origin: left center;
+}
+
+.people-command-advisors .people-roster-card { height: 100%; }
+
+.people-command-advisors .people-card-copy {
+  display: flex;
+  min-height: 5.25rem;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.people-consult-line {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 63%;
+  width: 9%;
+  height: 1px;
+  border-top: 2px dashed rgba(22, 81, 164, 0.42);
+}
+
+.people-command-stage::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(clamp(2.5rem, 5vw, 4.5rem) * -1);
+  width: 2px;
+  height: clamp(2.5rem, 5vw, 4.5rem);
+  background: #1651a4;
+  transform: translateX(-50%);
+}
+
+.people-deputy-level {
+  position: relative;
+  width: min(70%, 18rem);
+  margin-inline: auto;
+}
+
+.people-deputy-level::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(clamp(2.5rem, 5vw, 4.5rem) * -1);
+  width: 2px;
+  height: clamp(2.5rem, 5vw, 4.5rem);
+  background: linear-gradient(180deg, #1651a4, rgba(22, 81, 164, 0.18));
+  transform: translateX(-50%);
+}
+
+.people-deputy-level .people-roster-card--deputy { width: 100%; }
+
+.people-group-label {
+  position: sticky;
+  top: 6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding-top: 0.35rem;
+}
+
+.people-group-label span {
+  color: #94a3b8;
+  font-size: 0.6rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.people-group-label p {
+  margin: 0;
+  color: #1c396a;
+  font-size: 0.67rem;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.people-structure-tier {
+  position: relative;
+  display: grid;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  margin-inline: auto;
+}
+
+.people-structure-tier + .people-structure-tier::before {
+  content: "";
+  position: absolute;
+  top: calc(clamp(2.5rem, 5vw, 4.5rem) * -1);
+  left: 50%;
+  width: 1px;
+  height: clamp(2.5rem, 5vw, 4.5rem);
+  background: linear-gradient(180deg, rgba(22, 81, 164, 0.42), rgba(22, 81, 164, 0.08));
+}
+
+.people-structure-group .people-structure-tier::before,
+.people-structure-group .people-structure-tier::after,
+.people-structure-group .people-roster-card::before { display: none; }
+
+.people-executive-grid {
+  width: min(70%, 41rem);
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+  align-items: center;
+}
+
+.people-advisor-grid {
+  width: min(70%, 31rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-left: 0;
+}
+
+.people-leadership-grid {
+  width: min(100%, 62rem);
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+  align-items: center;
+}
+
+.people-leadership-grid .people-roster-card:only-child {
+  width: calc(50% - 1rem);
+  grid-column: 1 / -1;
+  justify-self: center;
+}
+
+.people-support-grid {
+  width: min(70%, 55rem);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.people-leadership-grid::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(clamp(2.5rem, 5vw, 4.5rem) * -0.52);
+  width: 1px;
+  height: calc(clamp(2.5rem, 5vw, 4.5rem) * 0.52);
+  background: rgba(22, 81, 164, 0.42);
+}
+
+.people-support-grid::before {
+  content: "";
+  position: absolute;
+  top: calc(clamp(2.5rem, 5vw, 4.5rem) * -0.5);
+  left: 37.5%;
+  width: 25%;
+  height: 1px;
+  background: rgba(22, 81, 164, 0.32);
+}
+
+.people-support-grid .people-roster-card::before {
+  content: "";
+  position: absolute;
+  top: calc(clamp(2.5rem, 5vw, 4.5rem) * -0.5);
+  left: 50%;
+  width: 1px;
+  height: calc(clamp(2.5rem, 5vw, 4.5rem) * 0.5);
+  background: rgba(22, 81, 164, 0.32);
+}
+
+.people-support-grid .people-roster-card:nth-child(1)::before,
+.people-support-grid .people-roster-card:nth-child(4)::before {
+  display: none;
+}
+
+.people-support-grid .people-roster-card:nth-child(1)::after,
+.people-support-grid .people-roster-card:nth-child(4)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  height: 1px;
+  background: rgba(22, 81, 164, 0.32);
+}
+
+.people-support-grid .people-roster-card:nth-child(1)::after {
+  right: calc(clamp(1.25rem, 2.5vw, 2rem) * -1);
+  width: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.people-support-grid .people-roster-card:nth-child(4)::after {
+  left: calc(clamp(1.25rem, 2.5vw, 2rem) * -1);
+  width: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.people-other-grid {
+  width: min(70%, 42rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.people-structure .people-roster-card {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  overflow: visible;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: white;
+  box-shadow: 0 1rem 2.8rem rgba(28, 57, 106, 0.08);
+}
+
+.people-structure .people-roster-card--featured {
+  border: 2px solid #1651a4;
+  box-shadow: 0 1.6rem 4rem rgba(28, 57, 106, 0.18);
+  transform: translateY(-0.35rem);
+}
+
+.people-structure .people-roster-card--deputy {
+  width: 92%;
+  justify-self: center;
+  border-color: rgba(22, 81, 164, 0.3);
+  box-shadow: 0 1rem 2.8rem rgba(28, 57, 106, 0.09);
+}
+
+.people-leadership-grid .people-roster-card--featured:only-child { width: 65%; }
+
+.people-structure .people-roster-card--featured .people-card-copy {
+  padding: 1.35rem 1.4rem 1.5rem;
+  background: linear-gradient(135deg, #1c396a, #1651a4);
+}
+
+.people-structure .people-roster-card--featured .people-card-copy p { color: #a9caff; }
+.people-structure .people-roster-card--featured .people-card-copy h3 {
+  color: white;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+}
+.people-structure .people-roster-card--featured .people-card-number { color: rgba(255, 255, 255, 0.32); }
+
+.people-structure .people-roster-card--advisor {
+  width: 100%;
+  justify-self: center;
+  box-shadow: 0 0.8rem 2.2rem rgba(28, 57, 106, 0.07);
+}
+
+.people-advisor-grid .people-avatar { aspect-ratio: 3 / 4; }
+.people-advisor-grid .people-card-copy { padding: 0.9rem 1rem 1.05rem; }
+.people-advisor-grid .people-roster-card h3 { font-size: 0.9rem; }
+
+.people-structure .people-avatar {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  border-radius: 0;
+  background: #e8f1ff;
+}
+
+.people-structure .people-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.people-card-copy {
+  width: 100%;
+  padding: 1.15rem 1.2rem 1.3rem;
+}
+
+.people-structure .people-card-number {
+  top: auto;
+  right: 1rem;
+  bottom: 1.2rem;
+}
+
 .people-roster-card p {
   margin: 0 0 0.3rem;
   color: #1651a4;
@@ -3716,7 +4042,19 @@ body {
   .people-roster-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .people-roster-card:nth-child(3n) { border-right: 1px solid rgba(148, 163, 184, 0.18); }
   .people-roster-card:nth-child(2n) { border-right: 0; }
+  .people-structure .people-roster-card,
+  .people-structure .people-roster-card:nth-child(2n),
+  .people-structure .people-roster-card:nth-child(3n) { border-right: 1px solid rgba(148, 163, 184, 0.24); }
   .people-department-list { column-gap: 1.75rem; }
+  .people-support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); width: min(70%, 35rem); }
+  .people-structure-group { grid-template-columns: 1fr; }
+  .people-group-label { position: static; }
+  .people-command-stage { width: min(100%, 59rem); gap: 1.25rem; }
+  .people-leadership-grid::after,
+  .people-support-grid::before,
+  .people-support-grid .people-roster-card::before,
+  .people-support-grid .people-roster-card:nth-child(1)::after,
+  .people-support-grid .people-roster-card:nth-child(4)::after { display: none; }
 }
 
 @media (max-width: 767px) {
@@ -3729,6 +4067,35 @@ body {
   .people-roster-card,
   .people-roster-card:nth-child(2n),
   .people-roster-card:nth-child(3n) { border-right: 0; }
+  .people-leadership-grid,
+  .people-executive-grid,
+  .people-advisor-grid,
+  .people-support-grid,
+  .people-other-grid { grid-template-columns: 1fr; width: min(100%, 18rem); }
+  .people-leadership-grid .people-roster-card:only-child { width: 100%; }
+  .people-structure .people-roster-card--advisor { width: 82%; }
+  .people-structure .people-roster-card--deputy { width: 92%; }
+  .people-command-stage {
+    width: min(100%, 36rem);
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+  .people-command-balance { display: none; }
+  .people-command-chair { width: 90%; }
+  .people-command-advisors { width: min(92%, 18rem); margin: 0.75rem auto 0; }
+  .people-command-stage .people-card-copy { padding: 0.65rem; }
+  .people-command-stage .people-roster-card h3 { font-size: 0.7rem; }
+  .people-command-stage .people-roster-card p { font-size: 0.5rem; }
+  .people-consult-line { display: none; }
+  .people-deputy-level { width: min(82%, 15rem); }
+  .people-leadership-grid::after,
+  .people-support-grid::before,
+  .people-support-grid .people-roster-card::before,
+  .people-support-grid .people-roster-card:nth-child(1)::after,
+  .people-support-grid .people-roster-card:nth-child(4)::after { display: none; }
+  .people-structure .people-roster-card,
+  .people-structure .people-roster-card:nth-child(2n),
+  .people-structure .people-roster-card:nth-child(3n) { border-right: 1px solid rgba(148, 163, 184, 0.24); }
   .people-department-list { grid-template-columns: 1fr; column-gap: 0; }
   .people-department-row { grid-template-columns: 1.5rem 2.75rem minmax(0, 1fr) auto; gap: 0.75rem; }
   .people-department-icon { width: 2.75rem; height: 2.75rem; }
@@ -4302,4 +4669,46 @@ body {
   .department-card-logo,
   .department-card-arrow,
   .faq-item-toggle { transition: none; }
+}
+
+@keyframes line-draw-vertical {
+  from { transform: scaleY(0); opacity: 0; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+
+@keyframes line-draw-horizontal {
+  from { transform: scaleX(0); opacity: 0; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+
+.people-leadership-grid::after,
+.people-deputy-level::after,
+.people-structure-tier + .people-structure-tier::before {
+  transform-origin: top;
+  animation: line-draw-vertical 400ms ease both;
+  animation-delay: 200ms;
+}
+
+.people-support-grid::before {
+  transform-origin: center;
+  animation: line-draw-horizontal 400ms ease both;
+  animation-delay: 400ms;
+}
+
+.people-support-grid .people-roster-card::before {
+  transform-origin: top;
+  animation: line-draw-vertical 400ms ease both;
+  animation-delay: 600ms;
+}
+
+.people-support-grid .people-roster-card:nth-child(1)::after {
+  transform-origin: left;
+  animation: line-draw-horizontal 400ms ease both;
+  animation-delay: 800ms;
+}
+
+.people-support-grid .people-roster-card:nth-child(4)::after {
+  transform-origin: right;
+  animation: line-draw-horizontal 400ms ease both;
+  animation-delay: 800ms;
 }

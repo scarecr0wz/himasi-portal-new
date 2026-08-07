@@ -17,7 +17,7 @@ type PengurusItem = {
 
 type DeptOption = { id: string; title: string };
 
-const ROLES_BPH = ["Dewan Pengarah", "Ketua Umum", "Wakil Ketua Umum", "Sekretaris Umum", "Bendahara Umum"];
+const ROLES_BPH = ["Dewan Pengarah", "Ketua Umum", "Wakil Ketua Umum", "Sekretaris Umum", "Sekretaris 1", "Bendahara Umum", "Bendahara 1"];
 const ROLES_DEPARTMENT = ["Kepala Departemen", "Anggota Departemen"];
 
 export default function AdminPengurus() {
