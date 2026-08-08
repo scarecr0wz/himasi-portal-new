@@ -281,7 +281,7 @@ Di sisi user (fokus **pengurus dulu**): melihat status pembayaran **uang kas** y
 | 3 | UI pengelolaan jabatan & akses (assign role jabatan + permission per user) di Pengaturan | RBAC | Belum |
 | 4 | Middleware/helper scope departemen di backend | RBAC | Belum |
 | 5 | Model + API + UI Persuratan (Sekretaris) | 1 | Belum |
-| 6 | Model + API + UI Keuangan/Kas (Bendahara) | 2 | Belum |
+| 6 | Model + API + UI Keuangan/Kas (Bendahara) | 2 | Selesai |
 | 7 | API absen user + rekap kehadiran admin + halaman kehadiran | 3 | Belum |
 | 8 | LMS: Course, Materi, Kuis (API + UI admin & user) | 4 | Belum |
 | 9 | Verifikasi pendaftaran (APPROVE/REJECT) untuk PSDM | PSDM | Belum |
