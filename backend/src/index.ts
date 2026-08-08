@@ -7,6 +7,7 @@ import { profile } from "./routes/profile.js";
 import { adminCms } from "./routes/admin-cms.js";
 import { adminArchive } from "./routes/admin-archive.js";
 import { adminFinance } from "./routes/admin-finance.js";
+import adminEventKasRouter from "./routes/admin-event-kas.js";
 import { forum } from "./routes/forum.js";
 import { uploads, serveUploadFile } from "./routes/uploads.js";
 import { authMiddleware } from "./lib/auth.js";
@@ -36,6 +37,7 @@ app.route("/api", forum);
 app.route("/api", adminCms);
 app.route("/api", adminArchive);
 app.route("/api/admin/finance", adminFinance);
+app.route("/api/admin/event-kas", adminEventKasRouter);
 
 app.get("/api/me", authMiddleware, (c) => {
   const user = c.get("user");

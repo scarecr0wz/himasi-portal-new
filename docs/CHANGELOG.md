@@ -9,6 +9,10 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 ### Admin — Sistem Manajemen Keuangan & Kas (Fase 2)
 
 - **Buku Kas Interaktif:** Menambahkan halaman "Keuangan" untuk Bendahara guna mencatat arus kas (pemasukan dan pengeluaran).
+- **Integrasi Multi-Tab Kas:** Menggabungkan "Kas Mahasiswa" dan "Kas Event" ke dalam halaman Keuangan agar navigasi terpusat dan rapi.
+- **Kas Mahasiswa (Tab):** Menampilkan list seluruh anggota dalam format grid progres bulanan (Jan-Des), memudahkan *tracking* iuran kas wajib. 
+- **Kas Event Backend & UI:** Modul "Kas Event" sudah berfungsi penuh, memungkinkan pembuatan buku kas terpisah per-event (pemasukan/pengeluaran mandiri).
+- **Auto-Sync Saldo Event:** Tombol finalisasi Kas Event kini secara otomatis mengirim sisa dana (surplus/defisit) ke catatan "Buku Kas Utama".
 - **Dashboard Finansial:** Ringkasan otomatis berupa kartu (cards) untuk Total Pemasukan, Total Pengeluaran, dan Saldo Saat Ini.
 - **Tabel Pencatatan (Excel-like):** Menampilkan riwayat transaksi dalam format tabel akuntansi yang rapi (pemisahan kolom debit/kredit dan baris auto-sum di bawah).
 - **Filter Rentang Waktu:** Menggunakan filter berdasarkan bulan untuk melacak rekam jejak keuangan per periode.

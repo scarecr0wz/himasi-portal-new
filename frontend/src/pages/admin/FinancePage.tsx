@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import { KasMahasiswaTab } from "./KasMahasiswaTab";
+import { KasEventTab } from "./KasEventTab";
+
+type Tab = 'buku-kas' | 'kas-mahasiswa' | 'kas-event';
 
 type Transaction = {
   id: string;
@@ -17,11 +21,18 @@ type Summary = {
   balance: number;
 };
 
+const TABS = [
+  { id: 'buku-kas' as const,      label: 'Buku Kas',      icon: 'account_balance_wallet' },
+  { id: 'kas-mahasiswa' as const,  label: 'Kas Mahasiswa', icon: 'payments' },
+  { id: 'kas-event' as const,     label: 'Kas Event',     icon: 'event_note' },
+];
+
 export default function FinancePage() {
+  const [activeTab, setActiveTab] = useState<Tab>('buku-kas');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [summary, setSummary] = useState<Summary>({ totalIncome: 0, totalExpense: 0, balance: 0 });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filterMonth, setFilterMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
+  const [filterMonth, setFilterMonth] = useState(new Date().toISOString().slice(0, 7));
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
@@ -31,14 +42,11 @@ export default function FinancePage() {
       const month = filterMonth.split("-")[1];
       const from = new Date(Number(year), Number(month) - 1, 1).toISOString();
       const to = new Date(Number(year), Number(month), 0, 23, 59, 59).toISOString();
-      
       const headers = { "Authorization": `Bearer ${localStorage.getItem("himasi_portal_token")}` };
-      
       const [sumRes, txRes] = await Promise.all([
         fetch(`/api/admin/finance/summary?from=${from}&to=${to}`, { headers }),
         fetch(`/api/admin/finance?from=${from}&to=${to}`, { headers })
       ]);
-
       if (sumRes.ok) setSummary(await sumRes.json());
       if (txRes.ok) setTransactions(await txRes.json());
     } catch (err) {
@@ -48,193 +56,223 @@ export default function FinancePage() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [filterMonth]);
+  useEffect(() => { 
+    if (activeTab === 'buku-kas') {
+      fetchData(); 
+    }
+  }, [filterMonth, activeTab]);
 
-  const formatRp = (num: number) => {
-    return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(num);
-  };
+  const formatRp = (num: number) =>
+    new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(num);
 
   return (
-    <div className="p-6 md:p-8 space-y-8 animate-fade-in pb-20">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div className="p-6 md:p-8 space-y-6 animate-fade-in pb-20">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 mb-2">Buku Kas &amp; Keuangan</h1>
-          <p className="text-slate-500">Kelola arus kas, donasi, operasional, dan pantau saldo organisasi.</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 mb-1">Keuangan</h1>
+          <p className="text-slate-500 text-sm">Kelola buku kas, iuran anggota, dan keuangan per event.</p>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          style={{ padding: "0.5rem 1rem", background: "var(--accent)", color: "white", borderRadius: "8px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "0.25rem", whiteSpace: "nowrap" }}
-        >
-          + Catat Transaksi
-        </button>
+        {activeTab === 'buku-kas' && (
+          <button
+            onClick={() => setIsModalOpen(true)}
+            style={{ padding: "0.5rem 1rem", background: "var(--accent)", color: "white", borderRadius: "8px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "0.25rem", whiteSpace: "nowrap" }}
+          >
+            + Catat Transaksi
+          </button>
+        )}
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-            <span className="material-symbols-outlined text-8xl text-green-600">south_west</span>
-          </div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center text-green-600">
-              <span className="material-symbols-outlined text-[22px]">south_west</span>
-            </div>
-            <h3 className="font-semibold text-slate-600">Pemasukan</h3>
-          </div>
-          <div>
-            <p className="text-3xl font-bold text-slate-900">{formatRp(summary.totalIncome)}</p>
-            <p className="text-sm text-slate-500 mt-1">Bulan ini</p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-            <span className="material-symbols-outlined text-8xl text-red-600">north_east</span>
-          </div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-red-600">
-              <span className="material-symbols-outlined text-[22px]">north_east</span>
-            </div>
-            <h3 className="font-semibold text-slate-600">Pengeluaran</h3>
-          </div>
-          <div>
-            <p className="text-3xl font-bold text-slate-900">{formatRp(summary.totalExpense)}</p>
-            <p className="text-sm text-slate-500 mt-1">Bulan ini</p>
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-primary to-blue-800 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden text-white">
-          <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
-            <span className="material-symbols-outlined text-8xl">account_balance_wallet</span>
-          </div>
-          <div className="flex items-center gap-3 mb-4 relative z-10">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-              <span className="material-symbols-outlined text-[22px]">account_balance_wallet</span>
-            </div>
-            <h3 className="font-medium text-blue-100">Saldo Saat Ini</h3>
-          </div>
-          <div className="relative z-10">
-            <p className="text-3xl md:text-4xl font-bold">{formatRp(summary.balance)}</p>
-            <p className="text-sm text-blue-200 mt-1">Estimasi kas aktif</p>
-          </div>
-        </div>
+      {/* Tab Bar */}
+      <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit flex-wrap">
+        {TABS.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              activeTab === tab.id
+                ? 'bg-white text-primary shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* Filter & List */}
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col">
-        <div className="p-5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/50">
-          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <span className="material-symbols-outlined text-slate-400">receipt_long</span>
-            Riwayat Transaksi
-          </h2>
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-slate-600">Bulan:</span>
-            <input 
-              type="month" 
-              value={filterMonth}
-              onChange={(e) => setFilterMonth(e.target.value)}
-              className="border-none rounded-none px-3 py-1.5 text-sm bg-white focus:ring-2 focus:ring-primary/50 outline-none"
-            />
-          </div>
-        </div>
-
-        <div className="p-0">
-          {loading ? (
-            <div className="p-12 text-center text-slate-400 flex flex-col items-center">
-              <span className="material-symbols-outlined animate-spin text-4xl mb-3">refresh</span>
-              <p>Memuat data...</p>
-            </div>
-          ) : transactions.length > 0 ? (
-            <div className="overflow-x-auto min-h-[300px]">
-              <table className="w-full text-left text-sm text-slate-700">
-                <thead className="bg-slate-50 text-slate-700 uppercase text-[11px] font-bold">
-                  <tr>
-                    <th className="px-4 py-3 w-32 whitespace-nowrap">Tanggal</th>
-                    <th className="px-4 py-3">Keterangan</th>
-                    <th className="px-4 py-3 w-40 text-right text-green-700">Pemasukan</th>
-                    <th className="px-4 py-3 w-40 text-right text-red-700">Pengeluaran</th>
-                    <th className="px-4 py-3 w-20 text-center">Bukti</th>
-                    <th className="px-4 py-3 w-16 text-center">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((t) => (
-                    <tr key={t.id} className="hover:bg-slate-50/80 transition-colors group">
-                      <td className="px-4 py-3 whitespace-nowrap font-medium text-slate-600">
-                        {new Date(t.transactionDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' })}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="font-semibold text-slate-900">{t.description || "-"}</div>
-                        <div className="text-[11px] text-slate-500 mt-0.5">Oleh: {t.user.name}</div>
-                      </td>
-                      <td className="px-4 py-3 text-right font-medium text-green-600">
-                        {t.type === 'INCOME' ? formatRp(Number(t.amount)) : "-"}
-                      </td>
-                      <td className="px-4 py-3 text-right font-medium text-red-600">
-                        {t.type === 'EXPENSE' ? formatRp(Number(t.amount)) : "-"}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        {t.evidencePath ? (
-                          <button
-                            type="button"
-                            onClick={() => window.open(t.evidencePath!, '_blank')}
-                            className="cursor-pointer text-slate-400 hover:text-primary transition-colors"
-                            title="Lihat bukti"
-                          >
-                            <span className={`material-symbols-outlined text-[20px] align-middle ${t.evidencePath.endsWith('.pdf') ? 'text-red-400 hover:text-red-600' : 'text-blue-400 hover:text-blue-600'}`}>
-                              {t.evidencePath.endsWith('.pdf') ? 'picture_as_pdf' : 'image'}
-                            </span>
-                          </button>
-                        ) : (
-                          <span className="material-symbols-outlined text-[18px] align-middle text-slate-200">attach_file</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <button 
-                          onClick={async () => {
-                            if (confirm("Hapus transaksi ini secara permanen?")) {
-                              await fetch(`/api/admin/finance/${t.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('himasi_portal_token')}` } });
-                              fetchData();
-                            }
-                          }}
-                          className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
-                          title="Hapus"
-                        >
-                          <span className="material-symbols-outlined text-[18px]">delete</span>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {/* Totals Row */}
-                  <tr className="bg-slate-50/50 font-bold">
-                    <td colSpan={2} className="px-4 py-3 text-right text-slate-700">
-                      TOTAL PADA BULAN INI:
-                    </td>
-                    <td className="px-4 py-3 text-right text-green-700">
-                      {formatRp(summary.totalIncome)}
-                    </td>
-                    <td className="px-4 py-3 text-right text-red-700">
-                      {formatRp(summary.totalExpense)}
-                    </td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="p-16 text-center flex flex-col items-center">
-              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-slate-400">
-                <span className="material-symbols-outlined text-3xl">receipt_long</span>
+      {/* ── Buku Kas ── */}
+      {activeTab === 'buku-kas' && (
+        <div className="space-y-8">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                <span className="material-symbols-outlined text-8xl text-green-600">south_west</span>
               </div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center text-green-600">
+                  <span className="material-symbols-outlined text-[22px]">south_west</span>
+                </div>
+                <h3 className="font-semibold text-slate-600">Pemasukan</h3>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-slate-900">{formatRp(summary.totalIncome)}</p>
+                <p className="text-sm text-slate-500 mt-1">Bulan ini</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                <span className="material-symbols-outlined text-8xl text-red-600">north_east</span>
+              </div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-red-600">
+                  <span className="material-symbols-outlined text-[22px]">north_east</span>
+                </div>
+                <h3 className="font-semibold text-slate-600">Pengeluaran</h3>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-slate-900">{formatRp(summary.totalExpense)}</p>
+                <p className="text-sm text-slate-500 mt-1">Bulan ini</p>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-primary to-blue-800 rounded-2xl p-6 shadow-lg flex flex-col justify-between relative overflow-hidden text-white">
+              <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                <span className="material-symbols-outlined text-8xl">account_balance_wallet</span>
+              </div>
+              <div className="flex items-center gap-3 mb-4 relative z-10">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                  <span className="material-symbols-outlined text-[22px]">account_balance_wallet</span>
+                </div>
+                <h3 className="font-medium text-blue-100">Saldo Saat Ini</h3>
+              </div>
+              <div className="relative z-10">
+                <p className="text-3xl md:text-4xl font-bold">{formatRp(summary.balance)}</p>
+                <p className="text-sm text-blue-200 mt-1">Estimasi kas aktif</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Filter & List */}
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            <div className="p-5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/50">
+              <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <span className="material-symbols-outlined text-slate-400">receipt_long</span>
+                Riwayat Transaksi
+              </h2>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-slate-600">Bulan:</span>
+                <input
+                  type="month"
+                  value={filterMonth}
+                  onChange={(e) => setFilterMonth(e.target.value)}
+                  className="border-none rounded-none px-3 py-1.5 text-sm bg-white focus:ring-2 focus:ring-primary/50 outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="p-0">
+              {loading ? (
+                <div className="p-12 text-center text-slate-400 flex flex-col items-center">
+                  <span className="material-symbols-outlined animate-spin text-4xl mb-3">refresh</span>
+                  <p>Memuat data...</p>
+                </div>
+              ) : transactions.length > 0 ? (
+                <div className="overflow-x-auto min-h-[300px]">
+                  <table className="w-full text-left text-sm text-slate-700">
+                    <thead className="bg-slate-50 text-slate-700 uppercase text-[11px] font-bold">
+                      <tr>
+                        <th className="px-4 py-3 w-32 whitespace-nowrap">Tanggal</th>
+                        <th className="px-4 py-3">Keterangan</th>
+                        <th className="px-4 py-3 w-40 text-right text-green-700">Pemasukan</th>
+                        <th className="px-4 py-3 w-40 text-right text-red-700">Pengeluaran</th>
+                        <th className="px-4 py-3 w-20 text-center">Bukti</th>
+                        <th className="px-4 py-3 w-16 text-center">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {transactions.map((t) => (
+                        <tr key={t.id} className="hover:bg-slate-50/80 transition-colors group">
+                          <td className="px-4 py-3 whitespace-nowrap font-medium text-slate-600">
+                            {new Date(t.transactionDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="font-semibold text-slate-900">{t.description || "-"}</div>
+                            <div className="text-[11px] text-slate-500 mt-0.5">Oleh: {t.user.name}</div>
+                          </td>
+                          <td className="px-4 py-3 text-right font-medium text-green-600">
+                            {t.type === 'INCOME' ? formatRp(Number(t.amount)) : "-"}
+                          </td>
+                          <td className="px-4 py-3 text-right font-medium text-red-600">
+                            {t.type === 'EXPENSE' ? formatRp(Number(t.amount)) : "-"}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            {t.evidencePath ? (
+                              <button
+                                type="button"
+                                onClick={() => window.open(t.evidencePath!, '_blank')}
+                                className="cursor-pointer text-slate-400 hover:text-primary transition-colors"
+                                title="Lihat bukti"
+                              >
+                                <span className={`material-symbols-outlined text-[20px] align-middle ${t.evidencePath.endsWith('.pdf') ? 'text-red-400' : 'text-blue-400'}`}>
+                                  {t.evidencePath.endsWith('.pdf') ? 'picture_as_pdf' : 'image'}
+                                </span>
+                              </button>
+                            ) : (
+                              <span className="material-symbols-outlined text-[18px] align-middle text-slate-200">attach_file</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <button
+                              onClick={async () => {
+                                if (confirm("Hapus transaksi ini secara permanen?")) {
+                                  await fetch(`/api/admin/finance/${t.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('himasi_portal_token')}` } });
+                                  fetchData();
+                                }
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                              title="Hapus"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      <tr className="bg-slate-50/50 font-bold">
+                        <td colSpan={2} className="px-4 py-3 text-right text-slate-700">TOTAL PADA BULAN INI:</td>
+                        <td className="px-4 py-3 text-right text-green-700">{formatRp(summary.totalIncome)}</td>
+                        <td className="px-4 py-3 text-right text-red-700">{formatRp(summary.totalExpense)}</td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="p-16 text-center flex flex-col items-center">
+                  <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-slate-400">
+                    <span className="material-symbols-outlined text-3xl">receipt_long</span>
+                  </div>
               <h3 className="font-semibold text-slate-700 mb-1">Belum Ada Transaksi</h3>
               <p className="text-sm text-slate-500">Tidak ada catatan keuangan pada bulan {new Date(filterMonth + "-01").toLocaleDateString("id-ID", { month: "long", year: "numeric" })}.</p>
             </div>
           )}
         </div>
       </div>
+      </div>
+      )}
+
+      {/* ── Kas Mahasiswa ── */}
+      {activeTab === 'kas-mahasiswa' && (
+        <KasMahasiswaTab />
+      )}
+
+      {/* ── Kas Event ── */}
+      {activeTab === 'kas-event' && (
+        <KasEventTab />
+      )}
 
       {isModalOpen && (
         <TransactionModal 

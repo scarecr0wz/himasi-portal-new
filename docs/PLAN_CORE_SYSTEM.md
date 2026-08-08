@@ -295,5 +295,6 @@ Di sisi user (fokus **pengurus dulu**): melihat status pembayaran **uang kas** y
 - **Nomor surat otomatis:** format perlu disepakati, mis. `002/HM.UTB/SEK/VIII/2026` (per jenis surat + bulan + tahun), dengan counter per tahun.
 - **Media & Publikasi** tidak dikerjakan ulang; hanya perlu memastikan permission CMS tetap milik divisi Media (dan bisa dilihat Ketua).
 - **Absensi:** pilih mekanisme MVP — (a) tombol absen langsung dalam rentang acara, atau (b) kode/PIN/QR yang diumumkan saat acara. Disarankan mulai dari (a), kode/PIN jadi pengembangan lanjutan.
+- **Dynamic Event & Pendaftaran Berbayar:** Jika ke depannya ada fitur absensi/pendaftaran mahasiswa ke sebuah acara yang membutuhkan uang pendaftaran, sistem ini direncanakan akan **sinkron otomatis**. Status `PAYMENT_PENDING` pada tabel pendaftaran, setelah diverifikasi/dibayar (Lunas), akan *mentrigger* otomatis pencatatan 1 row pemasukan ke tabel `EventKasTransaction` milik acara (Kas Event) tersebut. Ini menjamin Pemasukan Kas Event selalu klop 100% dengan data jumlah pendaftar tanpa butuh rekap manual oleh bendahara event.
 - **Payment gateway** diputuskan belakangan (Midtrans / Xendit / QRIS) setelah Fase 1–4 berjalan.
 - Perubahan pada `schema.prisma` akan membutuhkan migration (`npm run db:migrate`) — lihat `docs/MIGRATION.md`.

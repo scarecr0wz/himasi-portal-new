@@ -17,9 +17,6 @@ import AdminMahasiswa from "./pages/AdminMahasiswa";
 import AdminPengurus from "./pages/AdminPengurus";
 import ArchivePage from "./pages/admin/ArchivePage";
 import FinancePage from "./pages/admin/FinancePage";
-import KasMahasiswaPage from "./pages/admin/KasMahasiswaPage";
-import KasEventPage from "./pages/admin/KasEventPage";
-import KasEventDetailPage from "./pages/admin/KasEventDetailPage";
 import Profile from "./pages/Profile";
 import BeritaList from "./pages/BeritaList";
 import BeritaDetail from "./pages/BeritaDetail";
@@ -109,9 +106,6 @@ export default function App() {
         <Route path="pengurus" element={<AdminPengurus />} />
         <Route path="persuratan" element={<ArchivePage />} />
         <Route path="keuangan" element={<FinancePage />} />
-        <Route path="kas-mahasiswa" element={<KasMahasiswaPage />} />
-        <Route path="kas-event" element={<KasEventPage />} />
-        <Route path="kas-event/:id" element={<KasEventDetailPage />} />
         <Route path="menus" element={<AdminPlaceholder />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>
