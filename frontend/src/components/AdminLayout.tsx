@@ -25,6 +25,14 @@ const sidebarNav = (
       <span className="material-symbols-outlined">account_balance_wallet</span>
       <span className="text-[14px]">Keuangan</span>
     </NavLink>
+    <NavLink to="/admin/kas-mahasiswa" className={({ isActive }) => `sidebar-item ${isActive ? "sidebar-active" : ""}`}>
+      <span className="material-symbols-outlined">payments</span>
+      <span className="text-[14px]">Kas Mahasiswa</span>
+    </NavLink>
+    <NavLink to="/admin/kas-event" className={({ isActive }) => `sidebar-item ${isActive ? "sidebar-active" : ""}`}>
+      <span className="material-symbols-outlined">event_note</span>
+      <span className="text-[14px]">Kas Event</span>
+    </NavLink>
     <NavLink to="/admin/pengurus" className={({ isActive }) => `sidebar-item ${isActive ? "sidebar-active" : ""}`}>
       <span className="material-symbols-outlined">groups</span>
       <span className="text-[14px]">Pengurus</span>
