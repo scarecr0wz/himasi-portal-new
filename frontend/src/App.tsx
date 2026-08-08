@@ -16,6 +16,8 @@ import AdminSettings from "./pages/AdminSettings";
 import AdminMahasiswa from "./pages/AdminMahasiswa";
 import AdminPengurus from "./pages/AdminPengurus";
 import ArchivePage from "./pages/admin/ArchivePage";
+import ActivityPage from "./pages/admin/ActivityPage";
+import ActivityDetailPage from "./pages/admin/ActivityDetailPage";
 import FinancePage from "./pages/admin/FinancePage";
 import Profile from "./pages/Profile";
 import BeritaList from "./pages/BeritaList";
@@ -105,6 +107,8 @@ export default function App() {
         <Route path="users" element={<AdminMahasiswa />} />
         <Route path="pengurus" element={<AdminPengurus />} />
         <Route path="persuratan" element={<ArchivePage />} />
+        <Route path="activities" element={<ActivityPage />} />
+        <Route path="activities/:id" element={<ActivityDetailPage />} />
         <Route path="keuangan" element={<FinancePage />} />
         <Route path="menus" element={<AdminPlaceholder />} />
         <Route path="settings" element={<AdminSettings />} />

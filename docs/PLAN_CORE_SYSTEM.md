@@ -282,7 +282,8 @@ Di sisi user (fokus **pengurus dulu**): melihat status pembayaran **uang kas** y
 | 4 | Middleware/helper scope departemen di backend | RBAC | Belum |
 | 5 | Model + API + UI Persuratan (Sekretaris) | 1 | Belum |
 | 6 | Model + API + UI Keuangan/Kas (Bendahara) | 2 | Selesai |
-| 7 | API absen user + rekap kehadiran admin + halaman kehadiran | 3 | Belum |
+| 7 | Event & Absensi: Model + API + UI Admin Sided | 3 | Selesai |
+| 7b| Event & Absensi: User Sided (Daftar mandiri & input kode absensi) | 3 | Belum |
 | 8 | LMS: Course, Materi, Kuis (API + UI admin & user) | 4 | Belum |
 | 9 | Verifikasi pendaftaran (APPROVE/REJECT) untuk PSDM | PSDM | Belum |
 | 10 | Kas user otomatis (tunggakan) + integrasi payment gateway | 5 | Belum |

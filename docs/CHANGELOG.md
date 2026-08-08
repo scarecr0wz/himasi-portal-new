@@ -1,10 +1,20 @@
 # Changelog — HIMASI Portal
+# Changelog — HIMASI Portal
 
 Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
 ## [Unreleased]
+
+### Added
+- **[Phase 3] Admin Event Management Module**: 
+  - API Routes: `/api/admin/activities` for complete Event CRUD and participant attendance management.
+  - UI Admin: `ActivityPage.tsx` for Event listing/publishing.
+  - UI Admin: `ActivityDetailPage.tsx` for managing Event participants, manual registration, and toggle attendance.
+- **Brand Consistency**: Renamed system titles and local storage keys from "HIMASI" to "HIMA SI" globally. Added web favicon `himasi-icon.png`.
+- **[Phase 2] Admin Finance Module**: 
+  - Event Kas Sub-module integrated into Finance page with automatic syncing to main ledger.
 
 ### Admin — Sistem Manajemen Keuangan & Kas (Fase 2)
 

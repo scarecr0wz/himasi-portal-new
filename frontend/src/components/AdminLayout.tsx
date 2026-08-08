@@ -17,6 +17,10 @@ const sidebarNav = (
       <span className="material-symbols-outlined">article</span>
       <span className="text-[14px]">Content</span>
     </NavLink>
+    <NavLink to="/admin/activities" className={({ isActive }) => `sidebar-item ${isActive ? "sidebar-active" : ""}`}>
+      <span className="material-symbols-outlined">event</span>
+      <span className="text-[14px]">Acara</span>
+    </NavLink>
     <NavLink to="/admin/persuratan" className={({ isActive }) => `sidebar-item ${isActive ? "sidebar-active" : ""}`}>
       <span className="material-symbols-outlined">folder_open</span>
       <span className="text-[14px]">Persuratan</span>
