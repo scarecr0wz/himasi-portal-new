@@ -17,7 +17,7 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 - **Tabel Pencatatan (Excel-like):** Menampilkan riwayat transaksi dalam format tabel akuntansi yang rapi (pemisahan kolom debit/kredit dan baris auto-sum di bawah).
 - **Filter Rentang Waktu:** Menggunakan filter berdasarkan bulan untuk melacak rekam jejak keuangan per periode.
 - **Bukti / Nota Transaksi:** Menambahkan field upload opsional (PDF/Gambar, drag & drop, maks. 10MB) pada form catat transaksi sebagai lampiran bukti kwitansi atau nota. File ditampilkan sebagai ikon klik-buka di kolom "Bukti" pada tabel riwayat transaksi.
-- **UI Polish:** Menghilangkan border dan border-radius pada textbox form, menghapus border horizontal di tabel dan card, menyeragamkan tombol aksi dengan style tombol `+ Tambah` di halaman Content.
+- **UI Polish:** Menghilangkan border dan border-radius pada textbox form, menghapus border horizontal di tabel dan card, menyeragamkan tombol aksi dengan style tombol `+ Tambah` di halaman Content. Memperbaiki penulisan HIMASI menjadi HIMA SI secara global dan menambahkan Favicon web ke `index.html`.
 
 ### Admin — Sistem Manajemen Persuratan & Dokumen (Fase 1)
 
