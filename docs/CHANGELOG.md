@@ -12,6 +12,8 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 - **Dashboard Finansial:** Ringkasan otomatis berupa kartu (cards) untuk Total Pemasukan, Total Pengeluaran, dan Saldo Saat Ini.
 - **Tabel Pencatatan (Excel-like):** Menampilkan riwayat transaksi dalam format tabel akuntansi yang rapi (pemisahan kolom debit/kredit dan baris auto-sum di bawah).
 - **Filter Rentang Waktu:** Menggunakan filter berdasarkan bulan untuk melacak rekam jejak keuangan per periode.
+- **Bukti / Nota Transaksi:** Menambahkan field upload opsional (PDF/Gambar, drag & drop, maks. 10MB) pada form catat transaksi sebagai lampiran bukti kwitansi atau nota. File ditampilkan sebagai ikon klik-buka di kolom "Bukti" pada tabel riwayat transaksi.
+- **UI Polish:** Menghilangkan border dan border-radius pada textbox form, menghapus border horizontal di tabel dan card, menyeragamkan tombol aksi dengan style tombol `+ Tambah` di halaman Content.
 
 ### Admin — Sistem Manajemen Persuratan & Dokumen (Fase 1)
 
@@ -19,6 +21,7 @@ Perubahan dan penambahan fitur yang tercatat. Format longgar mengikuti [Keep a C
 - **Tampilan Dinamis:** Menyediakan mode grid (kartu) dan mode *list* (tabel) yang dapat di-switch sesuai kenyamanan baca pengurus.
 - **Drag & Drop Upload:** Formulir unggah dokumen dengan *drag and drop* didukung validasi ekstensi untuk PDF dan gambar.
 - **Baca PDF Langsung:** Dokumen PDF yang diunggah dapat di-klik langsung dari daftar dan terbuka secara presisi di *tab* browser baru.
+- **UI Polish:** Menghilangkan border dan border-radius pada textbox form modal, menghapus border pada card/tabel utama, menyeragamkan tombol aksi dengan style tombol `+ Tambah` di halaman Content.
 
 ### Public UI — Pengurus Hierarchy & Animation
 

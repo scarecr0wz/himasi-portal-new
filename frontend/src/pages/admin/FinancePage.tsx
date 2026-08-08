@@ -6,6 +6,7 @@ type Transaction = {
   amount: string;
   description: string | null;
   transactionDate: string;
+  evidencePath: string | null;
   category: { value: string } | null;
   user: { name: string };
 };
@@ -59,7 +60,7 @@ export default function FinancePage() {
     <div className="p-6 md:p-8 space-y-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 mb-2">Buku Kas & Keuangan</h1>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 mb-2">Buku Kas &amp; Keuangan</h1>
           <p className="text-slate-500">Kelola arus kas, donasi, operasional, dan pantau saldo organisasi.</p>
         </div>
         <button
@@ -154,6 +155,7 @@ export default function FinancePage() {
                     <th className="px-4 py-3">Keterangan</th>
                     <th className="px-4 py-3 w-40 text-right text-green-700">Pemasukan</th>
                     <th className="px-4 py-3 w-40 text-right text-red-700">Pengeluaran</th>
+                    <th className="px-4 py-3 w-20 text-center">Bukti</th>
                     <th className="px-4 py-3 w-16 text-center">Aksi</th>
                   </tr>
                 </thead>
@@ -174,6 +176,22 @@ export default function FinancePage() {
                         {t.type === 'EXPENSE' ? formatRp(Number(t.amount)) : "-"}
                       </td>
                       <td className="px-4 py-3 text-center">
+                        {t.evidencePath ? (
+                          <button
+                            type="button"
+                            onClick={() => window.open(t.evidencePath!, '_blank')}
+                            className="cursor-pointer text-slate-400 hover:text-primary transition-colors"
+                            title="Lihat bukti"
+                          >
+                            <span className={`material-symbols-outlined text-[20px] align-middle ${t.evidencePath.endsWith('.pdf') ? 'text-red-400 hover:text-red-600' : 'text-blue-400 hover:text-blue-600'}`}>
+                              {t.evidencePath.endsWith('.pdf') ? 'picture_as_pdf' : 'image'}
+                            </span>
+                          </button>
+                        ) : (
+                          <span className="material-symbols-outlined text-[18px] align-middle text-slate-200">attach_file</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-center">
                         <button 
                           onClick={async () => {
                             if (confirm("Hapus transaksi ini secara permanen?")) {
@@ -190,7 +208,7 @@ export default function FinancePage() {
                     </tr>
                   ))}
                   {/* Totals Row */}
-                  <tr className="bg-slate-50/50 font-bold border-t border-slate-200">
+                  <tr className="bg-slate-50/50 font-bold">
                     <td colSpan={2} className="px-4 py-3 text-right text-slate-700">
                       TOTAL PADA BULAN INI:
                     </td>
@@ -200,6 +218,7 @@ export default function FinancePage() {
                     <td className="px-4 py-3 text-right text-red-700">
                       {formatRp(summary.totalExpense)}
                     </td>
+                    <td></td>
                     <td></td>
                   </tr>
                 </tbody>
@@ -233,6 +252,8 @@ export default function FinancePage() {
 function TransactionModal({ onClose, onSuccess }: { onClose: () => void, onSuccess: () => void }) {
   const [type, setType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
   const [saving, setSaving] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -242,12 +263,28 @@ function TransactionModal({ onClose, onSuccess }: { onClose: () => void, onSucce
       const form = e.currentTarget;
       const amountRaw = (form.elements.namedItem("amount") as HTMLInputElement).value;
       const amount = Number(amountRaw.replace(/[^0-9]/g, ''));
+
+      // Upload file if selected
+      let evidencePath: string | null = null;
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        const uploadRes = await fetch("/api/admin/finance/upload", {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${localStorage.getItem('himasi_portal_token')}` },
+          body: formData,
+        });
+        if (!uploadRes.ok) throw new Error("Gagal mengunggah file bukti");
+        const uploadData = await uploadRes.json();
+        evidencePath = uploadData.url;
+      }
       
       const payload = {
         type,
         amount,
         description: (form.elements.namedItem("description") as HTMLInputElement).value,
         transactionDate: (form.elements.namedItem("transactionDate") as HTMLInputElement).value + "T12:00:00.000Z",
+        evidencePath,
       };
 
       const res = await fetch("/api/admin/finance", {
@@ -340,6 +377,42 @@ function TransactionModal({ onClose, onSuccess }: { onClose: () => void, onSucce
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-slate-700">Tanggal <span className="text-red-500">*</span></label>
               <input type="date" name="transactionDate" required defaultValue={new Date().toISOString().slice(0, 10)} className="w-full border-0 rounded-none px-4 py-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 outline-none transition-all" />
+            </div>
+
+            {/* Evidence upload */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-semibold text-slate-700">Bukti / Nota <span className="text-slate-400 font-normal">(opsional)</span></label>
+              <div
+                className={`border-2 border-dashed rounded-xl p-5 flex flex-col items-center justify-center text-center relative transition-colors ${dragOver ? 'border-primary bg-primary/5' : 'border-slate-300 bg-slate-50 hover:bg-slate-100'}`}
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragOver(false);
+                  if (e.dataTransfer.files && e.dataTransfer.files[0]) setSelectedFile(e.dataTransfer.files[0]);
+                }}
+              >
+                {selectedFile ? (
+                  <>
+                    <span className="material-symbols-outlined text-3xl text-primary mb-1">task</span>
+                    <p className="text-sm font-medium text-slate-800">{selectedFile.name}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                    <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedFile(null); }} className="mt-2 text-xs text-red-500 hover:text-red-700 font-medium">Hapus File</button>
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-3xl text-slate-400 mb-1">upload_file</span>
+                    <p className="text-sm font-medium text-slate-700">Klik atau drag &amp; drop (PDF, Gambar)</p>
+                    <p className="text-xs text-slate-500 mt-0.5">Maks. 10MB</p>
+                    <input
+                      type="file"
+                      accept=".pdf,image/*"
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      onChange={(e) => { if (e.target.files && e.target.files[0]) setSelectedFile(e.target.files[0]); }}
+                    />
+                  </>
+                )}
+              </div>
             </div>
             
           </div>

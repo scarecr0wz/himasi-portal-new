@@ -4,10 +4,47 @@ import { z } from "zod";
 import { authMiddleware, requirePermission } from "../lib/auth.js";
 import type { AuthVariables } from "../lib/auth.js";
 import { prisma } from "../lib/db.js";
+import { writeFile, mkdir } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { randomUUID } from "node:crypto";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const UPLOADS_DIR = process.env.UPLOADS_DIR ?? path.resolve(__dirname, "..", "..", "uploads");
+
+function safeFilename(name: string, mime: string): string {
+  const ext = path.extname(name).toLowerCase();
+  const allowed = [".pdf", ".jpg", ".jpeg", ".png", ".webp"];
+  if (allowed.includes(ext)) return `${randomUUID()}${ext}`;
+  if (mime === "application/pdf") return `${randomUUID()}.pdf`;
+  return `${randomUUID()}.jpg`;
+}
 
 const app = new Hono<{ Variables: AuthVariables }>();
 
 app.use("*", authMiddleware, requirePermission("menu.finance"));
+
+// POST upload evidence file
+app.post("/upload", async (c) => {
+  try {
+    const body = await c.req.parseBody();
+    const file = body["file"];
+    if (!file || typeof file === "string") {
+      return c.json({ message: "File tidak ditemukan." }, 400);
+    }
+    const f = file as { name?: string; type?: string; arrayBuffer: () => Promise<ArrayBuffer> };
+    await mkdir(UPLOADS_DIR, { recursive: true });
+    const filename = safeFilename(f.name ?? "evidence", f.type ?? "");
+    const filepath = path.join(UPLOADS_DIR, filename);
+    const buffer = Buffer.from(await f.arrayBuffer());
+    await writeFile(filepath, buffer);
+    const url = `/api/uploads/${filename}`;
+    return c.json({ url, filename }, 201);
+  } catch (e) {
+    console.error("Upload error:", e);
+    return c.json({ message: "Gagal mengunggah file." }, 500);
+  }
+});
 
 // GET summary
 app.get("/summary", async (c) => {
