@@ -255,7 +255,7 @@ function ArchiveModal({ activeTab, onClose, onSuccess }: { activeTab: string, on
           {activeTab !== "DOKUMEN" && (
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-slate-700">Nomor Surat (Manual)</label>
-              <input type="text" name="noSurat" className="w-full border-0 rounded-none px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 outline-none transition-all" placeholder="Misal: 001/INT-HIMASI/VII/2026" />
+              <input type="text" name="noSurat" className="w-full border-0 rounded-none px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 outline-none transition-all" placeholder="Misal: 001/INT-HIMA SI/VII/2026" />
             </div>
           )}
           

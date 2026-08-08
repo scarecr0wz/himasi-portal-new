@@ -72,7 +72,7 @@ export default function ProgramKerja() {
       <PublicNavbar />
       <SEO
         title="Program Kerja"
-        description="Jelajahi program kerja HIMASI Universitas Terbuka Bogor dari setiap departemen."
+        description="Jelajahi program kerja HIMA SI Universitas Terbuka Bogor dari setiap departemen."
       />
 
       <main className="program-page flex-1 w-full">
@@ -85,7 +85,7 @@ export default function ProgramKerja() {
 
             <div className="event-page-heading program-page-heading">
               <div>
-                <p className="event-page-kicker">Program Kerja HIMASI</p>
+                <p className="event-page-kicker">Program Kerja HIMA SI</p>
                 <h1>Ide yang bergerak menjadi dampak.</h1>
               </div>
             </div>
@@ -137,7 +137,7 @@ export default function ProgramKerja() {
             <div className="event-empty-state program-empty-state">
               <span className="material-symbols-outlined">inventory_2</span>
               <h3>Belum ada program di departemen ini.</h3>
-              <p>Pilih departemen lain untuk menjelajahi program kerja HIMASI.</p>
+              <p>Pilih departemen lain untuk menjelajahi program kerja HIMA SI.</p>
               {selectedDepartment && (
                 <button type="button" className="news-clear-search" onClick={() => setSelectedDepartment(null)}>
                   Lihat semua program
@@ -160,14 +160,14 @@ export default function ProgramKerja() {
                       ) : (
                         <div className="program-card-placeholder" aria-hidden="true">
                           <span className="material-symbols-outlined">lightbulb</span>
-                          <strong>HIMASI</strong>
+                          <strong>HIMA SI</strong>
                         </div>
                       )}
                       <span className="program-card-number">{String(index + 1).padStart(2, "0")}</span>
                     </div>
 
                     <div className="program-card-body">
-                      <p className="program-card-department">{program.departemen?.title || "HIMASI"}</p>
+                      <p className="program-card-department">{program.departemen?.title || "HIMA SI"}</p>
                       <h3>{program.title}</h3>
                       <p className="program-card-description">
                         {program.desc ? stripMarkdown(program.desc) : "Program kolaboratif untuk mahasiswa Sistem Informasi."}

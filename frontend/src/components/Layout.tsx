@@ -47,9 +47,8 @@ export default function Layout() {
       >
         <div className="portal-brand p-4 flex items-center justify-between border-b md:border-b-0 md:px-7 md:py-8">
           <div className="flex items-center gap-3">
-            <div className="portal-logo"><img src="/himasi-icon.png" alt="" /></div>
+            <div className="portal-logo"><img src="/logo-himasi.png" alt="" className="h-10 w-auto" /></div>
             <div className="min-w-0">
-              <h2 className="text-sm font-extrabold tracking-tight leading-none">HIMASI</h2>
               <p className="text-[10px] font-semibold tracking-[0.14em] uppercase mt-1">Portal Mahasiswa</p>
             </div>
           </div>

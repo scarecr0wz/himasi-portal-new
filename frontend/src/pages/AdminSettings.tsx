@@ -865,7 +865,7 @@ export default function AdminSettings() {
                 type="text"
                 value={smtp.fromName}
                 onChange={handleSmtpChange}
-                placeholder="HIMASI Portal"
+                placeholder="HIMA SI Portal"
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
               />
             </div>

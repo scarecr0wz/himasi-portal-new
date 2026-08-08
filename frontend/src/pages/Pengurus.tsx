@@ -120,7 +120,7 @@ export default function Pengurus() {
       <PublicNavbar />
       <SEO
         title="Pengurus"
-        description={`Struktur kepengurusan HIMASI Universitas Terbuka Bogor${periode ? ` periode ${periode}` : ""}.`}
+        description={`Struktur kepengurusan HIMA SI Universitas Terbuka Bogor${periode ? ` periode ${periode}` : ""}.`}
       />
 
       <main className="people-page flex-1 w-full">
@@ -133,8 +133,8 @@ export default function Pengurus() {
 
             <div className="event-page-heading people-page-heading">
               <div>
-                <p className="event-page-kicker">Pengurus {periode || "HIMASI"}</p>
-                <h1>Orang-orang di balik langkah HIMASI.</h1>
+                <p className="event-page-kicker">Pengurus {periode || "HIMA SI"}</p>
+                <h1>Orang-orang di balik langkah HIMA SI.</h1>
               </div>
             </div>
           </div>

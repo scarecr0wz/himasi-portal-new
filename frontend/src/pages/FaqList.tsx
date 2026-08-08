@@ -47,7 +47,7 @@ export default function FaqList() {
       <PublicNavbar />
       <SEO
         title="FAQ"
-        description="Jawaban atas pertanyaan umum seputar HIMASI Universitas Terbuka Bogor."
+        description="Jawaban atas pertanyaan umum seputar HIMA SI Universitas Terbuka Bogor."
       />
 
       <main className="faq-page flex-1 w-full">
@@ -92,7 +92,7 @@ export default function FaqList() {
               <p className="event-page-kicker">Yang Sering Ditanyakan</p>
               <h2 id="faq-list-title">Temukan Jawaban</h2>
             </div>
-            <p>Informasi singkat seputar organisasi, keanggotaan, kegiatan, dan layanan HIMASI.</p>
+            <p>Informasi singkat seputar organisasi, keanggotaan, kegiatan, dan layanan HIMA SI.</p>
           </div>
 
           {loading ? (
@@ -146,7 +146,7 @@ export default function FaqList() {
               <span className="material-symbols-outlined" aria-hidden="true">forum</span>
               <div>
                 <h3>Masih belum menemukan jawaban?</h3>
-                <p>Masuk ke portal mahasiswa untuk berdiskusi langsung bersama komunitas HIMASI.</p>
+                <p>Masuk ke portal mahasiswa untuk berdiskusi langsung bersama komunitas HIMA SI.</p>
               </div>
             </div>
             <Link to="/login">Masuk ke Portal</Link>

@@ -175,7 +175,7 @@ export default function DepartmentPortal() {
       {department && (
         <SEO
           title={department.title}
-          description={department.desc || `Portal resmi departemen ${department.title} HIMASI UT Bogor.`}
+          description={department.desc || `Portal resmi departemen ${department.title} HIMA SI UT Bogor.`}
         />
       )}
 
@@ -258,7 +258,7 @@ export default function DepartmentPortal() {
             <span className="material-symbols-outlined text-primary">calendar_month</span>
             Kalendar Aktivitas
           </h2>
-          <p className="text-slate-500 text-sm mb-8">Jadwal kegiatan dan acara HIMASI.</p>
+          <p className="text-slate-500 text-sm mb-8">Jadwal kegiatan dan acara HIMA SI.</p>
 
           {sortedActivities.length === 0 ? (
             <div className="bg-white rounded-2xl border border-slate-100 p-8 text-center text-slate-500 text-sm">
@@ -305,7 +305,7 @@ export default function DepartmentPortal() {
             <span className="material-symbols-outlined text-primary">newspaper</span>
             Berita Terkini
           </h2>
-          <p className="text-slate-500 text-sm mb-8">Informasi dan berita terbaru dari HIMASI.</p>
+          <p className="text-slate-500 text-sm mb-8">Informasi dan berita terbaru dari HIMA SI.</p>
 
           {news.length === 0 ? (
             <div className="bg-white rounded-2xl border border-slate-100 p-8 text-center text-slate-500 text-sm">
@@ -338,12 +338,12 @@ export default function DepartmentPortal() {
                       </span>
                       <span className="flex items-center gap-1">
                         <span className="material-symbols-outlined text-sm">person</span>
-                        {item.author || "HIMASI"}
+                        {item.author || "HIMA SI"}
                       </span>
                     </div>
                     <h3 className="text-slate-900 text-lg font-bold leading-snug">{item.title}</h3>
                     <p className="text-slate-600 text-sm leading-relaxed line-clamp-2 flex-1">
-                      {item.desc ? stripMarkdown(item.desc) : "Informasi terbaru dari HIMASI."}
+                      {item.desc ? stripMarkdown(item.desc) : "Informasi terbaru dari HIMA SI."}
                     </p>
                     <Link
                       to={`/berita/${item.slug || item.id}`}
@@ -373,7 +373,7 @@ export default function DepartmentPortal() {
         <section className="rounded-2xl bg-primary/5 border border-primary/10 p-8 md:p-12 text-center">
           <h2 className="text-slate-900 text-xl md:text-2xl font-bold mb-3">Kembali ke Struktur Pengurus</h2>
           <p className="text-slate-600 text-sm md:text-base max-w-xl mx-auto mb-6">
-            Lihat semua departemen dan Badan Pengurus Harian HIMASI.
+            Lihat semua departemen dan Badan Pengurus Harian HIMA SI.
           </p>
           <Link
             to="/pengurus"

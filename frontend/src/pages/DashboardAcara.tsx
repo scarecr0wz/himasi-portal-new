@@ -93,7 +93,7 @@ export default function DashboardAcara() {
               Acara Saya
             </h2>
             <p className="section-subtitle">
-              Daftar acara dan kegiatan HIMASI yang Anda ikuti.
+              Daftar acara dan kegiatan HIMA SI yang Anda ikuti.
             </p>
           </div>
           <Link
@@ -118,7 +118,7 @@ export default function DashboardAcara() {
             <span className="material-symbols-outlined text-4xl text-slate-300 mb-3 block">event_available</span>
             <p className="font-medium mb-1">Belum ada acara yang didaftarkan</p>
             <p className="text-sm text-slate-500 mb-6">
-              Jelajahi daftar acara HIMASI dan daftar untuk berpartisipasi.
+              Jelajahi daftar acara HIMA SI dan daftar untuk berpartisipasi.
             </p>
             <Link
               to="/acara"

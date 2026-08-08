@@ -18,7 +18,7 @@ export function truncateDescription(text: string, maxLength: number = 155): stri
   return cleaned.slice(0, maxLength).trim() + "...";
 }
 
-const DEFAULT_OG_IMAGE = "https://placehold.co/1200x630/1e3a5f/ffffff?text=HIMASI+UT+Bogor";
+const DEFAULT_OG_IMAGE = "https://placehold.co/1200x630/1e3a5f/ffffff?text=HIMA SI+UT+Bogor";
 
 function toAbsoluteImageUrl(img: string): string {
   if (img.startsWith("http://") || img.startsWith("https://")) return img;
@@ -44,10 +44,10 @@ export default function SEO({
   url = typeof window !== "undefined" ? window.location.href : "",
   type = "article",
 }: SEOProps) {
-  const defaultTitle = "HIMASI Portal — Universitas Terbuka Bogor";
+  const defaultTitle = "HIMA SI Portal — Universitas Terbuka Bogor";
   const defaultDescription =
-    "Portal Resmi Himpunan Mahasiswa Sistem Informasi (HIMASI) Universitas Terbuka Bogor.";
-  const siteName = "HIMASI UT Bogor";
+    "Portal Resmi Himpunan Mahasiswa Sistem Informasi (HIMA SI) Universitas Terbuka Bogor.";
+  const siteName = "HIMA SI UT Bogor";
 
   useEffect(() => {
     const finalTitle = title ? `${title} | ${siteName}` : defaultTitle;

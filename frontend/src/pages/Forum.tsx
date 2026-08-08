@@ -136,7 +136,7 @@ export default function Forum() {
               <span className="section-title-bar" />
               Ruang Terbuka
             </h2>
-            <p className="section-subtitle">Diskusi dan berbagi dengan sesama anggota HIMASI</p>
+            <p className="section-subtitle">Diskusi dan berbagi dengan sesama anggota HIMA SI</p>
           </div>
           <button
             type="button"

@@ -52,7 +52,7 @@ export default function AdminDashboard() {
             </li>
           </ol>
         </nav>
-        <span className="portal-kicker">Pusat kendali HIMASI</span>
+        <span className="portal-kicker">Pusat kendali HIMA SI</span>
         <h1 className="text-3xl font-extrabold tracking-tight">Kelola portal dengan lebih ringkas.</h1>
         <p className="mt-2 text-[15px]">
           Anggota, konten, dan pengaturan organisasi tersedia dalam satu ruang kerja.

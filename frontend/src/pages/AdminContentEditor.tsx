@@ -26,7 +26,7 @@ export default function AdminContentEditor() {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [slug, setSlug] = useState("");
-  const [author, setAuthor] = useState("HIMASI");
+  const [author, setAuthor] = useState("HIMA SI");
   const [categoryId, setCategoryId] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);
   const [publishedAt, setPublishedAt] = useState(() => new Date().toISOString().slice(0, 10));
@@ -172,7 +172,7 @@ export default function AdminContentEditor() {
           setTitle(item.title);
           setDesc(item.desc ?? "");
           setSlug(item.slug);
-          setAuthor(item.author ?? "HIMASI");
+          setAuthor(item.author ?? "HIMA SI");
           setCategoryId(item.categoryId);
           setPhoto(item.photo ?? null);
           setPublishedAt(item.publishedAt ? new Date(item.publishedAt).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10));
@@ -194,7 +194,7 @@ export default function AdminContentEditor() {
         title: title.trim(),
         slug: (slug || slugify(title)).trim() || slugify(title) || "berita",
         desc: desc.trim(),
-        author: author.trim() || "HIMASI",
+        author: author.trim() || "HIMA SI",
         categoryId: categoryId || categories[0]?.id,
         photo: photo || null,
         publishedAt: publishedAt ? new Date(publishedAt).toISOString() : nowIso,
@@ -460,7 +460,7 @@ export default function AdminContentEditor() {
                   type="text"
                   value={author}
                   onChange={(e) => setAuthor(e.target.value)}
-                  placeholder="HIMASI"
+                  placeholder="HIMA SI"
                   className="w-full p-2.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>

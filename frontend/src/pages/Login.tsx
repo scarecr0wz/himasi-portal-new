@@ -744,7 +744,7 @@ export default function Login() {
         }
         .login-back-link a:hover { color: #137fec; }
 
-        /* HIMASI public theme alignment */
+        /* HIMA SI public theme alignment */
         .login-root {
           background:
             radial-gradient(circle at 88% 8%, rgba(22, 81, 164, 0.08), transparent 26rem),
@@ -925,7 +925,7 @@ export default function Login() {
               <div className="login-logo-box">
                 <img
                   src="/himasi-icon.png"
-                  alt="HIMASI"
+                  alt="HIMA SI"
                   className="login-logo-img"
                   onError={(e) => {
                     const t = e.currentTarget;
@@ -943,7 +943,7 @@ export default function Login() {
             {/* Title */}
             <h1 className="login-brand-title">
               Portal<br />
-              <span>HIMASI</span>
+              <span>HIMA SI</span>
             </h1>
 
             <p className="login-brand-subtitle">
@@ -953,7 +953,7 @@ export default function Login() {
 
           </div>
 
-          <p className="login-brand-footer">© 2024 HIMASI · Departemen Media & Publikasi</p>
+          <p className="login-brand-footer">© 2024 HIMA SI · Departemen Media & Publikasi</p>
         </div>
 
         {/* ══════════════════════════════════════
@@ -970,7 +970,7 @@ export default function Login() {
               <div className="login-mobile-logo-box">
                 <img
                   src="/himasi-icon.png"
-                  alt="HIMASI"
+                  alt="HIMA SI"
                   className="login-mobile-logo-img"
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
@@ -980,7 +980,7 @@ export default function Login() {
                 />
               </div>
               <h1 className="login-mobile-hero-title">
-                Portal <span>HIMASI</span>
+                Portal <span>HIMA SI</span>
               </h1>
               <p className="login-mobile-hero-sub">
                 Himpunan Mahasiswa Sistem Informasi

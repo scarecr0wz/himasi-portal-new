@@ -191,7 +191,7 @@ export default function Landing() {
                     to="/register"
                     className="hero-primary-button group flex items-center justify-center gap-2 rounded-xl h-13 px-6 bg-primary text-white text-sm font-bold shadow-xl shadow-primary/25 transition-all"
                   >
-                    Gabung HIMASI
+                    Gabung HIMA SI
                     <span className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
                   </Link>
                   <a
@@ -222,17 +222,17 @@ export default function Landing() {
                 <strong>Move together</strong>
               </div>
             </div>
-            <span className="sr-only">Latar menampilkan kebersamaan mahasiswa HIMASI Universitas Terbuka Bogor.</span>
+            <span className="sr-only">Latar menampilkan kebersamaan mahasiswa HIMA SI Universitas Terbuka Bogor.</span>
           </div>
         </section>
 
         <main className="landing-main flex-1 max-w-[1440px] mx-auto w-full px-5 md:px-10 lg:px-14 xl:px-16 pb-8 md:pb-12">
 
-          {/* HIMASI Infopedia - Berita */}
+          {/* HIMA SI Infopedia - Berita */}
           <section id="berita" className="mb-16" data-reveal="section">
             <div className="mb-8">
               <span className="section-kicker">Wawasan & kabar kampus</span>
-              <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-2">HIMASI Infopedia</h2>
+              <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-2">HIMA SI Infopedia</h2>
               <p className="text-slate-600 text-lg max-w-2xl">
                 Pusat informasi terkini, berisikan info akademik, kegiatan, dan inovasi seputar Sistem Informasi.
               </p>
@@ -267,12 +267,12 @@ export default function Landing() {
                         </span>
                         <span className="flex items-center gap-1">
                           <span className="material-symbols-outlined text-sm">person</span>
-                          {item.author || "HIMASI"}
+                          {item.author || "HIMA SI"}
                         </span>
                       </div>
                       <h3 className="text-slate-900 text-lg font-bold leading-snug">{item.title}</h3>
                       <p className="text-slate-600 text-sm leading-relaxed line-clamp-2 flex-1">
-                        {item.desc || "Informasi terbaru dari HIMASI Universitas Terbuka Bogor."}
+                        {item.desc || "Informasi terbaru dari HIMA SI Universitas Terbuka Bogor."}
                       </p>
                       <Link
                         to={`/berita/${item.slug || item.id}`}
@@ -357,7 +357,7 @@ export default function Landing() {
             )}
           </section>
 
-          {/* Tentang HIMASI */}
+          {/* Tentang HIMA SI */}
           <section id="tentang" className="about-editorial mb-16" data-reveal="editorial">
             <div className="about-layout">
               <div className="about-image-wrap about-editorial-photo w-full">
@@ -368,9 +368,9 @@ export default function Landing() {
                 />
               </div>
               <div className="about-copy w-full flex flex-col gap-6">
-                <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight">Tentang HIMASI</h2>
+                <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight">Tentang HIMA SI</h2>
                 <p className="text-slate-600 text-lg leading-relaxed">
-                  HIMASI adalah rumah bagi mahasiswa Sistem Informasi Universitas Terbuka Bogor untuk tumbuh, berkolaborasi, dan menciptakan dampak.
+                  HIMA SI adalah rumah bagi mahasiswa Sistem Informasi Universitas Terbuka Bogor untuk tumbuh, berkolaborasi, dan menciptakan dampak.
                 </p>
                 <p className="text-slate-600 text-lg leading-relaxed">
                   Kami membangun ruang belajar yang dinamis—menggabungkan teknologi, kreativitas, dan kepemimpinan—untuk menyiapkan generasi digital yang adaptif dan siap menghadapi perubahan.
@@ -422,7 +422,7 @@ export default function Landing() {
           {/* Departemen - pakai primary saja biar aman di Tailwind v4 */}
           <section id="department" className="mb-16 py-12 px-6 md:px-8 rounded-2xl bg-primary/5" data-reveal="directory">
             <span className="section-kicker">Temukan ruang kontribusimu</span>
-            <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-8">Departemen HIMASI</h2>
+            <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-8">Departemen HIMA SI</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-3">
                 <DepartmentLogo title="Acara & Humas" icon="emoji_events" className="landing-department-logo" />
@@ -456,8 +456,8 @@ export default function Landing() {
           <section id="program-kerja" className="mb-16" data-reveal="section">
             <div className="mb-8">
               <span className="section-kicker">Ide yang diwujudkan</span>
-              <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-2">Program Kerja HIMASI</h2>
-              <p className="text-slate-600 text-lg">Program kerja unggulan dari setiap departemen HIMASI.</p>
+              <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-2">Program Kerja HIMA SI</h2>
+              <p className="text-slate-600 text-lg">Program kerja unggulan dari setiap departemen HIMA SI.</p>
             </div>
             <div className="flex flex-wrap gap-2 mb-6">
               <button
@@ -520,9 +520,9 @@ export default function Landing() {
           <section id="bergabung" className="hidden">
             <div className="text-center mb-12">
               <span className="section-kicker mx-auto">Temukan versi terbaikmu</span>
-              <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-3">Mari Bergabung dengan HIMASI</h2>
+              <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-3">Mari Bergabung dengan HIMA SI</h2>
               <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-                Bergabung dengan HIMASI memberikan berbagai manfaat untuk pengembangan diri Anda.
+                Bergabung dengan HIMA SI memberikan berbagai manfaat untuk pengembangan diri Anda.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -585,7 +585,7 @@ export default function Landing() {
               <span className="section-kicker">Perlu tahu lebih lanjut?</span>
               <h2 className="text-slate-900 text-2xl md:text-3xl font-bold tracking-tight mb-2">Pertanyaan yang Sering Ditanyakan</h2>
               <p className="text-slate-600 text-lg max-w-2xl">
-                Pertanyaan yang sering diajukan seputar HIMASI, keanggotaan, dan kegiatan.
+                Pertanyaan yang sering diajukan seputar HIMA SI, keanggotaan, dan kegiatan.
               </p>
             </div>
             {loading ? (

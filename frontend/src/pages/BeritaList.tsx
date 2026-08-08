@@ -72,7 +72,7 @@ export default function BeritaList() {
       <PublicNavbar />
       <SEO
         title="Berita"
-        description="Kumpulan berita, pengumuman, dan informasi terkini dari HIMASI Universitas Terbuka Bogor."
+        description="Kumpulan berita, pengumuman, dan informasi terkini dari HIMA SI Universitas Terbuka Bogor."
       />
 
       <main className="news-page flex-1 w-full">
@@ -86,7 +86,7 @@ export default function BeritaList() {
             <div className="event-page-heading news-page-heading">
               <div>
                 <p className="event-page-kicker">Ruang Berita</p>
-                <h1>Cerita, kabar, dan jejak perjalanan HIMASI.</h1>
+                <h1>Cerita, kabar, dan jejak perjalanan HIMA SI.</h1>
               </div>
 
               <div className="news-search-panel">
@@ -106,7 +106,7 @@ export default function BeritaList() {
                     </button>
                   )}
                 </div>
-                <p>{search ? `${filteredNews.length} artikel ditemukan` : `${news.length} artikel dalam arsip HIMASI`}</p>
+                <p>{search ? `${filteredNews.length} artikel ditemukan` : `${news.length} artikel dalam arsip HIMA SI`}</p>
               </div>
             </div>
           </div>
@@ -115,7 +115,7 @@ export default function BeritaList() {
         <section className="event-page-container news-list-section" aria-labelledby="news-list-title">
           <div className="event-list-heading">
             <div>
-              <p className="event-page-kicker">Dari HIMASI</p>
+              <p className="event-page-kicker">Dari HIMA SI</p>
               <h2 id="news-list-title">Tulisan Terbaru</h2>
             </div>
             <p>Catatan kegiatan, pengumuman penting, dan cerita yang tumbuh bersama mahasiswa Sistem Informasi.</p>
@@ -133,7 +133,7 @@ export default function BeritaList() {
               <p>
                 {search
                   ? "Coba gunakan kata kunci lain atau hapus pencarian untuk melihat semua artikel."
-                  : "Cerita terbaru dari HIMASI akan hadir di sini."}
+                  : "Cerita terbaru dari HIMA SI akan hadir di sini."}
               </p>
               {search && (
                 <button type="button" className="news-clear-search" onClick={() => setSearch("")}>
@@ -161,7 +161,7 @@ export default function BeritaList() {
                           if (e.currentTarget.src !== fallbackImage) e.currentTarget.src = fallbackImage;
                         }}
                       />
-                      <span className="news-card-label">{featured ? "Sorotan" : "Kabar HIMASI"}</span>
+                      <span className="news-card-label">{featured ? "Sorotan" : "Kabar HIMA SI"}</span>
                       <span className="news-card-index">{String(index + 1).padStart(2, "0")}</span>
                     </div>
 
@@ -173,12 +173,12 @@ export default function BeritaList() {
                         </span>
                         <span>
                           <span className="material-symbols-outlined" aria-hidden="true">edit_note</span>
-                          {item.author || "HIMASI"}
+                          {item.author || "HIMA SI"}
                         </span>
                       </div>
                       <h3>{item.title}</h3>
                       <p className="news-card-description">
-                        {item.desc ? stripMarkdown(item.desc) : "Informasi terbaru dari HIMASI Universitas Terbuka Bogor."}
+                        {item.desc ? stripMarkdown(item.desc) : "Informasi terbaru dari HIMA SI Universitas Terbuka Bogor."}
                       </p>
                       <div className="news-card-footer">
                         <span>Baca cerita</span>

@@ -44,7 +44,7 @@ export default function DepartemenList() {
       <PublicNavbar />
       <SEO
         title="Departemen"
-        description="Kenali departemen HIMASI Universitas Terbuka Bogor dan ruang kontribusinya."
+        description="Kenali departemen HIMA SI Universitas Terbuka Bogor dan ruang kontribusinya."
       />
 
       <main className="department-page flex-1 w-full">
@@ -57,7 +57,7 @@ export default function DepartemenList() {
 
             <div className="event-page-heading department-page-heading">
               <div>
-                <p className="event-page-kicker">Departemen HIMASI</p>
+                <p className="event-page-kicker">Departemen HIMA SI</p>
                 <h1>Banyak ruang, satu tujuan bersama.</h1>
               </div>
             </div>
@@ -103,7 +103,7 @@ export default function DepartemenList() {
                     />
                     <div className="department-card-copy">
                       <h3>{department.title}</h3>
-                      <p>{department.desc || "Ruang kolaborasi dan pengembangan mahasiswa HIMASI."}</p>
+                      <p>{department.desc || "Ruang kolaborasi dan pengembangan mahasiswa HIMA SI."}</p>
                     </div>
                     <div className="department-card-meta">
                       <span>{programCount}</span>

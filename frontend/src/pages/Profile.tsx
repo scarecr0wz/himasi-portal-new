@@ -494,7 +494,7 @@ export default function Profile() {
               className="rounded border-slate-300 mt-0.5"
             />
             <span className="text-sm text-slate-600">
-              Saya setuju dengan kebijakan privasi dan pengumpulan data untuk keperluan portal HIMASI.
+              Saya setuju dengan kebijakan privasi dan pengumpulan data untuk keperluan portal HIMA SI.
             </span>
           </label>
         </section>

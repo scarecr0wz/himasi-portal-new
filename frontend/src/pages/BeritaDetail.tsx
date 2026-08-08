@@ -118,7 +118,7 @@ export default function BeritaDetail() {
               </span>
               <span className="flex items-center gap-1">
                 <span className="material-symbols-outlined text-lg">person</span>
-                {article.author || "HIMASI"}
+                {article.author || "HIMA SI"}
               </span>
             </div>
           </div>

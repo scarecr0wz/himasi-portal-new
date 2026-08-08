@@ -128,7 +128,7 @@ export default function Register() {
 
             <div className="space-y-6 mb-12">
               <p className="text-slate-600 text-lg leading-relaxed font-medium">
-                Selamat! Langkah pertama Anda untuk bergabung dengan <span className="text-primary font-bold">Keluarga Besar HIMASI</span> telah resmi dimulai.
+                Selamat! Langkah pertama Anda untuk bergabung dengan <span className="text-primary font-bold">Keluarga Besar HIMA SI</span> telah resmi dimulai.
               </p>
 
               <div className="bg-slate-50 rounded-2xl p-6 text-left border border-slate-100">
@@ -338,7 +338,7 @@ export default function Register() {
                       minLength={MIN_ALASAN}
                       value={alasan}
                       onChange={(e) => setAlasan(e.target.value)}
-                      placeholder="Apa yang membuat Anda ingin bergabung dengan HIMASI? Apa harapan Anda kedepannya? (Minimal 50 karakter)"
+                      placeholder="Apa yang membuat Anda ingin bergabung dengan HIMA SI? Apa harapan Anda kedepannya? (Minimal 50 karakter)"
                       rows={8}
                       className="w-full bg-white border-2 border-slate-100 rounded-[2.5rem] p-8 text-slate-900 focus:border-primary focus:ring-8 focus:ring-primary/5 transition-all outline-none text-lg font-medium resize-none shadow-sm hover:border-slate-200"
                     />

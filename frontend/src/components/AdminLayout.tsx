@@ -87,8 +87,8 @@ export default function AdminLayout() {
       >
         <div className="portal-brand p-4 flex items-center justify-between border-b">
           <div className="flex items-center gap-3">
-            <div className="portal-logo"><img src="/himasi-icon.png" alt="" /></div>
-            <div><strong className="block text-sm">HIMASI</strong><span className="text-[10px] font-semibold tracking-[0.14em] uppercase">Admin Console</span></div>
+            <div className="portal-logo"><img src="/logo-himasi.png" alt="" className="h-8 w-auto" /></div>
+            <div><span className="text-[10px] font-semibold tracking-[0.14em] uppercase">Admin Console</span></div>
           </div>
           <button
             type="button"
@@ -117,9 +117,8 @@ export default function AdminLayout() {
       {/* Desktop sidebar */}
       <aside className="portal-sidebar w-72 flex-shrink-0 border-r hidden md:flex flex-col relative z-20">
         <div className="portal-brand px-7 py-8 flex items-center gap-4">
-          <div className="portal-logo"><img src="/himasi-icon.png" alt="" /></div>
+          <div className="portal-logo"><img src="/logo-himasi.png" alt="" className="h-10 w-auto" /></div>
           <div>
-            <h2 className="text-sm font-extrabold tracking-tight leading-none">HIMASI</h2>
             <p className="text-[10px] font-semibold tracking-[0.14em] uppercase mt-1">Admin Console</p>
           </div>
         </div>

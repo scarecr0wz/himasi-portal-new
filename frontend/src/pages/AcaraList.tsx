@@ -88,7 +88,7 @@ export default function AcaraList() {
 
             <div className="event-page-heading">
               <div>
-                <p className="event-page-kicker">Kalender HIMASI</p>
+                <p className="event-page-kicker">Kalender HIMA SI</p>
                 <h1>Ruang untuk bertemu,<br className="hidden sm:block" /> belajar, dan bertumbuh.</h1>
               </div>
             </div>
@@ -156,7 +156,7 @@ export default function AcaraList() {
 
                     <div className="event-card-body">
                       <p className="event-card-department">
-                        {item.departemen?.title || "HIMASI"}
+                        {item.departemen?.title || "HIMA SI"}
                       </p>
                       <h3>{item.title}</h3>
                       {item.desc && <p className="event-card-description">{item.desc}</p>}

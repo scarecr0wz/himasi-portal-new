@@ -268,7 +268,7 @@ export default function AdminMahasiswa() {
         </nav>
         <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Data Anggota</h1>
         <p className="text-slate-500 mt-2 text-[15px]">
-          Daftar anggota HIMASI. Cari berdasarkan NIM, nama, atau email.
+          Daftar anggota HIMA SI. Cari berdasarkan NIM, nama, atau email.
         </p>
       </div>
 

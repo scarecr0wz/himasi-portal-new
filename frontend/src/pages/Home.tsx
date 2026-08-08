@@ -39,9 +39,9 @@ export default function Home() {
   };
 
   const placeholderActivities = [
-    { id: "1", title: "Partisipasi HIMASI dalam OSMB 26.1 Hari Kedua: Games dan Solidaritas ORMAWA.", category: "Media & Publikasi", date: "22/2/2026" },
-    { id: "2", title: "HIMASI Raih Juara 1 pada UT Esport Conquest (UEC) 2026", category: "Acara", date: "21/2/2026" },
-    { id: "3", title: "HIMASI Hadir dan Ramaikan OSMB 26.1 melalui Booth dan Games Interaktif", category: "Media & Publikasi", date: "20/2/2026" },
+    { id: "1", title: "Partisipasi HIMA SI dalam OSMB 26.1 Hari Kedua: Games dan Solidaritas ORMAWA.", category: "Media & Publikasi", date: "22/2/2026" },
+    { id: "2", title: "HIMA SI Raih Juara 1 pada UT Esport Conquest (UEC) 2026", category: "Acara", date: "21/2/2026" },
+    { id: "3", title: "HIMA SI Hadir dan Ramaikan OSMB 26.1 melalui Booth dan Games Interaktif", category: "Media & Publikasi", date: "20/2/2026" },
     { id: "4", title: "MakraSI 2026: Sinergi Solidaritas Keluarga Besar Sistem Informasi", category: "Acara", date: "15/2/2026" },
     { id: "5", title: "BERSI Special Tuton: Offline dan Online Selama Tuton!", category: "Akademik", date: "10/2/2026" },
   ];
@@ -59,7 +59,7 @@ export default function Home() {
 
       <section className="portal-dashboard-intro">
         <div>
-          <span className="portal-kicker">Ruang anggota HIMASI</span>
+          <span className="portal-kicker">Ruang anggota HIMA SI</span>
           <h1>Semua aktivitasmu, dalam satu tempat.</h1>
           <p>Pantau kehadiran, kas, aspirasi, dan kegiatan organisasi dengan lebih mudah.</p>
         </div>

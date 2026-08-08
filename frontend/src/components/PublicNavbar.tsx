@@ -25,8 +25,8 @@ export default function PublicNavbar() {
     <header className="public-navbar sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/85 backdrop-blur-xl py-3">
       <div className="flex items-center justify-between gap-6 w-full max-w-[1440px] mx-auto px-5 md:px-10 lg:px-14 xl:px-16">
         <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center gap-3" aria-label="HIMASI - Beranda">
-            <img src="/logo-himasi.png" alt="HIMASI" className="h-10 w-auto object-contain" />
+          <Link to="/" className="flex items-center gap-3" aria-label="HIMA SI - Beranda">
+            <img src="/logo-himasi.png" alt="HIMA SI" className="h-10 w-auto object-contain" />
           </Link>
           <nav className="hidden lg:flex items-center gap-6">
             <Link to="/berita" className="text-slate-600 hover:text-primary text-sm font-semibold transition-colors">Berita</Link>
