@@ -64,15 +64,15 @@ export default function FinancePage() {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="portal-btn portal-btn-primary flex items-center justify-center gap-2 whitespace-nowrap shadow-md shadow-primary/20"
+          style={{ padding: "0.5rem 1rem", background: "var(--accent)", color: "white", borderRadius: "8px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "0.25rem", whiteSpace: "nowrap" }}
         >
-          <span className="material-symbols-outlined">add</span> Catat Transaksi
+          + Catat Transaksi
         </button>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-2xl p-6 border shadow-sm flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
             <span className="material-symbols-outlined text-8xl text-green-600">south_west</span>
           </div>
@@ -88,7 +88,7 @@ export default function FinancePage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-6 border shadow-sm flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
             <span className="material-symbols-outlined text-8xl text-red-600">north_east</span>
           </div>
@@ -122,8 +122,8 @@ export default function FinancePage() {
       </div>
 
       {/* Filter & List */}
-      <div className="bg-white border rounded-2xl shadow-sm overflow-hidden flex flex-col">
-        <div className="p-5 border-b flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/50">
+      <div className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col">
+        <div className="p-5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/50">
           <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
             <span className="material-symbols-outlined text-slate-400">receipt_long</span>
             Riwayat Transaksi
@@ -134,7 +134,7 @@ export default function FinancePage() {
               type="month" 
               value={filterMonth}
               onChange={(e) => setFilterMonth(e.target.value)}
-              className="border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none"
+              className="border-none rounded-none px-3 py-1.5 text-sm bg-white focus:ring-2 focus:ring-primary/50 outline-none"
             />
           </div>
         </div>
@@ -148,29 +148,29 @@ export default function FinancePage() {
           ) : transactions.length > 0 ? (
             <div className="overflow-x-auto min-h-[300px]">
               <table className="w-full text-left text-sm text-slate-700">
-                <thead className="bg-slate-100 text-slate-700 uppercase text-[11px] font-bold border-b border-slate-300">
+                <thead className="bg-slate-50 text-slate-700 uppercase text-[11px] font-bold">
                   <tr>
-                    <th className="px-4 py-3 w-32 whitespace-nowrap border-r border-slate-200">Tanggal</th>
-                    <th className="px-4 py-3 border-r border-slate-200">Keterangan</th>
-                    <th className="px-4 py-3 w-40 text-right border-r border-slate-200 text-green-700 bg-green-50/50">Pemasukan</th>
-                    <th className="px-4 py-3 w-40 text-right border-r border-slate-200 text-red-700 bg-red-50/50">Pengeluaran</th>
+                    <th className="px-4 py-3 w-32 whitespace-nowrap">Tanggal</th>
+                    <th className="px-4 py-3">Keterangan</th>
+                    <th className="px-4 py-3 w-40 text-right text-green-700">Pemasukan</th>
+                    <th className="px-4 py-3 w-40 text-right text-red-700">Pengeluaran</th>
                     <th className="px-4 py-3 w-16 text-center">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody>
                   {transactions.map((t) => (
-                    <tr key={t.id} className="hover:bg-slate-50 transition-colors group">
-                      <td className="px-4 py-3 whitespace-nowrap font-medium text-slate-600 border-r border-slate-100">
+                    <tr key={t.id} className="hover:bg-slate-50/80 transition-colors group">
+                      <td className="px-4 py-3 whitespace-nowrap font-medium text-slate-600">
                         {new Date(t.transactionDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' })}
                       </td>
-                      <td className="px-4 py-3 border-r border-slate-100">
+                      <td className="px-4 py-3">
                         <div className="font-semibold text-slate-900">{t.description || "-"}</div>
                         <div className="text-[11px] text-slate-500 mt-0.5">Oleh: {t.user.name}</div>
                       </td>
-                      <td className="px-4 py-3 text-right font-medium text-green-600 border-r border-slate-100">
+                      <td className="px-4 py-3 text-right font-medium text-green-600">
                         {t.type === 'INCOME' ? formatRp(Number(t.amount)) : "-"}
                       </td>
-                      <td className="px-4 py-3 text-right font-medium text-red-600 border-r border-slate-100">
+                      <td className="px-4 py-3 text-right font-medium text-red-600">
                         {t.type === 'EXPENSE' ? formatRp(Number(t.amount)) : "-"}
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -190,14 +190,14 @@ export default function FinancePage() {
                     </tr>
                   ))}
                   {/* Totals Row */}
-                  <tr className="bg-slate-50 font-bold border-t-2 border-slate-300">
-                    <td colSpan={2} className="px-4 py-3 text-right border-r border-slate-200 text-slate-700">
+                  <tr className="bg-slate-50/50 font-bold border-t border-slate-200">
+                    <td colSpan={2} className="px-4 py-3 text-right text-slate-700">
                       TOTAL PADA BULAN INI:
                     </td>
-                    <td className="px-4 py-3 text-right text-green-700 border-r border-slate-200 bg-green-50/50">
+                    <td className="px-4 py-3 text-right text-green-700">
                       {formatRp(summary.totalIncome)}
                     </td>
-                    <td className="px-4 py-3 text-right text-red-700 border-r border-slate-200 bg-red-50/50">
+                    <td className="px-4 py-3 text-right text-red-700">
                       {formatRp(summary.totalExpense)}
                     </td>
                     <td></td>
@@ -326,7 +326,7 @@ function TransactionModal({ onClose, onSuccess }: { onClose: () => void, onSucce
                   name="amount" 
                   required 
                   onChange={handleAmountChange}
-                  className={`w-full border rounded-xl pl-12 pr-4 py-3 bg-slate-50 focus:bg-white focus:ring-4 outline-none transition-all text-lg font-bold ${type === 'INCOME' ? 'focus:ring-green-500/20 focus:border-green-500 border-slate-300' : 'focus:ring-red-500/20 focus:border-red-500 border-slate-300'}`} 
+                  className={`w-full border-0 rounded-none pl-12 pr-4 py-3 bg-slate-50 focus:bg-white focus:ring-4 outline-none transition-all text-lg font-bold ${type === 'INCOME' ? 'focus:ring-green-500/20' : 'focus:ring-red-500/20'}`} 
                   placeholder="0" 
                 />
               </div>
@@ -334,12 +334,12 @@ function TransactionModal({ onClose, onSuccess }: { onClose: () => void, onSucce
             
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-slate-700">Keterangan Transaksi <span className="text-red-500">*</span></label>
-              <input type="text" name="description" required className="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" placeholder="Contoh: Beli konsumsi rapat" />
+              <input type="text" name="description" required className="w-full border-0 rounded-none px-4 py-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 outline-none transition-all" placeholder="Contoh: Beli konsumsi rapat" />
             </div>
             
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-slate-700">Tanggal <span className="text-red-500">*</span></label>
-              <input type="date" name="transactionDate" required defaultValue={new Date().toISOString().slice(0, 10)} className="w-full border border-slate-300 rounded-xl px-4 py-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" />
+              <input type="date" name="transactionDate" required defaultValue={new Date().toISOString().slice(0, 10)} className="w-full border-0 rounded-none px-4 py-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 outline-none transition-all" />
             </div>
             
           </div>

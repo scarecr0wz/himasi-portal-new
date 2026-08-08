@@ -15,7 +15,6 @@ type ArchiveDocument = {
 
 export default function ArchivePage() {
   const [activeTab, setActiveTab] = useState<"SURAT_MASUK" | "SURAT_KELUAR" | "DOKUMEN">("SURAT_MASUK");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [documents, setDocuments] = useState<ArchiveDocument[]>([]);
 
@@ -45,19 +44,11 @@ export default function ArchivePage() {
           <p className="text-slate-500">Kelola pendataan surat masuk, keluar, dan berkas penting organisasi.</p>
         </div>
         <div className="flex flex-col md:flex-row items-center gap-3">
-          <div className="bg-slate-100 p-1 rounded-lg flex w-full md:w-auto">
-            <button onClick={() => setViewMode("list")} className={`flex-1 p-1.5 rounded-md flex items-center justify-center ${viewMode === "list" ? "bg-white shadow-sm text-primary" : "text-slate-500 hover:text-slate-700"}`} title="Mode Tabel">
-              <span className="material-symbols-outlined text-[20px]">table_rows</span>
-            </button>
-            <button onClick={() => setViewMode("grid")} className={`flex-1 p-1.5 rounded-md flex items-center justify-center ${viewMode === "grid" ? "bg-white shadow-sm text-primary" : "text-slate-500 hover:text-slate-700"}`} title="Mode Kartu">
-              <span className="material-symbols-outlined text-[20px]">grid_view</span>
-            </button>
-          </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="portal-btn portal-btn-primary flex items-center justify-center gap-2 whitespace-nowrap w-full md:w-auto"
+            style={{ padding: "0.5rem 1rem", background: "var(--accent)", color: "white", borderRadius: "8px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "0.25rem", whiteSpace: "nowrap" }}
           >
-            <span className="material-symbols-outlined">add</span> Tambah Data
+            + Tambah Data
           </button>
         </div>
       </div>
@@ -85,12 +76,11 @@ export default function ArchivePage() {
       </div>
 
       {/* Cloud-like grid view */}
-      <div className="bg-white border rounded-xl shadow-sm overflow-hidden min-h-[400px]">
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden min-h-[400px]">
         {documents && documents.length > 0 ? (
-          viewMode === "list" ? (
             <div className="overflow-x-auto min-h-[300px]">
               <table className="w-full text-left text-sm text-slate-600">
-                <thead className="bg-slate-50 text-slate-700 uppercase text-[11px] font-bold border-b tracking-wider">
+                <thead className="bg-slate-50 text-slate-700 uppercase text-[11px] font-bold tracking-wider">
                   <tr>
                     <th className="px-4 py-3 w-10 text-center">#</th>
                     <th className="px-4 py-3">Perihal / Judul</th>
@@ -100,7 +90,7 @@ export default function ArchivePage() {
                     <th className="px-4 py-3 text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody>
                   {documents.map((doc) => (
                     <tr 
                       key={doc.id} 
@@ -149,61 +139,12 @@ export default function ArchivePage() {
               </table>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
-              {documents.map((doc) => (
-                <div 
-                  key={doc.id} 
-                  onClick={() => doc.attachmentPath && window.open(doc.attachmentPath, '_blank')}
-                  className="group relative border rounded-xl p-4 flex flex-col hover:border-primary/50 hover:shadow-md transition-all bg-slate-50/50 hover:bg-white cursor-pointer"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className={`p-3 rounded-lg ${doc.attachmentPath?.endsWith('.pdf') ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
-                      <span className="material-symbols-outlined text-3xl">
-                        {doc.attachmentPath?.endsWith('.pdf') ? 'picture_as_pdf' : doc.attachmentPath ? 'image' : 'draft'}
-                      </span>
-                    </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {doc.attachmentPath && (
-                        <button type="button" className="p-1.5 text-slate-500 hover:text-primary hover:bg-slate-100 rounded-md" title="Buka File" onClick={(e) => { e.stopPropagation(); window.open(doc.attachmentPath!, '_blank'); }}>
-                          <span className="material-symbols-outlined text-[18px]">open_in_new</span>
-                        </button>
-                      )}
-                      <button 
-                        type="button"
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          if (confirm("Hapus dokumen ini?")) {
-                            await fetch(`/api/admin/archive/${doc.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('himasi_portal_token')}` } });
-                            fetchDocuments();
-                          }
-                        }}
-                        className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-md" title="Hapus"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">delete</span>
-                      </button>
-                    </div>
-                  </div>
-                  <h3 className="font-semibold text-slate-800 line-clamp-2 leading-tight mb-1" title={doc.subject}>{doc.subject}</h3>
-                  {activeTab !== "DOKUMEN" && (
-                    <p className="text-xs text-slate-500 font-mono mb-2">{doc.noSurat || "Tanpa Nomor"}</p>
-                  )}
-                  <div className="mt-auto pt-3 border-t text-[11px] text-slate-500 flex flex-col gap-1">
-                    {activeTab === "SURAT_MASUK" && <span>Pengirim: {doc.fromTo}</span>}
-                    {activeTab === "SURAT_KELUAR" && <span>Tujuan: {doc.fromTo}</span>}
-                    <span>Tanggal: {doc.letterDate ? new Date(doc.letterDate).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' }) : "-"}</span>
-                    <span className="mt-1 font-semibold text-slate-400">Diunggah oleh: {doc.user.name}</span>
-                  </div>
-                </div>
-              ))}
+            <div className="flex flex-col items-center justify-center h-[300px] text-slate-400">
+              <span className="material-symbols-outlined text-5xl mb-2 opacity-50">folder_open</span>
+              <p>Tidak ada data di folder ini</p>
             </div>
-          )
-        ) : (
-          <div className="flex flex-col items-center justify-center h-[300px] text-slate-400">
-            <span className="material-symbols-outlined text-5xl mb-2 opacity-50">folder_open</span>
-            <p>Tidak ada data di folder ini</p>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
       {isModalOpen && (
         <ArchiveModal 
@@ -308,13 +249,13 @@ function ArchiveModal({ activeTab, onClose, onSuccess }: { activeTab: string, on
           <div className="p-5 space-y-5 flex-1">
             <div className="flex flex-col gap-1.5">
             <label className="text-sm font-semibold text-slate-700">Perihal / Judul Dokumen <span className="text-red-500">*</span></label>
-            <input type="text" name="subject" required className="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" placeholder="Masukkan perihal..." />
+            <input type="text" name="subject" required className="w-full border-0 rounded-none px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 outline-none transition-all" placeholder="Masukkan perihal..." />
           </div>
           
           {activeTab !== "DOKUMEN" && (
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-slate-700">Nomor Surat (Manual)</label>
-              <input type="text" name="noSurat" className="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" placeholder="Misal: 001/HM.UTB/VIII/2026" />
+              <input type="text" name="noSurat" className="w-full border-0 rounded-none px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 outline-none transition-all" placeholder="Misal: 001/HM.UTB/VIII/2026" />
             </div>
           )}
           
@@ -322,11 +263,11 @@ function ArchiveModal({ activeTab, onClose, onSuccess }: { activeTab: string, on
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-slate-700">Pengirim (Dari)</label>
-                <input type="text" name="pengirim" className="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" placeholder="Nama instansi/orang pengirim" />
+                <input type="text" name="pengirim" className="w-full border-0 rounded-none px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 outline-none transition-all" placeholder="Nama instansi/orang pengirim" />
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-slate-700">Kepada / Tujuan</label>
-                <input type="text" name="tujuan" className="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" placeholder="Ditujukan kepada" />
+                <input type="text" name="tujuan" className="w-full border-0 rounded-none px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 outline-none transition-all" placeholder="Ditujukan kepada" />
               </div>
             </div>
           )}
@@ -334,13 +275,13 @@ function ArchiveModal({ activeTab, onClose, onSuccess }: { activeTab: string, on
           {activeTab !== "DOKUMEN" && (
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-slate-700">Tanggal</label>
-              <input type="date" name="letterDate" className="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" />
+              <input type="date" name="letterDate" className="w-full border-0 rounded-none px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 outline-none transition-all" />
             </div>
           )}
           
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-semibold text-slate-700">Keterangan Tambahan</label>
-            <textarea name="description" rows={3} className="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all resize-none" placeholder="Opsional..."></textarea>
+            <textarea name="description" rows={3} className="w-full border-0 rounded-none px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 outline-none transition-all resize-none" placeholder="Opsional..."></textarea>
           </div>
           
           <div className="flex flex-col gap-1.5">
